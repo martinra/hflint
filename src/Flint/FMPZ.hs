@@ -7,11 +7,10 @@ import Flint.FMPZ.FFI
 import Foreign.C.Types (CLong(..))
 import Foreign.C.String (peekCString)
 import Foreign.Ptr (Ptr, nullPtr)
-import Foreign.Marshal (alloca, with, free)
-import Foreign.Storable (peek)
+import Foreign.Marshal (alloca, free)
 
 import Control.Monad (foldM)
-import Control.Applicative ((<$>))
+
 import System.IO.Unsafe (unsafePerformIO)
 
 instance Num FMPZ where
@@ -25,6 +24,7 @@ instance Num FMPZ where
                                                  fmpz_set_si lptr (fromIntegral l)
                                                  fmpz_mul_si b b limbSize
                                                  fmpz_add b b lptr
+                                                 fmpz_clear lptr
                                                  return b)
                                 c limbs
                   where
@@ -39,7 +39,7 @@ instance Num FMPZ where
     negate = liftFMPZ_ fmpz_neg
 
 instance Show FMPZ where
-    show = show . flip toString 10
+    show = flip toString 10
 
 toString :: FMPZ -> Int -> String
 toString a base = unsafePerformIO $ flip lift0FMPZ a $ \ptr -> do
@@ -48,26 +48,13 @@ toString a base = unsafePerformIO $ flip lift0FMPZ a $ \ptr -> do
   free cstr
   return str
   
-
-withNewFMPZ_ :: (Ptr CFMPZ -> IO a) -> FMPZ
-withNewFMPZ_ = fst . withNewFMPZ
-
-withNewFMPZ :: (Ptr CFMPZ -> IO a) -> (FMPZ, IO a)
-withNewFMPZ f = (unsafePerformIO $ fst <$> res, snd <$> res)
-    where
-      res = alloca $ \ptr -> do
-              fmpz_init ptr
-              fres <- f ptr
-              a <- peek ptr
-              return (fromCFMPZ a, fres)
-
 lift0FMPZ :: (Ptr CFMPZ -> IO a) -> FMPZ -> IO a
-lift0FMPZ f a = with (toCFMPZ a) $ \aptr ->
+lift0FMPZ f a = withFMPZ a $ \aptr ->
                 f aptr
 
 liftFMPZ :: (Ptr CFMPZ -> Ptr CFMPZ -> IO a) -> FMPZ -> (FMPZ, IO a)
 liftFMPZ f a = withNewFMPZ $ \cptr ->
-               with (toCFMPZ a) $ \aptr ->
+               withFMPZ a $ \aptr ->
                f cptr aptr
 
 liftFMPZ_ :: (Ptr CFMPZ -> Ptr CFMPZ -> IO a) -> FMPZ -> FMPZ
@@ -75,8 +62,8 @@ liftFMPZ_ f a = fst $ liftFMPZ f a
 
 lift2FMPZ :: (Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO a) -> FMPZ -> FMPZ -> (FMPZ, IO a)
 lift2FMPZ f a b = withNewFMPZ $ \cptr ->
-                  with (toCFMPZ a) $ \aptr ->
-                  with (toCFMPZ b) $ \bptr -> 
+                  withFMPZ a $ \aptr ->
+                  withFMPZ b $ \bptr -> 
                   f cptr aptr bptr
 
 lift2FMPZ_ :: (Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO a) -> FMPZ -> FMPZ -> FMPZ

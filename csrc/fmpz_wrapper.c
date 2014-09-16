@@ -9,6 +9,14 @@ fmpz_init_wrapper(
 }
 
 void
+fmpz_clear_wrapper(
+  fmpz_t f
+)
+{
+  fmpz_clear(f);
+}
+
+void
 fmpz_set_si_wrapper(
   fmpz_t f,
   slong val
