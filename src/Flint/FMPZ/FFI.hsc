@@ -1,7 +1,7 @@
-{-# LANGUAGE ForeignFunctionInterface #-}
+{-#   LANGUAGE ForeignFunctionInterface
+    , CApiFFI #-}
 
 #include <flint/fmpz.h>
-#include <fmpz_wrapper.h>
 
 module Flint.FMPZ.FFI
 where
@@ -15,16 +15,16 @@ import Control.Applicative((<$>))
 import System.IO.Unsafe (unsafePerformIO)
 
 
-foreign import ccall unsafe "fmpz_init_wrapper"
+foreign import capi unsafe "flint/fmpz.h fmpz_init"
         fmpz_init :: Ptr CFMPZ -> IO ()
 
-foreign import ccall unsafe "fmpz_set_si_wrapper"
+foreign import capi unsafe "flint/fmpz.h fmpz_set_si"
         fmpz_set_si :: Ptr CFMPZ -> CLong -> IO ()
 
-foreign import ccall unsafe "fmpz_clear_wrapper"
+foreign import capi unsafe "flint/fmpz.h fmpz_clear"
         fmpz_clear :: Ptr CFMPZ -> IO ()
 
-foreign import ccall "&fmpz_clear_wrapper"
+foreign import capi "flint/fmpz.h value fmpz_clear"
         p_fmpz_clear :: FunPtr (Ptr CFMPZ -> IO ())
 
 foreign import ccall unsafe "fmpz_get_str"
@@ -33,7 +33,7 @@ foreign import ccall unsafe "fmpz_get_str"
 foreign import ccall unsafe "fmpz_sgn"
         fmpz_sgn :: Ptr CFMPZ -> IO CInt
 
-foreign import ccall unsafe "fmpz_neg_wrapper"
+foreign import capi unsafe "flint/fmpz.h fmpz_neg"
         fmpz_neg :: Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
 foreign import ccall unsafe "fmpz_abs"

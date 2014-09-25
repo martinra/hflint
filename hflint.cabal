@@ -42,10 +42,8 @@ Library
   GHC-options:         -Wall -fno-warn-orphans
   GHC-prof-options:    -prof -auto
   hs-source-dirs:      src
-  include-dirs:        csrc
-  c-sources:           csrc/fmpz_wrapper.c
   includes:            flint/flint.h
                        flint/fmpz.h
 
-  extra-libraries:     flint
+  extra-libraries:     flint, gmp
 
