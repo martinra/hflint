@@ -89,5 +89,5 @@ instance Flint FMPQ CFMPQ where
       addForeignPtrFinalizer p_fmpq_clear a
       return $ FMPQ a
 
-    withFlint f (FMPQ a) = withForeignPtr a $ \a' ->
+    withFlint (FMPQ a) f = withForeignPtr a $ \a' ->
                            f a' >>= \r -> return (FMPQ a,r)

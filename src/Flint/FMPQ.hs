@@ -26,7 +26,7 @@ instance Num FMPQ where
     -- todo : speed this up
     fromInteger a = unsafePerformIO $
                     withNewFlint_ $ \cptr ->
-                    (flip withFlint_ (fromInteger a) :: (Ptr CFMPZ -> IO b) -> IO FMPZ)
+                    (withFlint_ (fromInteger a) :: (Ptr CFMPZ -> IO b) -> IO FMPZ)
                     $ \aptr ->
                     (withNewFlint_ :: (Ptr CFMPZ -> IO b) -> IO FMPZ)
                     $ \bptr -> do
