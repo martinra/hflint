@@ -83,8 +83,5 @@ instance Flint FMPZ CFMPZ where
       addForeignPtrFinalizer p_fmpz_clear a
       return $ FMPZ a
 
-    withFlint f (FMPZ a) = withForeignPtr a f'
-        where
-          f' a' = do
-            r <- f a'
-            return (FMPZ a,r)
+    withFlint f (FMPZ a) = withForeignPtr a $ \a' ->
+                           f a' >>= \r -> return (FMPZ a,r)
