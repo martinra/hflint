@@ -23,7 +23,6 @@ import System.IO.Unsafe (unsafePerformIO)
 
 
 instance Num FMPQ where
-    -- todo : speed this up
     fromInteger a = unsafePerformIO $
                     withNewFlint_ $ \cptr ->
                     (withFlint_ (fromInteger a) :: (Ptr CFMPZ -> IO b) -> IO FMPZ)
