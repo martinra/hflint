@@ -34,10 +34,12 @@ source-repository this
 Library
   build-Depends:       base > 3 && < 5
 
-  Other-modules:       Flint.FMPZ.FFI
-                       Flint.Internal.FlintCalls
+  Other-modules:       Flint.Internal.FlintCalls
+                       Flint.FMPZ.FFI
+                       Flint.FMPQ.FFI
 
   Exposed-modules:     Flint.FMPZ
+                       Flint.FMPQ
 
   build-tools:         hsc2hs
   GHC-options:         -Wall -fno-warn-orphans

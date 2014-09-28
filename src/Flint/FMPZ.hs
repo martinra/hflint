@@ -1,6 +1,5 @@
 {-# LANGUAGE
-    TypeSynonymInstances
-  , FlexibleInstances
+    FlexibleInstances
   #-}
 
 module Flint.FMPZ
@@ -13,8 +12,8 @@ import Flint.FMPZ.FFI
     
 import Foreign.C.Types (CLong(..))
 import Foreign.C.String (peekCString)
-import Foreign.Ptr (nullPtr)
-import Foreign.Marshal (alloca, free)
+import Foreign.Ptr (Ptr, nullPtr)
+import Foreign.Marshal (free)
 
 import System.IO.Unsafe (unsafePerformIO)
 
@@ -22,16 +21,17 @@ instance Num FMPZ where
     -- todo : speed this up
     fromInteger a | a < 0 = negate (fromInteger (negate a))
                   | a == 0 = unsafePerformIO $ withNewFlint_ fmpz_zero
-                  | otherwise = unsafePerformIO $ withNewFlint_ $ \cptr ->
-                                alloca $ \lptr -> do
-                                  fmpz_init lptr
+                  | otherwise = unsafePerformIO $
+                                withNewFlint_ $ \cptr ->
+                                (withNewFlint_ :: (Ptr CFMPZ -> IO b) -> IO FMPZ)
+                                $ \lptr -> do
                                   fmpz_set_si cptr $ head limbs
                                   flip mapM_ (tail limbs) $ \l ->
                                       do
                                         fmpz_mul_si cptr cptr limbSize
+                                        -- todo: use add_ui instead
                                         fmpz_set_si lptr l
                                         fmpz_add cptr cptr lptr
-                                  fmpz_clear lptr
                   where
                     limbSize = 1 + (div (maxBound :: CLong) 2)
                     limbs = map fromIntegral $

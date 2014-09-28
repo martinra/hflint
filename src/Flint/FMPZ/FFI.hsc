@@ -12,12 +12,12 @@ module Flint.FMPZ.FFI
 where
 
 
-import Foreign.C.String(CString)
-import Foreign.C.Types(CLong(..), CInt(..))
-import Foreign.ForeignPtr( ForeignPtr, withForeignPtr
-                         , mallocForeignPtr, addForeignPtrFinalizer )
-import Foreign.Ptr(Ptr, FunPtr)
-import Foreign.Storable(Storable(..))
+import Foreign.C.String (CString)
+import Foreign.C.Types (CLong(..), CInt(..))
+import Foreign.ForeignPtr ( ForeignPtr, withForeignPtr
+                          , mallocForeignPtr, addForeignPtrFinalizer )
+import Foreign.Ptr (Ptr, FunPtr)
+import Foreign.Storable (Storable(..))
 
 import Data.Int
 import Flint.Internal.FlintCalls
@@ -26,20 +26,26 @@ import Flint.Internal.FlintCalls
 foreign import capi unsafe "flint/fmpz.h fmpz_init"
         fmpz_init :: Ptr CFMPZ -> IO ()
 
-foreign import capi unsafe "flint/fmpz.h fmpz_zero"
-        fmpz_zero :: Ptr CFMPZ -> IO ()
-
-foreign import capi unsafe "flint/fmpz.h fmpz_set_si"
-        fmpz_set_si :: Ptr CFMPZ -> CLong -> IO ()
-
 foreign import capi unsafe "flint/fmpz.h fmpz_clear"
         fmpz_clear :: Ptr CFMPZ -> IO ()
 
 foreign import capi "flint/fmpz.h value fmpz_clear"
         p_fmpz_clear :: FunPtr (Ptr CFMPZ -> IO ())
 
+
+foreign import capi unsafe "flint/fmpz.h fmpz_zero"
+        fmpz_zero :: Ptr CFMPZ -> IO ()
+
+foreign import capi unsafe "flint/fmpz.h fmpz_one"
+        fmpz_one :: Ptr CFMPZ -> IO ()
+
+foreign import capi unsafe "flint/fmpz.h fmpz_set_si"
+        fmpz_set_si :: Ptr CFMPZ -> CLong -> IO ()
+
+
 foreign import ccall unsafe "fmpz_get_str"
         fmpz_get_str :: CString -> CInt -> Ptr CFMPZ -> IO CString
+
 
 foreign import ccall unsafe "fmpz_sgn"
         fmpz_sgn :: Ptr CFMPZ -> IO CInt
@@ -49,6 +55,7 @@ foreign import capi unsafe "flint/fmpz.h fmpz_neg"
 
 foreign import ccall unsafe "fmpz_abs"
         fmpz_abs :: Ptr CFMPZ -> Ptr CFMPZ -> IO ()
+
 
 foreign import ccall unsafe "fmpz_add"
         fmpz_add :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
