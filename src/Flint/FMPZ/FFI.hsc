@@ -1,22 +1,33 @@
-{-#   LANGUAGE ForeignFunctionInterface
-    , CApiFFI #-}
+{-# LANGUAGE
+    ForeignFunctionInterface
+  , CApiFFI
+  , EmptyDataDecls
+  , FlexibleInstances
+  , MultiParamTypeClasses
+  #-}
 
 #include <flint/fmpz.h>
 
 module Flint.FMPZ.FFI
 where
 
+
 import Foreign.C.String(CString)
 import Foreign.C.Types(CLong(..), CInt(..))
-import Foreign.Ptr(Ptr, FunPtr)
 import Foreign.ForeignPtr( ForeignPtr, withForeignPtr
                          , mallocForeignPtr, addForeignPtrFinalizer )
-import Control.Applicative((<$>))
-import System.IO.Unsafe (unsafePerformIO)
+import Foreign.Ptr(Ptr, FunPtr)
+import Foreign.Storable(Storable(..))
+
+import Data.Int
+import Flint.Internal.FlintCalls
 
 
 foreign import capi unsafe "flint/fmpz.h fmpz_init"
         fmpz_init :: Ptr CFMPZ -> IO ()
+
+foreign import capi unsafe "flint/fmpz.h fmpz_zero"
+        fmpz_zero :: Ptr CFMPZ -> IO ()
 
 foreign import capi unsafe "flint/fmpz.h fmpz_set_si"
         fmpz_set_si :: Ptr CFMPZ -> CLong -> IO ()
@@ -55,25 +66,25 @@ foreign import ccall unsafe "fmpz_mul"
 foreign import ccall unsafe "fmpz_mul_si"
         fmpz_mul_si :: Ptr CFMPZ -> Ptr CFMPZ -> CLong -> IO ()
 
-type CFMPZ = CLong
+
+data CFMPZ
 newtype FMPZ = FMPZ (ForeignPtr CFMPZ)
 
-withFMPZ :: FMPZ -> (Ptr CFMPZ -> IO b) -> IO b
-withFMPZ (FMPZ a) = withForeignPtr a
+instance Storable CFMPZ where
+    sizeOf _ = #size fmpz
+    alignment _ = alignment (undefined :: #{type fmpz})
+    peek = error "CFMPZ.peek: Not defined"
+    poke = error "CFMPZ.poke: Not defined"
 
-newFMPZ :: IO FMPZ
-newFMPZ = do
-  a <- mallocForeignPtr
-  addForeignPtrFinalizer p_fmpz_clear a
-  return $ FMPZ a
+instance Flint FMPZ CFMPZ where
+    newFlint = do
+      a <- mallocForeignPtr
+      withForeignPtr a fmpz_init
+      addForeignPtrFinalizer p_fmpz_clear a
+      return $ FMPZ a
 
-withNewFMPZ :: (Ptr CFMPZ -> IO a) -> (FMPZ, IO a)
-withNewFMPZ f = (unsafePerformIO $ fst <$> ab, snd <$> ab)
-    where
-      ab = do
-        a <- newFMPZ
-        b <- withFMPZ a f
-        return (a,b)
-
-withNewFMPZ_ :: (Ptr CFMPZ -> IO a) -> FMPZ
-withNewFMPZ_ = fst . withNewFMPZ
+    withFlint f (FMPZ a) = withForeignPtr a f'
+        where
+          f' a' = do
+            r <- f a'
+            return (FMPZ a,r)

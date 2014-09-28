@@ -35,6 +35,7 @@ Library
   build-Depends:       base > 3 && < 5
 
   Other-modules:       Flint.FMPZ.FFI
+                       Flint.Internal.FlintCalls
 
   Exposed-modules:     Flint.FMPZ
 
@@ -44,6 +45,8 @@ Library
   hs-source-dirs:      src
   includes:            flint/flint.h
                        flint/fmpz.h
+  include-dirs:        csrc
+  c-sources:           csrc/flint_define_wrappers.c
 
   extra-libraries:     flint, gmp
 
