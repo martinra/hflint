@@ -10,9 +10,9 @@ where
 import Flint.Internal.FlintCalls
 import Flint.FMPZ.FFI
     
-import Foreign.C.Types (CLong(..))
+import Foreign.C.Types (CULong(..))
 import Foreign.C.String (peekCString)
-import Foreign.Ptr (Ptr, nullPtr)
+import Foreign.Ptr (nullPtr)
 import Foreign.Marshal (free)
 
 import System.IO.Unsafe (unsafePerformIO)
@@ -22,18 +22,13 @@ instance Num FMPZ where
     fromInteger a | a < 0 = negate (fromInteger (negate a))
                   | a == 0 = unsafePerformIO $ withNewFlint_ fmpz_zero
                   | otherwise = unsafePerformIO $
-                                withNewFlint_ $ \cptr ->
-                                (withNewFlint_ :: (Ptr CFMPZ -> IO b) -> IO FMPZ)
-                                $ \lptr -> do
-                                  fmpz_set_si cptr $ head limbs
-                                  flip mapM_ (tail limbs) $ \l ->
-                                      do
-                                        fmpz_mul_si cptr cptr limbSize
-                                        -- todo: use add_ui instead
-                                        fmpz_set_si lptr l
-                                        fmpz_add cptr cptr lptr
+                                withNewFlint_ $ \cptr -> do
+                                  fmpz_set_ui cptr $ head limbs
+                                  flip mapM_ (tail limbs) $ \l -> do
+                                    fmpz_mul_ui cptr cptr limbSize
+                                    fmpz_add_ui cptr cptr l
                   where
-                    limbSize = 1 + (div (maxBound :: CLong) 2)
+                    limbSize = 1 + (div (maxBound :: CULong) 2)
                     limbs = map fromIntegral $
                             reverse $ map snd $ takeWhile (not . isZeroLimb) $
                             tail $ iterate nextLimb (a,0)
