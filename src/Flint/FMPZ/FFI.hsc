@@ -13,14 +13,15 @@ where
 
 
 import Foreign.C.String (CString)
-import Foreign.C.Types (CLong(..), CInt(..))
+import Foreign.C.Types (CULong(..), CInt(..))
 import Foreign.ForeignPtr ( ForeignPtr, withForeignPtr
                           , mallocForeignPtr, addForeignPtrFinalizer )
 import Foreign.Ptr (Ptr, FunPtr)
 import Foreign.Storable (Storable(..))
 
-import Data.Int
 import Flint.Internal.FlintCalls
+
+#let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 
 
 foreign import capi unsafe "flint/fmpz.h fmpz_init"
@@ -39,8 +40,8 @@ foreign import capi unsafe "flint/fmpz.h fmpz_zero"
 foreign import capi unsafe "flint/fmpz.h fmpz_one"
         fmpz_one :: Ptr CFMPZ -> IO ()
 
-foreign import capi unsafe "flint/fmpz.h fmpz_set_si"
-        fmpz_set_si :: Ptr CFMPZ -> CLong -> IO ()
+foreign import capi unsafe "flint/fmpz.h fmpz_set_ui"
+        fmpz_set_ui :: Ptr CFMPZ -> CULong -> IO ()
 
 
 foreign import ccall unsafe "fmpz_get_str"
@@ -60,9 +61,8 @@ foreign import ccall unsafe "fmpz_abs"
 foreign import ccall unsafe "fmpz_add"
         fmpz_add :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
--- NOT IMPLEMENTED IN FLINT 2.4
--- foreign import ccall unsafe "fmpz_add_si"
---        fmpz_add_si :: Ptr CFMPZ -> Ptr CFMPZ -> CLong -> IO ()
+foreign import ccall unsafe "fmpz_add_ui"
+        fmpz_add_ui :: Ptr CFMPZ -> Ptr CFMPZ -> CULong -> IO ()
 
 foreign import ccall unsafe "fmpz_sub"
         fmpz_sub :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
@@ -70,16 +70,16 @@ foreign import ccall unsafe "fmpz_sub"
 foreign import ccall unsafe "fmpz_mul"
         fmpz_mul :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-foreign import ccall unsafe "fmpz_mul_si"
-        fmpz_mul_si :: Ptr CFMPZ -> Ptr CFMPZ -> CLong -> IO ()
+foreign import ccall unsafe "fmpz_mul_ui"
+        fmpz_mul_ui :: Ptr CFMPZ -> Ptr CFMPZ -> CULong -> IO ()
 
 
 data CFMPZ
 newtype FMPZ = FMPZ (ForeignPtr CFMPZ)
 
 instance Storable CFMPZ where
-    sizeOf _ = #size fmpz
-    alignment _ = alignment (undefined :: #{type fmpz})
+    sizeOf _ = #{size fmpz}
+    alignment _ = #{alignment fmpz}
     peek = error "CFMPZ.peek: Not defined"
     poke = error "CFMPZ.poke: Not defined"
 

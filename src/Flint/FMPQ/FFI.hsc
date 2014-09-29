@@ -21,6 +21,8 @@ import Foreign.Storable (Storable(..))
 import Flint.Internal.FlintCalls
 import Flint.FMPZ.FFI
 
+#let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
+
 
 foreign import capi unsafe "flint/fmpq.h fmpq_init"
         fmpq_init :: Ptr CFMPQ -> IO ()
@@ -76,8 +78,7 @@ newtype FMPQ = FMPQ (ForeignPtr CFMPQ)
 
 instance Storable CFMPQ where
     sizeOf _ = #size fmpq
-    -- fixme: what is the correct alignment
-    alignment _ = alignment (undefined :: Ptr CFMPQ)
+    alignment _ = #alignment fmpq
     peek = error "CFMPQ.peek: Not defined"
     poke = error "CFMPQ.poke: Not defined"
 
