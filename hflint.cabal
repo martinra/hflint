@@ -50,6 +50,8 @@ Library
                        Flint.FMPQ.Arithmetic
 
                        Flint.FMPQMat.FFI
+                       Flint.FMPQMat.Internal
+                       Flint.FMPQMat.Basic
 
   Exposed-modules:     Flint.FMPZ
                        Flint.FMPQ
