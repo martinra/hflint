@@ -1,7 +1,3 @@
-{-# LANGUAGE
-    FlexibleInstances
-  #-}
-
 module Flint.FMPZ
     ( FMPZ
     , withFMPZ
@@ -11,62 +7,8 @@ module Flint.FMPZ
     )
 where
 
-import Flint.Internal.Flint
+
 import Flint.FMPZ.FFI
-    
-import Foreign.C.Types (CULong(..))
-import Foreign.C.String (peekCString)
-import Foreign.Ptr (Ptr, nullPtr)
-import Foreign.Marshal (free)
-
-import System.IO.Unsafe (unsafePerformIO)
-
-
-withFMPZ :: FMPZ -> (Ptr CFMPZType -> Ptr CFMPZ -> IO b) -> IO (FMPZ, b)
-withFMPZ = withFlint 
-
-withFMPZ_ :: FMPZ -> (Ptr CFMPZType -> Ptr CFMPZ -> IO b) -> IO FMPZ
-withFMPZ_ = withFlint_
-
-withNewFMPZ :: (Ptr CFMPZType -> Ptr CFMPZ -> IO b) -> IO (FMPZ, b)
-withNewFMPZ = withNewFlint FMPZType
-
-withNewFMPZ_ :: (Ptr CFMPZType -> Ptr CFMPZ -> IO b) -> IO FMPZ
-withNewFMPZ_ = withNewFlint_ FMPZType
-
-
-instance Show FMPZ where
-    show = flip toString 10
-
-toString :: FMPZ -> Int -> String
-toString a base = unsafePerformIO $ do
-  cstr <- lift0Flint (const $ fmpz_get_str nullPtr (fromIntegral base)) a
-  str <- peekCString cstr
-  free cstr
-  return str
-
-
-instance Num FMPZ where
-    -- todo : speed this up
-    fromInteger a | a < 0 = negate (fromInteger (negate a))
-                  | a == 0 = unsafePerformIO $ withNewFMPZ_ $ \_ cptr -> fmpz_zero cptr
-                  | otherwise = unsafePerformIO $
-                                withNewFMPZ_ $ const $ \cptr -> do
-                                  fmpz_set_ui cptr $ head limbs
-                                  flip mapM_ (tail limbs) $ \l -> do
-                                    fmpz_mul_ui cptr cptr limbSize
-                                    fmpz_add_ui cptr cptr l
-                  where
-                    limbSize = 1 + (div (maxBound :: CULong) 2)
-                    limbs = map fromIntegral $
-                            reverse $ map snd $ takeWhile (not . isZeroLimb) $
-                            tail $ iterate nextLimb (a,0)
-                    nextLimb = flip divMod (fromIntegral limbSize) . fst
-                    isZeroLimb (b,l) = b==0 && l==0
-    (+) = lift2Flint_ $ const fmpz_add
-    (-) = lift2Flint_ $ const fmpz_sub
-    (*) = lift2Flint_ $ const fmpz_mul
-    abs = liftFlint_ $ const fmpz_abs
-    signum = fromInteger . fromIntegral . unsafePerformIO .
-             lift0Flint (const fmpz_sgn)
-    negate = liftFlint_ $ const fmpz_neg
+import Flint.FMPZ.Internal
+import Flint.FMPZ.Basic()
+import Flint.FMPZ.Arithmetic()

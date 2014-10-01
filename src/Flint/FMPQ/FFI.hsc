@@ -42,7 +42,7 @@ foreign import ccall unsafe "fmpq_denref_wrapper"
 
 
 foreign import capi unsafe "fmpq_set"
-        fmpq_set :: Ptr CFMPQ -> Ptr CFMPZ -> IO ()
+        fmpq_set :: Ptr CFMPQ -> Ptr CFMPQ -> IO ()
 
 foreign import ccall unsafe "fmpq_set_fmpz_frac"
         fmpq_set_fmpz_frac :: Ptr CFMPQ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()

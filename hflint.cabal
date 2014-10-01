@@ -38,11 +38,22 @@ Library
 
   Other-modules:       Flint.Internal.Flint
                        Flint.Internal.FlintMat
+
                        Flint.FMPZ.FFI
+                       Flint.FMPZ.Internal
+                       Flint.FMPZ.Basic
+                       Flint.FMPZ.Arithmetic
+
                        Flint.FMPQ.FFI
+                       Flint.FMPQ.Internal
+                       Flint.FMPQ.Basic
+                       Flint.FMPQ.Arithmetic
+
+                       Flint.FMPQMat.FFI
 
   Exposed-modules:     Flint.FMPZ
                        Flint.FMPQ
+                       Flint.FMPQMat
 
   build-tools:         hsc2hs
   GHC-options:         -Wall -fno-warn-orphans
