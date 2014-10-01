@@ -23,16 +23,16 @@ import System.IO.Unsafe (unsafePerformIO)
 
 
 withFMPZ :: FMPZ -> (Ptr CFMPZ -> IO b) -> IO (FMPZ, b)
-withFMPZ = withFlint
+withFMPZ = withFlint 
 
 withFMPZ_ :: FMPZ -> (Ptr CFMPZ -> IO b) -> IO FMPZ
 withFMPZ_ = withFlint_
 
 withNewFMPZ :: (Ptr CFMPZ -> IO b) -> IO (FMPZ, b)
-withNewFMPZ = withNewFlint
+withNewFMPZ = withNewFlint FMPZType
 
 withNewFMPZ_ :: (Ptr CFMPZ -> IO b) -> IO FMPZ
-withNewFMPZ_ = withNewFlint_
+withNewFMPZ_ = withNewFlint_ FMPZType
 
 
 instance Show FMPZ where
@@ -49,9 +49,9 @@ toString a base = unsafePerformIO $ do
 instance Num FMPZ where
     -- todo : speed this up
     fromInteger a | a < 0 = negate (fromInteger (negate a))
-                  | a == 0 = unsafePerformIO $ withNewFlint_ fmpz_zero
+                  | a == 0 = unsafePerformIO $ withNewFMPZ_ fmpz_zero
                   | otherwise = unsafePerformIO $
-                                withNewFlint_ $ \cptr -> do
+                                withNewFMPZ_ $ \cptr -> do
                                   fmpz_set_ui cptr $ head limbs
                                   flip mapM_ (tail limbs) $ \l -> do
                                     fmpz_mul_ui cptr cptr limbSize

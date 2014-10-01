@@ -76,6 +76,7 @@ foreign import ccall unsafe "fmpz_mul_ui"
 
 data CFMPZ
 newtype FMPZ = FMPZ (ForeignPtr CFMPZ)
+data FMPZType = FMPZType
 
 instance Storable CFMPZ where
     sizeOf _ = #{size fmpz}
@@ -83,8 +84,10 @@ instance Storable CFMPZ where
     peek = error "CFMPZ.peek: Not defined"
     poke = error "CFMPZ.poke: Not defined"
 
-instance Flint FMPZ CFMPZ where
-    newFlint = do
+instance Flint FMPZ CFMPZ FMPZType where
+    flintType _ = FMPZType
+
+    newFlint _ = do
       a <- mallocForeignPtr
       withForeignPtr a fmpz_init
       addForeignPtrFinalizer p_fmpz_clear a

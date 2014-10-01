@@ -78,6 +78,7 @@ foreign import ccall unsafe "fmpq_inv"
 
 data CFMPQ
 newtype FMPQ = FMPQ (ForeignPtr CFMPQ)
+data FMPQType = FMPQType
 
 instance Storable CFMPQ where
     sizeOf _ = #size fmpq
@@ -86,8 +87,10 @@ instance Storable CFMPQ where
     poke = error "CFMPQ.poke: Not defined"
 
 
-instance Flint FMPQ CFMPQ where
-    newFlint = do
+instance Flint FMPQ CFMPQ FMPQType where
+    flintType _ = FMPQType
+
+    newFlint _ = do
       a <- mallocForeignPtr
       withForeignPtr a fmpq_init
       addForeignPtrFinalizer p_fmpq_clear a
