@@ -32,7 +32,8 @@ source-repository this
   tag:      hflint-0.0.1
 
 Library
-  build-Depends:       base > 3 && < 5
+  build-Depends:       base > 3 && < 5,
+                       composition > 1 && < 2
 
   Other-modules:       Flint.Internal.FlintCalls
                        Flint.FMPZ.FFI
