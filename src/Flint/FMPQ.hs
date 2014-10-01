@@ -14,7 +14,7 @@ module Flint.FMPQ
     )
 where
 
-import Flint.Internal.FlintCalls
+import Flint.Internal.Flint
 import Flint.FMPZ
 import Flint.FMPZ.FFI
 import Flint.FMPQ.FFI
@@ -28,16 +28,16 @@ import Foreign.Marshal (free)
 import System.IO.Unsafe (unsafePerformIO)
 
 
-withFMPQ :: FMPQ -> (Ptr CFMPQ -> IO b) -> IO (FMPQ, b)
+withFMPQ :: FMPQ -> (Ptr CFMPQType -> Ptr CFMPQ -> IO b) -> IO (FMPQ, b)
 withFMPQ = withFlint
 
-withFMPQ_ :: FMPQ -> (Ptr CFMPQ -> IO b) -> IO FMPQ
+withFMPQ_ :: FMPQ -> (Ptr CFMPQType -> Ptr CFMPQ -> IO b) -> IO FMPQ
 withFMPQ_ = withFlint_
 
-withNewFMPQ :: (Ptr CFMPQ -> IO b) -> IO (FMPQ, b)
+withNewFMPQ :: (Ptr CFMPQType -> Ptr CFMPQ -> IO b) -> IO (FMPQ, b)
 withNewFMPQ = withNewFlint FMPQType
 
-withNewFMPQ_ :: (Ptr CFMPQ -> IO b) -> IO FMPQ
+withNewFMPQ_ :: (Ptr CFMPQType -> Ptr CFMPQ -> IO b) -> IO FMPQ
 withNewFMPQ_ = withNewFlint_ FMPQType
 
 
@@ -47,7 +47,7 @@ instance Show FMPQ where
 -- todo: use other show function ??
 toString :: FMPQ -> Int -> String
 toString a base = unsafePerformIO $ do
-  cstr <- lift0Flint (fmpq_get_str nullPtr (fromIntegral base)) a
+  cstr <- lift0Flint (const $ fmpq_get_str nullPtr (fromIntegral base)) a
   str <- peekCString cstr
   free cstr
   return str
@@ -55,28 +55,29 @@ toString a base = unsafePerformIO $ do
 
 instance Num FMPQ where
     fromInteger a = unsafePerformIO $
-                    withNewFMPQ_ $ \cptr ->
-                    withFMPZ_ (fromInteger a) $ \aptr ->
-                    withNewFMPZ $ \bptr -> do
+                    withNewFMPQ_ $ const $ \cptr ->
+                    withFMPZ_ (fromInteger a) $ const $ \aptr ->
+                    withNewFMPZ $ const $ \bptr -> do
                       fmpz_one bptr
                       fmpq_set_fmpz_frac cptr aptr bptr
-    (+) = lift2Flint_ fmpq_add
-    (-) = lift2Flint_ fmpq_sub
-    (*) = lift2Flint_ fmpq_mul
-    abs = liftFlint_ fmpq_abs
-    signum = fromInteger . fromIntegral . unsafePerformIO . lift0Flint fmpq_sgn
-    negate = liftFlint_ fmpq_neg
+    (+) = lift2Flint_ $ const fmpq_add
+    (-) = lift2Flint_ $ const fmpq_sub
+    (*) = lift2Flint_ $ const fmpq_mul
+    abs = liftFlint_ $ const fmpq_abs
+    signum = fromInteger . fromIntegral . unsafePerformIO .
+             lift0Flint (const fmpq_sgn)
+    negate = liftFlint_ $ const fmpq_neg
 
 
 instance Fractional FMPQ where
     fromRational a = unsafePerformIO $
-                     withNewFMPQ_ $ \cptr ->
-                     withFMPZ (fromInteger num) $ \aptr ->
-                     withFMPZ (fromInteger den) $ \bptr ->
+                     withNewFMPQ_ $ const $ \cptr ->
+                     withFMPZ (fromInteger num) $ const $ \aptr ->
+                     withFMPZ (fromInteger den) $ const $ \bptr ->
                      fmpq_set_fmpz_frac cptr aptr bptr
         where
           num = numerator a
           den = denominator a
 
-    (/) = lift2Flint_ fmpq_div
-    recip = liftFlint_ fmpq_inv
+    (/) = lift2Flint_ $ const fmpq_div
+    recip = liftFlint_ $ const fmpq_inv

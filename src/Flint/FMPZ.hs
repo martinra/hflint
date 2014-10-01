@@ -11,7 +11,7 @@ module Flint.FMPZ
     )
 where
 
-import Flint.Internal.FlintCalls
+import Flint.Internal.Flint
 import Flint.FMPZ.FFI
     
 import Foreign.C.Types (CULong(..))
@@ -22,16 +22,16 @@ import Foreign.Marshal (free)
 import System.IO.Unsafe (unsafePerformIO)
 
 
-withFMPZ :: FMPZ -> (Ptr CFMPZ -> IO b) -> IO (FMPZ, b)
+withFMPZ :: FMPZ -> (Ptr CFMPZType -> Ptr CFMPZ -> IO b) -> IO (FMPZ, b)
 withFMPZ = withFlint 
 
-withFMPZ_ :: FMPZ -> (Ptr CFMPZ -> IO b) -> IO FMPZ
+withFMPZ_ :: FMPZ -> (Ptr CFMPZType -> Ptr CFMPZ -> IO b) -> IO FMPZ
 withFMPZ_ = withFlint_
 
-withNewFMPZ :: (Ptr CFMPZ -> IO b) -> IO (FMPZ, b)
+withNewFMPZ :: (Ptr CFMPZType -> Ptr CFMPZ -> IO b) -> IO (FMPZ, b)
 withNewFMPZ = withNewFlint FMPZType
 
-withNewFMPZ_ :: (Ptr CFMPZ -> IO b) -> IO FMPZ
+withNewFMPZ_ :: (Ptr CFMPZType -> Ptr CFMPZ -> IO b) -> IO FMPZ
 withNewFMPZ_ = withNewFlint_ FMPZType
 
 
@@ -40,7 +40,7 @@ instance Show FMPZ where
 
 toString :: FMPZ -> Int -> String
 toString a base = unsafePerformIO $ do
-  cstr <- lift0Flint (fmpz_get_str nullPtr (fromIntegral base)) a
+  cstr <- lift0Flint (const $ fmpz_get_str nullPtr (fromIntegral base)) a
   str <- peekCString cstr
   free cstr
   return str
@@ -49,9 +49,9 @@ toString a base = unsafePerformIO $ do
 instance Num FMPZ where
     -- todo : speed this up
     fromInteger a | a < 0 = negate (fromInteger (negate a))
-                  | a == 0 = unsafePerformIO $ withNewFMPZ_ fmpz_zero
+                  | a == 0 = unsafePerformIO $ withNewFMPZ_ $ \_ cptr -> fmpz_zero cptr
                   | otherwise = unsafePerformIO $
-                                withNewFMPZ_ $ \cptr -> do
+                                withNewFMPZ_ $ const $ \cptr -> do
                                   fmpz_set_ui cptr $ head limbs
                                   flip mapM_ (tail limbs) $ \l -> do
                                     fmpz_mul_ui cptr cptr limbSize
@@ -63,9 +63,10 @@ instance Num FMPZ where
                             tail $ iterate nextLimb (a,0)
                     nextLimb = flip divMod (fromIntegral limbSize) . fst
                     isZeroLimb (b,l) = b==0 && l==0
-    (+) = lift2Flint_ fmpz_add
-    (-) = lift2Flint_ fmpz_sub
-    (*) = lift2Flint_ fmpz_mul
-    abs = liftFlint_ fmpz_abs
-    signum = fromInteger . fromIntegral . unsafePerformIO . lift0Flint fmpz_sgn
-    negate = liftFlint_ fmpz_neg
+    (+) = lift2Flint_ $ const fmpz_add
+    (-) = lift2Flint_ $ const fmpz_sub
+    (*) = lift2Flint_ $ const fmpz_mul
+    abs = liftFlint_ $ const fmpz_abs
+    signum = fromInteger . fromIntegral . unsafePerformIO .
+             lift0Flint (const fmpz_sgn)
+    negate = liftFlint_ $ const fmpz_neg

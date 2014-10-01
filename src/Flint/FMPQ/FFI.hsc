@@ -3,7 +3,7 @@
   , CApiFFI
   , EmptyDataDecls
   , FlexibleInstances
-  , MultiParamTypeClasses
+  , TypeFamilies
   #-}
 
 #include <flint/fmpq.h>
@@ -18,7 +18,7 @@ import Foreign.ForeignPtr ( ForeignPtr, withForeignPtr
 import Foreign.Ptr (Ptr, FunPtr)
 import Foreign.Storable (Storable(..))
 
-import Flint.Internal.FlintCalls
+import Flint.Internal.Flint
 import Flint.FMPZ.FFI
 
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
@@ -40,6 +40,9 @@ foreign import ccall unsafe "fmpq_numref_wrapper"
 foreign import ccall unsafe "fmpq_denref_wrapper"
         fmpq_denref :: Ptr CFMPQ -> IO (Ptr CFMPQ)
 
+
+foreign import capi unsafe "fmpq_set"
+        fmpq_set :: Ptr CFMPQ -> Ptr CFMPZ -> IO ()
 
 foreign import ccall unsafe "fmpq_set_fmpz_frac"
         fmpq_set_fmpz_frac :: Ptr CFMPQ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
@@ -78,7 +81,9 @@ foreign import ccall unsafe "fmpq_inv"
 
 data CFMPQ
 newtype FMPQ = FMPQ (ForeignPtr CFMPQ)
+data CFMPQType
 data FMPQType = FMPQType
+
 
 instance Storable CFMPQ where
     sizeOf _ = #size fmpq
@@ -87,7 +92,11 @@ instance Storable CFMPQ where
     poke = error "CFMPQ.poke: Not defined"
 
 
-instance Flint FMPQ CFMPQ FMPQType where
+instance Flint FMPQ where
+    type CFlint FMPQ = CFMPQ
+    type FlintType FMPQ = FMPQType
+    type CFlintType FMPQ = CFMPQType
+
     flintType _ = FMPQType
 
     newFlint _ = do
@@ -97,4 +106,4 @@ instance Flint FMPQ CFMPQ FMPQType where
       return $ FMPQ a
 
     withFlint (FMPQ a) f = withForeignPtr a $ \a' ->
-                           f a' >>= \r -> return (FMPQ a,r)
+                           f undefined a' >>= \r -> return (FMPQ a,r)

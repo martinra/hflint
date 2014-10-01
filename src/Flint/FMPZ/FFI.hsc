@@ -3,7 +3,7 @@
   , CApiFFI
   , EmptyDataDecls
   , FlexibleInstances
-  , MultiParamTypeClasses
+  , TypeFamilies
   #-}
 
 #include <flint/fmpz.h>
@@ -19,7 +19,7 @@ import Foreign.ForeignPtr ( ForeignPtr, withForeignPtr
 import Foreign.Ptr (Ptr, FunPtr)
 import Foreign.Storable (Storable(..))
 
-import Flint.Internal.FlintCalls
+import Flint.Internal.Flint
 
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 
@@ -76,6 +76,7 @@ foreign import ccall unsafe "fmpz_mul_ui"
 
 data CFMPZ
 newtype FMPZ = FMPZ (ForeignPtr CFMPZ)
+data CFMPZType
 data FMPZType = FMPZType
 
 instance Storable CFMPZ where
@@ -84,7 +85,11 @@ instance Storable CFMPZ where
     peek = error "CFMPZ.peek: Not defined"
     poke = error "CFMPZ.poke: Not defined"
 
-instance Flint FMPZ CFMPZ FMPZType where
+instance Flint FMPZ where
+    type CFlint FMPZ = CFMPZ
+    type FlintType FMPZ = FMPZType
+    type CFlintType FMPZ = CFMPZType
+
     flintType _ = FMPZType
 
     newFlint _ = do
@@ -94,4 +99,4 @@ instance Flint FMPZ CFMPZ FMPZType where
       return $ FMPZ a
 
     withFlint (FMPZ a) f = withForeignPtr a $ \a' ->
-                           f a' >>= \r -> return (FMPZ a,r)
+                           f undefined a' >>= \r -> return (FMPZ a,r)

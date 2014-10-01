@@ -33,9 +33,11 @@ source-repository this
 
 Library
   build-Depends:       base > 3 && < 5,
-                       composition > 1 && < 2
+                       composition > 1 && < 2,
+                       vector > 0.10
 
-  Other-modules:       Flint.Internal.FlintCalls
+  Other-modules:       Flint.Internal.Flint
+                       Flint.Internal.FlintMat
                        Flint.FMPZ.FFI
                        Flint.FMPQ.FFI
 
