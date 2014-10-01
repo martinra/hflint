@@ -4,6 +4,10 @@
 
 module Flint.FMPZ
     ( FMPZ
+    , withFMPZ
+    , withFMPZ_
+    , withNewFMPZ
+    , withNewFMPZ_
     )
 where
 
@@ -12,10 +16,35 @@ import Flint.FMPZ.FFI
     
 import Foreign.C.Types (CULong(..))
 import Foreign.C.String (peekCString)
-import Foreign.Ptr (nullPtr)
+import Foreign.Ptr (Ptr, nullPtr)
 import Foreign.Marshal (free)
 
 import System.IO.Unsafe (unsafePerformIO)
+
+
+withFMPZ :: FMPZ -> (Ptr CFMPZ -> IO b) -> IO (FMPZ, b)
+withFMPZ = withFlint
+
+withFMPZ_ :: FMPZ -> (Ptr CFMPZ -> IO b) -> IO FMPZ
+withFMPZ_ = withFlint_
+
+withNewFMPZ :: (Ptr CFMPZ -> IO b) -> IO (FMPZ, b)
+withNewFMPZ = withNewFlint
+
+withNewFMPZ_ :: (Ptr CFMPZ -> IO b) -> IO FMPZ
+withNewFMPZ_ = withNewFlint_
+
+
+instance Show FMPZ where
+    show = flip toString 10
+
+toString :: FMPZ -> Int -> String
+toString a base = unsafePerformIO $ do
+  cstr <- lift0Flint (fmpz_get_str nullPtr (fromIntegral base)) a
+  str <- peekCString cstr
+  free cstr
+  return str
+
 
 instance Num FMPZ where
     -- todo : speed this up
@@ -40,14 +69,3 @@ instance Num FMPZ where
     abs = liftFlint_ fmpz_abs
     signum = fromInteger . fromIntegral . unsafePerformIO . lift0Flint fmpz_sgn
     negate = liftFlint_ fmpz_neg
-
-
-instance Show FMPZ where
-    show = flip toString 10
-
-toString :: FMPZ -> Int -> String
-toString a base = unsafePerformIO $ do
-  cstr <- lift0Flint (fmpz_get_str nullPtr (fromIntegral base)) a
-  str <- peekCString cstr
-  free cstr
-  return str

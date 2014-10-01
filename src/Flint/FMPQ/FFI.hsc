@@ -72,6 +72,9 @@ foreign import ccall unsafe "fmpq_mul"
 foreign import ccall unsafe "fmpq_div"
         fmpq_div :: Ptr CFMPQ -> Ptr CFMPQ -> Ptr CFMPQ -> IO ()
 
+foreign import ccall unsafe "fmpq_inv"
+        fmpq_inv :: Ptr CFMPQ -> Ptr CFMPQ -> IO ()
+
 
 data CFMPQ
 newtype FMPQ = FMPQ (ForeignPtr CFMPQ)
