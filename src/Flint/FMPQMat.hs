@@ -10,6 +10,8 @@ module Flint.FMPQMat
     , withNewFMPQMat_
 
     , fmpqMatFromVVector
+
+    , echelonForm
     )
 where
 
@@ -17,5 +19,6 @@ where
 import Flint.FMPQMat.FFI
 import Flint.FMPQMat.Internal
 import Flint.FMPQMat.Basic
+import Flint.Echelon
 
 

@@ -59,6 +59,9 @@ foreign import ccall unsafe "fmpq_mat_mul"
         fmpq_mat_mul :: Ptr CFMPQMat -> Ptr CFMPQMat -> Ptr CFMPQMat -> IO ()
 
 
+foreign import ccall unsafe "fmpq_mat_rref"
+        fmpq_mat_rref :: Ptr CFMPQMat -> Ptr CFMPQMat -> IO ()
+
 data CFMPQMat
 newtype FMPQMat = FMPQMat (ForeignPtr CFMPQMat)
 data CFMPQMatType
