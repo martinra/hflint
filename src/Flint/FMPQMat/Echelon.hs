@@ -1,7 +1,12 @@
-module Flint.FMPQ.Echelon
+module Flint.FMPQMat.Echelon
 where
 
+import Flint.Internal.Flint
+
+import Flint.FMPQMat.FFI
+import Flint.FMPQMat.Internal
+
+import System.IO.Unsafe (unsafePerformIO)
+
 echelonForm :: FMPQMat -> FMPQMat
-echelonForm m = withNewFMPQMat r c $ const $ \nptr ->
-                withFMPQMat $ const $ \mptr
-                fmpq_mat_rref nptr mptr
+echelonForm = liftFlint_ $ const fmpq_mat_rref

@@ -9,7 +9,7 @@ module Flint.Internal.FlintMat
     , flintMatEntryType
     , flintMatR
     , flintMatC
-    , flintMatToVVector
+    , toVVector
 
     , lift2addFlintMat
     , lift2addFlintMat_
@@ -51,10 +51,10 @@ flintMatC m = c
     where
       (_, _, c) = flintType m
 
-flintMatToVVector ::  ( Flint a, FlintMat a
+toVVector ::  ( Flint a, FlintMat a
                       , FlintType a ~ (FlintType (FlintMatEntry a), Int, Int) ) =>
                       a -> Vector (Vector (FlintMatEntry a))
-flintMatToVVector m = generate (flintMatR m) $ \i ->
+toVVector m = generate (flintMatR m) $ \i ->
                       generate (flintMatC m) $ \j ->
                       flintMatEntry m i j
 

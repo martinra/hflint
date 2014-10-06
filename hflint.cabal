@@ -34,7 +34,8 @@ source-repository this
 Library
   build-Depends:       base > 3 && < 5,
                        composition > 1 && < 2,
-                       vector > 0.10
+                       vector > 0.10,
+                       safe >= 0.3.8
 
   Other-modules:       Flint.Internal.Flint
                        Flint.Internal.FlintMat
@@ -52,6 +53,7 @@ Library
                        Flint.FMPQMat.FFI
                        Flint.FMPQMat.Internal
                        Flint.FMPQMat.Basic
+                       Flint.FMPQMat.Echelon
 
   Exposed-modules:     Flint.FMPZ
                        Flint.FMPQ

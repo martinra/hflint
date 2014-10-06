@@ -102,4 +102,3 @@ instance FlintMat FMPQMat where
                           fmpq_mat_entryref mptr (fromIntegral i) (fromIntegral j) >>=
                           fmpq_set eptr
 
-
