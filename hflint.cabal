@@ -36,7 +36,8 @@ Library
                        composition > 1 && < 2,
                        vector > 0.10,
                        safe >= 0.3.8,
-                       containers >= 0.5
+                       containers >= 0.5,
+                       dlist >= 0.7.1
 
   Other-modules:       Flint.Internal.Flint
                        Flint.Internal.FlintMat
@@ -55,6 +56,9 @@ Library
                        Flint.FMPQMat.Internal
                        Flint.FMPQMat.Basic
                        Flint.FMPQMat.Echelon
+
+                       Flint.Matrix.Internal
+                       Flint.Matrix.Basic
 
   Exposed-modules:     Flint.FMPZ
                        Flint.FMPQ

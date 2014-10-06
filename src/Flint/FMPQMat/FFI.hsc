@@ -49,6 +49,13 @@ foreign import ccall unsafe "fmpq_mat_entryref_wrapper"
         fmpq_mat_entryref :: Ptr CFMPQMat -> CLong -> CLong -> IO (Ptr CFMPQ)
 
 
+foreign import ccall unsafe "fmpq_mat_zero"
+        fmpq_mat_zero :: Ptr CFMPQMat -> IO ()
+
+foreign import ccall unsafe "fmpq_mat_one"
+        fmpq_mat_one :: Ptr CFMPQMat -> IO ()
+
+
 foreign import ccall unsafe "fmpq_mat_add"
         fmpq_mat_add :: Ptr CFMPQMat -> Ptr CFMPQMat -> Ptr CFMPQMat -> IO ()
 

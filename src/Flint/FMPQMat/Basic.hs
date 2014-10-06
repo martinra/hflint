@@ -2,6 +2,7 @@ module Flint.FMPQMat.Basic
 where
 
 
+import Flint.Internal.Flint
 import Flint.Internal.FlintMat
 import Flint.FMPQ.FFI
 import Flint.FMPQ.Internal
@@ -16,6 +17,14 @@ import Data.Vector (Vector, (!), indexed, length)
 
 import System.IO.Unsafe (unsafePerformIO)
 
+
+zeroFMPQMat :: Int -> Int -> FMPQMat
+zeroFMPQMat r c = unsafePerformIO $
+                  withNewFMPQMat_ r c $ const $ fmpq_mat_zero
+
+oneFMPQMat :: Int -> Int -> FMPQMat
+oneFMPQMat r c = unsafePerformIO $
+                 withNewFMPQMat_ r c $ const $ fmpq_mat_one
 
 fromVVector :: Vector (Vector FMPQ) -> Maybe FMPQMat
 fromVVector rows | length rows == 0 = Nothing
