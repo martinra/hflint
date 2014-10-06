@@ -35,7 +35,8 @@ Library
   build-Depends:       base > 3 && < 5,
                        composition > 1 && < 2,
                        vector > 0.10,
-                       safe >= 0.3.8
+                       safe >= 0.3.8,
+                       containers >= 0.5
 
   Other-modules:       Flint.Internal.Flint
                        Flint.Internal.FlintMat
@@ -58,6 +59,8 @@ Library
   Exposed-modules:     Flint.FMPZ
                        Flint.FMPQ
                        Flint.FMPQMat
+                       Flint.Algebra
+
 
   build-tools:         hsc2hs
   GHC-options:         -Wall -fno-warn-orphans
