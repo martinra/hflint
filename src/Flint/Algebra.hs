@@ -10,8 +10,10 @@ import Flint.FMPQ
 import Prelude hiding (length)
 import Data.Vector
 
-data Algebra = CyclicAlgebra { relation :: Vector FMPQ
+data Algebra = QQ
+             | CyclicAlgebra { relation :: Vector FMPQ
                              }
 
 degree :: Algebra -> Int
-degree = length . relation
+degree QQ = 1
+degree alg@(CyclicAlgebra _) = length $ relation alg
