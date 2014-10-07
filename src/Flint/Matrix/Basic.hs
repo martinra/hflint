@@ -21,3 +21,6 @@ oneMatrix r c alg = Matrix { components = MatrixCoordinates $
                             , nrows = r
                             , ncols = c
                             , algebra = alg}
+
+fromSubmatrices :: [(Int,Int,Matrix)] -> Maybe Matrix
+fromSubmatrices = undefined
