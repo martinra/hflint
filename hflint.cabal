@@ -60,7 +60,9 @@ Library
 
                        Flint.Matrix.Internal
                        Flint.Matrix.Basic
-                       Flint.Matrix.Echelon.EchelonHook
+                       Flint.Matrix.Echelon.EchelonFormPrimitive
+                       Flint.Matrix.Echelon.EchelonFormByBlocks
+                       Flint.Matrix.Echelon.EchelonizedRow
 
   Exposed-modules:     Flint.FMPZ
                        Flint.FMPQ
