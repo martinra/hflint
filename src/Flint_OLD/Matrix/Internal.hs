@@ -25,6 +25,12 @@ coordinates :: Matrix -> [FMPQMat]
 coordinates m = case components m of
                   MatrixCoordinates mc -> mc
 
+evaluations :: Matrix -> [FMPQMat]
+evaluations = undefined
+
+fromEvaluations2 :: [FMPQMat] -> MatrixComponents
+fromEvaluations2 = undefined
+ 
 withNewMatrixCoordinates :: Int -> Int -> Algebra -> ([Ptr CFMPQMat] -> IO ()) -> Matrix
 withNewMatrixCoordinates r c alg f =
     Matrix { components = go (degree alg) (\aptrs -> f aptrs >> return DL.empty)

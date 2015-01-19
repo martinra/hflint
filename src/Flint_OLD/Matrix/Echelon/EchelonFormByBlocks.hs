@@ -43,17 +43,6 @@ echelonFormByBlocks_ ep ed ers | Sq.null ed = mergeEchelonizedRows ers
                         fmap (splitAt 1) . snd
 
 
-data EchelonParameter = EchelonParameter
-    { _echelonRowCutOff :: Int
-    , _echelonColCutOff :: Int
-    }
-
-defaultEchelonParameter :: EchelonParameter
-defaultEchelonParameter
-    = EchelonParameter
-      { _echelonRowCutOff = 64
-      , _echelonColCutOff = 128
-      }
 
 rowDecompositionPosSize :: EchelonParameter -> Int -> [(Int,Int)]
 rowDecompositionPosSize ep = decompositionPosSize (_echelonRowCutOff ep)
@@ -111,7 +100,7 @@ echelonRedecomposition :: EchelonParameter ->
                           Seq [Matrix]
 echelonRedecomposition ep r ed
     = fmap (map $ fromJust . fromBlocks . map (:[]) . toList) $
-      echelonRedecomposition' (map snd $ rowDecompositionPosSize ep $ r) ed Sq.empty
+      echelonRedecomposition' (map snd $ rowDecompositionPosSize ep r) ed Sq.empty
 
 echelonRedecomposition' :: [Int] -> Seq [Matrix] -> Seq [Seq Matrix] -> Seq [Seq Matrix]
 echelonRedecomposition' [] _ bss = bss

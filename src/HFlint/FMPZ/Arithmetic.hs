@@ -1,15 +1,13 @@
 module Flint.FMPZ.Arithmetic
 where
 
+import Control.Monad ( forM_ )
+import Foreign.C.Types (CULong(..))
+import System.IO.Unsafe (unsafePerformIO)
 
 import Flint.Internal.Flint
-
 import Flint.FMPZ.FFI
 import Flint.FMPZ.Internal
-
-import Foreign.C.Types (CULong(..))
-
-import System.IO.Unsafe (unsafePerformIO)
 
 
 instance Num FMPZ where
@@ -19,11 +17,11 @@ instance Num FMPZ where
                   | otherwise = unsafePerformIO $
                                 withNewFMPZ_ $ const $ \cptr -> do
                                   fmpz_set_ui cptr $ head limbs
-                                  flip mapM_ (tail limbs) $ \l -> do
+                                  forM_ (tail limbs) $ \l -> do
                                     fmpz_mul_ui cptr cptr limbSize
                                     fmpz_add_ui cptr cptr l
                   where
-                    limbSize = 1 + (div (maxBound :: CULong) 2)
+                    limbSize = 1 + div (maxBound :: CULong) 2
                     limbs = map fromIntegral $
                             reverse $ map snd $ takeWhile (not . isZeroLimb) $
                             tail $ iterate nextLimb (a,0)
@@ -32,7 +30,7 @@ instance Num FMPZ where
     (+) = lift2Flint_ $ const fmpz_add
     (-) = lift2Flint_ $ const fmpz_sub
     (*) = lift2Flint_ $ const fmpz_mul
+    negate = liftFlint_ $ const fmpz_neg
     abs = liftFlint_ $ const fmpz_abs
     signum = fromInteger . fromIntegral . unsafePerformIO .
              lift0Flint (const fmpz_sgn)
-    negate = liftFlint_ $ const fmpz_neg

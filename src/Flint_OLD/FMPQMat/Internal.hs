@@ -30,10 +30,18 @@ withNewFMPQMat_ r c = withNewFlint_ (FMPQType, fromIntegral r, fromIntegral c)
 -- todo: this should be implemented using windows as soon as they are
 -- available
 -- note: this is unsafe as the corresponding C function will likely be
-setWindow :: Ptr CFMPQMat -> CLong -> CLong ->
-             Ptr CFMPQMat -> CLong -> CLong -> CLong -> CLong ->
-             IO ()
-setWindow cptr ic jc aptr ia ja ra ca =
+setSubmatrix :: Ptr CFMPQMat -> CLong -> CLong ->
+                Ptr CFMPQMat ->
+                IO ()
+setSubmatrix cptr ic jc aptr = do
+  ra <- fmpq_mat_nrows aptr
+  ca <- fmpq_mat_ncols aptr
+  setSubmatrix' cptr ic jc aptr 0 0 ra ca
+
+setSubmatrix' :: Ptr CFMPQMat -> CLong -> CLong ->
+                Ptr CFMPQMat -> CLong -> CLong -> CLong -> CLong ->
+                IO ()
+setSubmatrix' cptr ic jc aptr ia ja ra ca =
     forM_ (zip [ic..ic+ra] [ia..ia+ra]) $ \(ixc,ixa) ->
     forM_ (zip [jc..jc+ca] [ja..ja+ca]) $ \(jxc,jxa) -> do
         ce <- fmpq_mat_entryref cptr (fromIntegral ixc) (fromIntegral $ jxc)
