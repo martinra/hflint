@@ -1,11 +1,27 @@
-module Flint.FMPQ.Internal
+module HFlint.FMPQ.Internal
 where
 
-import Flint.Internal.Flint
-import Flint.FMPQ.FFI
+import Foreign.Ptr ( Ptr )
 
-import Foreign.Ptr (Ptr)
+import HFlint.FMPQ.FFI
+import HFlint.Internal.Flint
 
+
+instance Flint FMPQ where
+  type CFlint FMPQ = CFMPQ
+  type FlintType FMPQ = FMPQType
+  type CFlintType FMPQ = CFMPQType
+
+  flintType _ = FMPQType
+
+  newFlint _ = do
+    a <- mallocForeignPtr
+    withForeignPtr a fmpq_init
+    addForeignPtrFinalizer p_fmpq_clear a
+    return $ FMPQ a
+
+  withFlint (FMPQ a) f = withForeignPtr a $ \a' ->
+                         f undefined a' >>= \r -> return (FMPQ a,r)
 
 withFMPQ :: FMPQ -> (Ptr CFMPQType -> Ptr CFMPQ -> IO b) -> IO (FMPQ, b)
 withFMPQ = withFlint
@@ -18,4 +34,3 @@ withNewFMPQ = withNewFlint FMPQType
 
 withNewFMPQ_ :: (Ptr CFMPQType -> Ptr CFMPQ -> IO b) -> IO FMPQ
 withNewFMPQ_ = withNewFlint_ FMPQType
-

@@ -6,22 +6,32 @@
   , TypeFamilies
   #-}
 
-#include <flint/fmpz.h>
-
-module Flint.FMPZ.FFI
+module HFlint.FMPZ.FFI
 where
 
 
-import Foreign.C.String (CString)
-import Foreign.C.Types (CULong(..), CInt(..))
-import Foreign.ForeignPtr ( ForeignPtr, withForeignPtr
-                          , mallocForeignPtr, addForeignPtrFinalizer )
-import Foreign.Ptr (Ptr, FunPtr)
-import Foreign.Storable (Storable(..))
+#include <flint/fmpz.h>
 
-import Flint.Internal.Flint
+import Foreign.C.String ( CString )
+import Foreign.C.Types ( CULong(..)
+                       , CInt(..) )
+import Foreign.ForeignPtr ( ForeignPtr )
+import Foreign.Ptr ( Ptr, FunPtr )
+import Foreign.Storable ( Storable(..) )
+
 
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
+
+data CFMPZ
+newtype FMPZ = FMPZ (ForeignPtr CFMPZ)
+data CFMPZType
+data FMPZType = FMPZType
+
+instance Storable CFMPZ where
+    sizeOf _ = #{size fmpz}
+    alignment _ = #{alignment fmpz}
+    peek = error "CFMPZ.peek: Not defined"
+    poke = error "CFMPZ.poke: Not defined"
 
 
 foreign import capi unsafe "flint/fmpz.h fmpz_init"
@@ -40,6 +50,9 @@ foreign import capi unsafe "flint/fmpz.h fmpz_zero"
 foreign import capi unsafe "flint/fmpz.h fmpz_one"
         fmpz_one :: Ptr CFMPZ -> IO ()
 
+foreign import capi unsafe "flint/fmpz.h fmpz_is_zero"
+        fmpz_is_zero :: Ptr CFMPZ -> IO CInt
+
 foreign import capi unsafe "flint/fmpz.h fmpz_set_ui"
         fmpz_set_ui :: Ptr CFMPZ -> CULong -> IO ()
 
@@ -50,6 +63,15 @@ foreign import ccall unsafe "fmpz_get_str"
 
 foreign import ccall unsafe "fmpz_sgn"
         fmpz_sgn :: Ptr CFMPZ -> IO CInt
+
+foreign import ccall unsafe "fmpz_set"
+        fmpz_set :: Ptr CFMPZ -> Ptr CFMPZ -> IO ()
+
+foreign import ccall unsafe "fmpz_equal"
+	fmpz_equal :: Ptr CFMPZ -> Ptr CFMPZ -> IO CInt
+
+foreign import ccall unsafe "fmpz_cmp"
+	fmpz_cmp :: Ptr CFMPZ -> Ptr CFMPZ -> IO CInt
 
 foreign import capi unsafe "flint/fmpz.h fmpz_neg"
         fmpz_neg :: Ptr CFMPZ -> Ptr CFMPZ -> IO ()
@@ -73,30 +95,20 @@ foreign import ccall unsafe "fmpz_mul"
 foreign import ccall unsafe "fmpz_mul_ui"
         fmpz_mul_ui :: Ptr CFMPZ -> Ptr CFMPZ -> CULong -> IO ()
 
+foreign import ccall unsafe "fmpz_fdiv_q"
+        fmpz_fdiv_q :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-data CFMPZ
-newtype FMPZ = FMPZ (ForeignPtr CFMPZ)
-data CFMPZType
-data FMPZType = FMPZType
+foreign import ccall unsafe "fmpz_fdiv_qr"
+        fmpz_fdiv_qr :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-instance Storable CFMPZ where
-    sizeOf _ = #{size fmpz}
-    alignment _ = #{alignment fmpz}
-    peek = error "CFMPZ.peek: Not defined"
-    poke = error "CFMPZ.poke: Not defined"
+foreign import ccall unsafe "fmpz_tdiv_q"
+        fmpz_tdiv_q :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-instance Flint FMPZ where
-    type CFlint FMPZ = CFMPZ
-    type FlintType FMPZ = FMPZType
-    type CFlintType FMPZ = CFMPZType
+foreign import ccall unsafe "fmpz_tdiv_qr"
+        fmpz_tdiv_qr :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-    flintType _ = FMPZType
+foreign import ccall unsafe "fmpz_fdiv_ui"
+        fmpz_fdiv_ui :: Ptr CFMPZ -> CULong -> IO CULong
 
-    newFlint _ = do
-      a <- mallocForeignPtr
-      withForeignPtr a fmpz_init
-      addForeignPtrFinalizer p_fmpz_clear a
-      return $ FMPZ a
-
-    withFlint (FMPZ a) f = withForeignPtr a $ \a' ->
-                           f undefined a' >>= \r -> return (FMPZ a,r)
+foreign import ccall unsafe "fmpz_fdiv_q_ui"
+        fmpz_fdiv_q_ui :: Ptr CFMPZ -> Ptr CFMPZ -> CULong -> IO ()

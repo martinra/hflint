@@ -1,4 +1,4 @@
-module Flint.FMPQ
+module HFlint.FMPQ
     ( FMPQ
     , withFMPQ
     , withFMPQ_
@@ -7,8 +7,6 @@ module Flint.FMPQ
     )
 where
 
-
-import Flint.FMPQ.FFI
-import Flint.FMPQ.Internal
-import Flint.FMPQ.Basic()
-import Flint.FMPQ.Arithmetic()
+import HFlint.FMPQ.FFI
+import HFlint.FMPQ.Internal
+import HFlint.FMPQ.Basic ()

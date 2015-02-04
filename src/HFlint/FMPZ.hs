@@ -1,15 +1,15 @@
-module Flint.FMPZ
-    ( FMPZ
-    , withFMPZ
-    , withFMPZ_
-    , withNewFMPZ
-    , withNewFMPZ_
-    )
+module HFlint.FMPZ
+  ( FMPZ
+
+  , withFMPZ
+  , withFMPZ_
+  , withNewFMPZ
+  , withNewFMPZ_
+  )
 where
 
 
-import Flint.FMPZ.FFI
-import Flint.FMPZ.Internal
+import HFlint.FMPZ.FFI
+import HFlint.FMPZ.Internal
 
-import Flint.FMPZ.Basic ()
-import Flint.FMPZ.Arithmetic ()
+import HFlint.FMPZ.Basic ()

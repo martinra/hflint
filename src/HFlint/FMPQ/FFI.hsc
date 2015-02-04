@@ -8,7 +8,7 @@
 
 #include <flint/fmpq.h>
 
-module Flint.FMPQ.FFI
+module HFlint.FMPQ.FFI
 where
 
 import Foreign.C.String (CString)
@@ -21,7 +21,20 @@ import Foreign.Storable (Storable(..))
 import Flint.Internal.Flint
 import Flint.FMPZ.FFI
 
+
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
+
+data CFMPQ
+newtype FMPQ = FMPQ (ForeignPtr CFMPQ)
+data CFMPQType
+data FMPQType = FMPQType
+
+
+instance Storable CFMPQ where
+    sizeOf _ = #size fmpq
+    alignment _ = #alignment fmpq
+    peek = error "CFMPQ.peek: Not defined"
+    poke = error "CFMPQ.poke: Not defined"
 
 
 foreign import capi unsafe "flint/fmpq.h fmpq_init"
@@ -77,33 +90,3 @@ foreign import ccall unsafe "fmpq_div"
 
 foreign import ccall unsafe "fmpq_inv"
         fmpq_inv :: Ptr CFMPQ -> Ptr CFMPQ -> IO ()
-
-
-data CFMPQ
-newtype FMPQ = FMPQ (ForeignPtr CFMPQ)
-data CFMPQType
-data FMPQType = FMPQType
-
-
-instance Storable CFMPQ where
-    sizeOf _ = #size fmpq
-    alignment _ = #alignment fmpq
-    peek = error "CFMPQ.peek: Not defined"
-    poke = error "CFMPQ.poke: Not defined"
-
-
-instance Flint FMPQ where
-    type CFlint FMPQ = CFMPQ
-    type FlintType FMPQ = FMPQType
-    type CFlintType FMPQ = CFMPQType
-
-    flintType _ = FMPQType
-
-    newFlint _ = do
-      a <- mallocForeignPtr
-      withForeignPtr a fmpq_init
-      addForeignPtrFinalizer p_fmpq_clear a
-      return $ FMPQ a
-
-    withFlint (FMPQ a) f = withForeignPtr a $ \a' ->
-                           f undefined a' >>= \r -> return (FMPQ a,r)
