@@ -1,5 +1,8 @@
 *~
+*.swp
 flint2
 flint2_install
 OLD
 dist
+.cabal-sandbox
+cabal.sandbox.config
