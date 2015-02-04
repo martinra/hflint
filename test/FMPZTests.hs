@@ -31,23 +31,31 @@ intertwining2 f g x y =
   f x y == toIntegral $ g (fromInteger x) (fromInteger y)
 
 qcProps = testGroup "(checked by QuickCheck)"
-  [ QC.testProperty "toIntegral . fromInteger == const" $ intertwining id id
+  [
+    -- Show instance
+    QC.testProperty "Show" $ intertwining show show
+
+    -- Num instance
+  , QC.testProperty "toIntegral . fromInteger == const" $ intertwining id id
   , QC.testProperty "Addition" $ intertwining2 (+) (+)
   , QC.testProperty "Substraction" $ intertwining2 (-) (-)
   , QC.testProperty "Negation" $ intertwining negate negate
   , QC.testProperty "Multiplication" $ intertwining2 (*) (*)
   , QC.testProperty "Absolute Value" $ intertwining signum signum
-  , QC.testProperty "Show" $ intertwining show show
   ]
 
 scProps = testGroup "(checked by SmallCheck)"
-  [ SC.testProperty "toIntegral . fromInteger == const" $ intertwining id id
+  [
+    -- Show instance
+    SC.testProperty "Show" $ intertwining show show
+
+    -- Num instance
+  , SC.testProperty "toIntegral . fromInteger == const" $ intertwining id id
   , SC.testProperty "Addition" $ intertwining2 (+) (+)
   , SC.testProperty "Substraction" $ intertwining2 (-) (-)
   , SC.testProperty "Negation" $ intertwining negate negate
   , SC.testProperty "Multiplication" $ intertwining2 (*) (*)
   , SC.testProperty "Absolute Value" $ intertwining signum signum
-  , SC.testProperty "Show" $ intertwining show show
   ]
 
 -- unitTests = testGroup "Unit tests"
