@@ -1,5 +1,7 @@
 *~
 *.swp
+*.nix
+builder.sh
 flint2
 flint2_install
 OLD
