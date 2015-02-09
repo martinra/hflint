@@ -12,15 +12,15 @@ description:         Haskell binding to the FLINT library.  This
 category:            Data, Math
 license:             GPL-3
 license-file:        LICENSE
-Stability:           experimental
-Tested-with:         GHC==7.6.3
+stability:           experimental
+tested-with:         GHC==7.8.4
 author:              Martin Westerholt-Raum <martin@raum-brothers.eu>
 maintainer:          Martin Westerholt-Raum <martin@raum-brothers.eu>
-Homepage:            http://github.com/???
+homepage:            http://github.com/???
 build-type:          Simple
 cabal-version:       >= 1.16
 
-Data-files:          README
+data-files:          README
 
 source-repository head
   type:     git
@@ -31,7 +31,7 @@ source-repository this
   location: https://github
   tag:      hflint-0.0.1
 
-Library
+library
   default-language: Haskell2010
   build-depends:
       base > 3 && < 5
@@ -53,12 +53,14 @@ Library
     HFlint.FMPZ.Basic
     HFlint.FMPZ.FFI
     HFlint.FMPZ.Internal
+    HFlint.FMPZ.Limbs
 
     HFlint.Internal.Flint
 
   build-tools:         hsc2hs
-  GHC-options:         -Wall -fno-warn-orphans 
+  GHC-options:         -Wall -fno-warn-orphans -static
   GHC-prof-options:    -prof -auto
+  cpp-options:         -fpic
   hs-source-dirs:      src
 
   include-dirs:
@@ -70,23 +72,26 @@ Library
   c-sources:
     csrc/flint_define_wrappers.c
 
-  extra-lib-dirs:
-    /usr/lib64
   extra-libraries:
+    c,
+    stdc++,
     flint,
+    gf2x,
     gmp,
     mpfr,
     ntl
 
-Test-Suite test-hflint:
-    build-depends:
-      base,
-      tasty,
-      tasty-smallcheck,
-      tasty-quickcheck,
-      tasty-hunit
+test-suite test-hflint
+  default-language: Haskell2010
+  build-depends:
+    base,
+    tasty,
+    tasty-smallcheck,
+    tasty-quickcheck,
+    tasty-hunit,
+    hflint == 0.0.1
 
-    type:       exitcode-stdio-1.0
-    main-is:    test-hflint.hs
-    hs-source-dirs: test
+  type:       exitcode-stdio-1.0
+  main-is:    TestHFlint.hs
+  hs-source-dirs: test
 

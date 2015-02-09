@@ -1,9 +1,12 @@
+module Main
+where
+
 import Test.Tasty ( defaultMain
                   , testGroup
                   )
 
-import FMPZTests ( FMPZTestGroup )
+import FMPZTests ( fmpzTestGroup )
 
 
 main = defaultMain $
-       testGroup "HFlint Tests" [FMPZTestGroup]
+       testGroup "HFlint Tests" [fmpzTestGroup]

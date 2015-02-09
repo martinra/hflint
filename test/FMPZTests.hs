@@ -1,64 +1,63 @@
 module FMPZTests
 where
 
-import Test.Tasty ( testGroup ) 
+import Test.Tasty ( testGroup,
+                    TestTree
+                  )
+import qualified Test.Tasty.SmallCheck as SC
+import qualified Test.Tasty.QuickCheck as QC
+import qualified Test.Tasty.HUnit as HU
 
-import Test.Tasty.SmallCheck as SC
-import Test.Tasty.QuickCheck as QC
-import Test.Tasty.HUnit as HU
-
-import HFlint.FMPZ ()
+import HFlint.FMPZ
 
 
-testGroup :: TestTree
-testGruop = testGroup "FMPZ Tests" [properties, unitTests]
+fmpzTestGroup :: TestTree
+fmpzTestGroup = testGroup "FMPZ Tests" [properties, unitTests]
 
-properties :: TestTree
-properties = testGroup "Properties" [scProps, qcProps]
+
+equal :: Eq a
+      => (Integer -> a)
+      -> (FMPZ -> a)
+      -> Integer
+      -> Bool
+equal f g x = f x == (g $ fromInteger x)
 
 intertwining :: (Integer -> Integer)
              -> (FMPZ -> FMPZ)
              -> Integer
              -> Bool
 intertwining f g x =
-  f x == toIntegral $ g $ fromInteger x
+  f x == (toInteger $ g $ fromInteger x)
 
 intertwining2 :: (Integer -> Integer -> Integer)
               -> (FMPZ -> FMPZ -> FMPZ)
               -> Integer -> Integer
               -> Bool
 intertwining2 f g x y =
-  f x y == toIntegral $ g (fromInteger x) (fromInteger y)
+  f x y == (toInteger $ g (fromInteger x) (fromInteger y))
 
-qcProps = testGroup "(checked by QuickCheck)"
-  [
-    -- Show instance
-    QC.testProperty "Show" $ intertwining show show
 
-    -- Num instance
-  , QC.testProperty "toIntegral . fromInteger == const" $ intertwining id id
-  , QC.testProperty "Addition" $ intertwining2 (+) (+)
-  , QC.testProperty "Substraction" $ intertwining2 (-) (-)
-  , QC.testProperty "Negation" $ intertwining negate negate
-  , QC.testProperty "Multiplication" $ intertwining2 (*) (*)
-  , QC.testProperty "Absolute Value" $ intertwining signum signum
+testProperty s p = testGroup ("s " ++ "(QuickCheck & SmallCheck)")
+  [ QC.testProperty s p,
+    SC.testProperty s p
   ]
 
-scProps = testGroup "(checked by SmallCheck)"
-  [
-    -- Show instance
-    SC.testProperty "Show" $ intertwining show show
+properties :: TestTree
+properties = testGroup "Properties"
+  [ -- Show instance
+    testProperty "Show" $ equal show show 
 
     -- Num instance
-  , SC.testProperty "toIntegral . fromInteger == const" $ intertwining id id
-  , SC.testProperty "Addition" $ intertwining2 (+) (+)
-  , SC.testProperty "Substraction" $ intertwining2 (-) (-)
-  , SC.testProperty "Negation" $ intertwining negate negate
-  , SC.testProperty "Multiplication" $ intertwining2 (*) (*)
-  , SC.testProperty "Absolute Value" $ intertwining signum signum
+  , testProperty "toIntegral . fromInteger == const" $ intertwining id id
+  , testProperty "Addition" $ intertwining2 (+) (+)
+  , testProperty "Substraction" $ intertwining2 (-) (-)
+  , testProperty "Negation" $ intertwining negate negate
+  , testProperty "Multiplication" $ intertwining2 (*) (*)
+  , testProperty "Absolute Value" $ intertwining signum signum
   ]
 
--- unitTests = testGroup "Unit tests"
+
+unitTests = testGroup "Unit tests" []
 --   [ testCase "List comparison (different length)" $
 --       [1, 2, 3] `compare` [1,2] @?= GT
 -- 

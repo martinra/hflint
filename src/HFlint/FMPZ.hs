@@ -12,4 +12,5 @@ where
 import HFlint.FMPZ.FFI
 import HFlint.FMPZ.Internal
 
+import HFlint.FMPZ.Arithmetic ()
 import HFlint.FMPZ.Basic ()
