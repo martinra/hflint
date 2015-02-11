@@ -20,17 +20,21 @@ instance Flint FMPQ where
     addForeignPtrFinalizer p_fmpq_clear a
     return $ FMPQ a
 
-  withFlint (FMPQ a) f = withForeignPtr a $ \a' ->
-                         f undefined a' >>= \r -> return (FMPQ a,r)
+  withFlint (FMPQ a) f = withForeignPtr a $
+                         f undefined >=> \r -> return (FMPQ a,r)
 
-withFMPQ :: FMPQ -> (Ptr CFMPQType -> Ptr CFMPQ -> IO b) -> IO (FMPQ, b)
+withFMPQ :: FMPQ -> (Ptr CFMPQType -> Ptr CFMPQ -> IO b)
+         -> IO (FMPQ, b)
 withFMPQ = withFlint
 
-withFMPQ_ :: FMPQ -> (Ptr CFMPQType -> Ptr CFMPQ -> IO b) -> IO FMPQ
+withFMPQ_ :: FMPQ -> (Ptr CFMPQType -> Ptr CFMPQ -> IO b)
+          -> IO FMPQ
 withFMPQ_ = withFlint_
 
-withNewFMPQ :: (Ptr CFMPQType -> Ptr CFMPQ -> IO b) -> IO (FMPQ, b)
+withNewFMPQ :: (Ptr CFMPQType -> Ptr CFMPQ -> IO b)
+            -> IO (FMPQ, b)
 withNewFMPQ = withNewFlint FMPQType
 
-withNewFMPQ_ :: (Ptr CFMPQType -> Ptr CFMPQ -> IO b) -> IO FMPQ
+withNewFMPQ_ :: (Ptr CFMPQType -> Ptr CFMPQ -> IO b)
+             -> IO FMPQ
 withNewFMPQ_ = withNewFlint_ FMPQType
