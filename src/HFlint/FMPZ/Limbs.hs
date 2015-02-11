@@ -69,12 +69,12 @@ fromCFMPZ aptr = fmap snd $ withNewFMPZ $ const $ \cptr -> do
   nextLimb :: Ptr CFMPZ -> WriterT (Dual [CULong]) IO ()
   nextLimb bptr = do
     -- todo: as soon fmpz_fdiv_qr_ui is implemented us it
-    tell =<< (liftIO $ Dual <$> (:[]) <$> fmpz_fdiv_ui bptr limbSize)
+    tell =<< liftIO (Dual <$> (:[]) <$> fmpz_fdiv_ui bptr limbSize)
     liftIO $ fmpz_fdiv_q_ui bptr bptr limbSize
 
 toInteger :: LimbRepr -> Integer
 toInteger (LimbRepr _ [])   = 0
-toInteger (LimbRepr sgn ls) = let n = foldl' (\l a -> l + a*limbSize) 0 $
+toInteger (LimbRepr sgn ls) = let n = foldl' (\a l -> a*limbSize + l) 0 $
                                              map fromIntegral ls
                               in case sgn of
                                 Positive -> n 
