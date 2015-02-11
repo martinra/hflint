@@ -6,20 +6,17 @@
   , TypeFamilies
   #-}
 
-#include <flint/fmpq.h>
-
 module HFlint.FMPQ.FFI
 where
 
-import Foreign.C.String (CString)
-import Foreign.C.Types (CInt(..))
-import Foreign.ForeignPtr ( ForeignPtr, withForeignPtr
-                          , mallocForeignPtr, addForeignPtrFinalizer )
-import Foreign.Ptr (Ptr, FunPtr)
-import Foreign.Storable (Storable(..))
+#include <flint/fmpq.h>
 
-import Flint.Internal.Flint
-import Flint.FMPZ.FFI
+import Foreign.C.String ( CString )
+import Foreign.C.Types ( CULong(..)
+                       , CInt(..) )
+import Foreign.ForeignPtr ( ForeignPtr )
+import Foreign.Ptr ( Ptr, FunPtr )
+import Foreign.Storable ( Storable(..) )
 
 
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
@@ -28,7 +25,6 @@ data CFMPQ
 newtype FMPQ = FMPQ (ForeignPtr CFMPQ)
 data CFMPQType
 data FMPQType = FMPQType
-
 
 instance Storable CFMPQ where
     sizeOf _ = #size fmpq
