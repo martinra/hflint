@@ -1,68 +1,108 @@
+{-# LANGUAGE
+    FlexibleContexts
+  #-}
+
 module FMPQTests
 where
 
-import Test.Tasty ( testGroup ) 
+import Control.Arrow ( second )
+import Data.List ( delete
+                 , intercalate )
+import Data.List.Split ( splitOn )
 
-import Test.Tasty.SmallCheck as SC
-import Test.Tasty.QuickCheck as QC
-import Test.Tasty.HUnit as HU
+import Test.Tasty ( testGroup
+                  , TestTree
+                  )
 
-import HFlint.FMPQ ()
+import qualified Test.Tasty.SmallCheck as SC
+import qualified Test.Tasty.QuickCheck as QC
+import qualified Test.Tasty.HUnit as HU
+
+import HFlint.FMPQ
 
 
-testGroup :: TestTree
-testGruop = testGroup "FMPQ Tests" [properties, unitTests]
+fmpqTestGroup :: TestTree
+fmpqTestGroup = testGroup "FMPQ Tests" [properties]
 
-properties :: TestTree
-properties = testGroup "Properties" [scProps, qcProps]
+
+equal :: Eq a
+      => (Rational -> a)
+      -> (FMPQ -> a)
+      -> Rational
+      -> Bool
+equal f g x = f x == g (fromRational x)
+
+equal2 :: Eq a
+       => (Rational -> Rational -> a)
+       -> (FMPQ -> FMPQ -> a)
+       -> Rational -> Rational
+       -> Bool
+equal2 f g x y = f x y == g (fromRational x) (fromRational y)
 
 intertwining :: (Rational -> Rational)
              -> (FMPQ -> FMPQ)
              -> Rational
              -> Bool
 intertwining f g x =
-  f x == toRational $ g $ fromRational a
+  f x == toRational ( g (fromRational x))
 
 intertwining2 :: (Rational -> Rational -> Rational)
               -> (FMPQ -> FMPQ -> FMPQ)
               -> Rational -> Rational
               -> Bool
 intertwining2 f g x y =
-  f x y == toRational $ g (fromRational x) (fromRational y)
+  f x y == toRational ( g (fromRational x) (fromRational y))
 
-qcProps = testGroup "(checked by QuickCheck)"
-  [ QC.testProperty "toRational . fromRational == const" $ intertwining id id
-  , QC.testProperty "Addition" $ intertwining2 (+) (+)
-  , QC.testProperty "Substraction" $ intertwining2 (-) (-)
-  , QC.testProperty "Negation" $ intertwining negate negate
-  , QC.testProperty "Multiplication" $ intertwining2 (*) (*)
-  , QC.testProperty "Absolute Value" $ intertwining signum signum
+preRecip :: (Eq a, Num a)
+         => a -> a
+preRecip a | a == 0    = 1
+           | otherwise = a
 
-  , QC.testProperty "Show" $ intertwining show show
-
-  , QC.testProperty "Devision" $ intertwining2 (/) (/)
-  , QC.testProperty "Reciprocal" $ intertwining recip recip
+testProperty s p = testGroup ("s " ++ "(QuickCheck & SmallCheck)")
+  [ QC.testProperty s p,
+    SC.testProperty s p
   ]
 
-scProps = testGroup "(checked by SmallCheck)"
-  [ SC.testProperty "toRational . fromRational == const" $ intertwining id id
-  , SC.testProperty "Addition" $ intertwining2 (+) (+)
-  , SC.testProperty "Substraction" $ intertwining2 (-) (-)
-  , SC.testProperty "Negation" $ intertwining negate negate
-  , SC.testProperty "Multiplication" $ intertwining2 (*) (*)
-  , SC.testProperty "Absolute Value" $ intertwining signum signum
+properties :: TestTree
+properties = testGroup "Properties"
+   [ -- Show instance
+     testProperty "Show" $ equal (delete '(' . delete ')' .
+                                  intercalate "/" . splitOn " % " . show)
+                                 show
 
-  , SC.testProperty "Show" $ intertwining show show
+     -- Eq instance
+   , testProperty "Eq" $ equal2 (==) (==)
 
-  , SC.testProperty "Devision" $ intertwining2 (/) (/)
-  , SC.testProperty "Reciprocal" $ intertwining recip recip
-  ]
+     -- Ord instance
+   , testProperty "Ord" $ equal2 compare compare
 
--- unitTests = testGroup "Unit tests"
---   [ testCase "List comparison (different length)" $
---       [1, 2, 3] `compare` [1,2] @?= GT
--- 
---   -- the following test does not hold
---   , testCase "List comparison (same length)" $
---       [1, 2, 3] `compare` [1,2,2] @?= LT
---   ]
+     -- Enum instance
+   , testProperty "toEnum" $
+       \x -> (truncate (toEnum x :: FMPQ) :: Integer) == toEnum (x :: Int)
+   , testProperty "fromEnum" $
+       \x -> fromEnum (fromInteger x :: FMPQ) == fromEnum (x :: Integer)
+     
+     -- Num instance
+   , testProperty "fromInteger" $ 
+       \x -> toRational (fromInteger x :: FMPQ) == toRational x
+   , testProperty "add" $ intertwining2 (+) (+)
+   , testProperty "sub" $ intertwining2 (-) (-)
+   , testProperty "mul" $ intertwining2 (*) (*)
+   , testProperty "negate" $ intertwining negate negate
+   , testProperty "abs" $ intertwining abs abs
+   , testProperty "signum" $ intertwining signum signum
+ 
+     -- Fractional instance
+   , testProperty "fromRational" $ intertwining id id
+   , testProperty "div" $ intertwining2 (\x y -> x/preRecip y)
+                                        (\x y -> x/preRecip y)
+   , testProperty "recip" $ intertwining (recip . preRecip)
+                                         (recip . preRecip)
+
+     -- RealFrac instance
+   , testProperty "properFraction" $
+       \x -> let
+       (q,r) = properFraction (fromRational x :: FMPQ)
+       (q',r') = properFraction x
+       in q == q' && toRational r == r'
+   ] 

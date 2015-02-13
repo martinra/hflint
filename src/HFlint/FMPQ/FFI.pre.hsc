@@ -12,12 +12,12 @@ where
 #include <flint/fmpq.h>
 
 import Foreign.C.String ( CString )
-import Foreign.C.Types ( CULong(..)
-                       , CInt(..) )
+import Foreign.C.Types ( CInt(..) )
 import Foreign.ForeignPtr ( ForeignPtr )
 import Foreign.Ptr ( Ptr, FunPtr )
 import Foreign.Storable ( Storable(..) )
 
+import HFlint.FMPZ.FFI
 
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 
@@ -44,10 +44,10 @@ foreign import capi "flint/fmpq.h value fmpq_clear"
 
 
 foreign import ccall unsafe "fmpq_numref_wrapper"
-        fmpq_numref :: Ptr CFMPQ -> IO (Ptr CFMPQ)
+        fmpq_numref :: Ptr CFMPQ -> IO (Ptr CFMPZ)
 
 foreign import ccall unsafe "fmpq_denref_wrapper"
-        fmpq_denref :: Ptr CFMPQ -> IO (Ptr CFMPQ)
+        fmpq_denref :: Ptr CFMPQ -> IO (Ptr CFMPZ)
 
 
 foreign import capi unsafe "fmpq_set"
@@ -60,7 +60,11 @@ foreign import ccall unsafe "fmpq_set_fmpz_frac"
 foreign import ccall unsafe "fmpq_get_str"
         fmpq_get_str :: CString -> CInt -> Ptr CFMPQ -> IO CString
 
+foreign import capi unsafe "fmpq_equal"
+        fmpq_equal :: Ptr CFMPQ -> Ptr CFMPQ -> IO CInt
 
+foreign import ccall unsafe "fmpq_cmp"
+        fmpq_cmp :: Ptr CFMPQ -> Ptr CFMPQ -> IO CInt
 
 foreign import capi "flint/fmpq.h fmpq_sgn"
         fmpq_sgn :: Ptr CFMPQ -> IO CInt

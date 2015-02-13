@@ -1,6 +1,15 @@
+{-# LANGUAGE
+    TypeFamilies
+  #-}
+
 module HFlint.FMPQ.Internal
 where
 
+import Control.Monad ( (>=>) )
+import Foreign.ForeignPtr ( mallocForeignPtr
+                          , withForeignPtr
+                          , addForeignPtrFinalizer
+                          )
 import Foreign.Ptr ( Ptr )
 
 import HFlint.FMPQ.FFI

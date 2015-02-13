@@ -46,9 +46,15 @@ library
     , transformers >= 0.4.1
 
   exposed-modules:
+    HFlint.FMPQ
     HFlint.FMPZ
 
   other-modules:
+    HFlint.FMPQ.Arithmetic
+    HFlint.FMPQ.Basic
+    HFlint.FMPQ.FFI
+    HFlint.FMPQ.Internal
+
     HFlint.FMPZ.Arithmetic
     HFlint.FMPZ.Basic
     HFlint.FMPZ.FFI
@@ -85,6 +91,7 @@ test-suite test-hflint
   default-language: Haskell2010
   build-depends:
     base,
+    split,
     tasty,
     tasty-smallcheck,
     tasty-quickcheck,
