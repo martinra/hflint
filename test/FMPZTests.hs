@@ -41,7 +41,7 @@ intertwining2 f g x y =
   f x y == (toInteger $ g (fromInteger x) (fromInteger y))
 
 
-testProperty s p = testGroup ("s " ++ "(QuickCheck & SmallCheck)")
+testProperty s p = testGroup "(QuickCheck & SmallCheck)"
   [ QC.testProperty s p,
     SC.testProperty s p
   ]
