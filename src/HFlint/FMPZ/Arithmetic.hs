@@ -47,7 +47,7 @@ instance Integral FMPZ where
   div = throwBeforeDivideByZero2 $
         lift2Flint_ $ const fmpz_fdiv_q
   divMod = throwBeforeDivideByZero2 $
-           lift2Flint2_ $ const $ const fmpz_tdiv_qr
+           lift2Flint2_ $ const $ const fmpz_fdiv_qr
 
   toInteger = L.toInteger . L.fromFMPZ
 
