@@ -49,42 +49,42 @@ testProperty s p = testGroup ("s " ++ "(QuickCheck & SmallCheck)")
 
 properties :: TestTree
 properties = testGroup "Properties"
-   [ -- Show instance
-     testProperty "Show" $ equal (delete '(' . delete ')' .
-                                  intercalate "/" . splitOn " % " . show)
-                                 show
+  [ -- Show instance
+    testProperty "Show" $ equal (delete '(' . delete ')' .
+                                 intercalate "/" . splitOn " % " . show)
+                                show
 
-     -- Eq instance
-   , testProperty "Eq" $ equal2 (==) (==)
+    -- Eq instance
+  , testProperty "Eq" $ equal2 (==) (==)
 
-     -- Ord instance
-   , testProperty "Ord" $ equal2 compare compare
+    -- Ord instance
+  , testProperty "Ord" $ equal2 compare compare
 
-     -- Enum instance
-   , testProperty "toEnum" $
-       U.equal (toEnum :: Int -> FMPQ) undefined
-               (fromIntegral :: Int -> Integer) truncate
-   , testProperty "fromEnum" $
-       U.equal (fromInteger :: Integer -> FMPQ) undefined fromEnum fromEnum
-     
-     -- Num instance
-   , testProperty "fromInteger" $ 
-       U.equal (fromInteger :: Integer -> FMPQ) undefined toRational toRational
-   , testProperty "add" $ intertwining2 (+) (+)
-   , testProperty "sub" $ intertwining2 (-) (-)
-   , testProperty "mul" $ intertwining2 (*) (*)
-   , testProperty "negate" $ intertwining negate negate
-   , testProperty "abs" $ intertwining abs abs
-   , testProperty "signum" $ intertwining signum signum
- 
-     -- Fractional instance
-   , testProperty "fromRational" $ intertwining id id
-   , testProperty "div" $ intertwining2 (\x y -> x/preRecip y)
-                                        (\x y -> x/preRecip y)
-   , testProperty "recip" $ intertwining (recip . preRecip)
-                                         (recip . preRecip)
+    -- Enum instance
+  , testProperty "toEnum" $
+      U.equal (toEnum :: Int -> FMPQ) undefined
+              (fromIntegral :: Int -> Integer) truncate
+  , testProperty "fromEnum" $
+      U.equal (fromInteger :: Integer -> FMPQ) undefined fromEnum fromEnum
+    
+    -- Num instance
+  , testProperty "fromInteger" $ 
+      U.equal (fromInteger :: Integer -> FMPQ) undefined toRational toRational
+  , testProperty "add" $ intertwining2 (+) (+)
+  , testProperty "sub" $ intertwining2 (-) (-)
+  , testProperty "mul" $ intertwining2 (*) (*)
+  , testProperty "negate" $ intertwining negate negate
+  , testProperty "abs" $ intertwining abs abs
+  , testProperty "signum" $ intertwining signum signum
 
-     -- RealFrac instance
-   , testProperty "properFraction" $
-       equal properFraction ((id *** toRational) . properFraction)
-   ] 
+    -- Fractional instance
+  , testProperty "fromRational" $ intertwining id id
+  , testProperty "div" $ intertwining2 (\x y -> x/preRecip y)
+                                       (\x y -> x/preRecip y)
+  , testProperty "recip" $ intertwining (recip . preRecip)
+                                        (recip . preRecip)
+
+    -- RealFrac instance
+  , testProperty "properFraction" $
+      equal properFraction ((id *** toRational) . properFraction)
+  ] 
