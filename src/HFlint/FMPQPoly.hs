@@ -11,3 +11,4 @@ where
 import HFlint.FMPQPoly.FFI
 import HFlint.FMPQPoly.Internal
 
+import HFlint.FMPQPoly.Basic ()
