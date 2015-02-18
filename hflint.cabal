@@ -47,6 +47,7 @@ library
 
   exposed-modules:
     HFlint.FMPQ
+    HFlint.FMPQPoly
     HFlint.FMPZ
 
   other-modules:
@@ -54,6 +55,9 @@ library
     HFlint.FMPQ.Basic
     HFlint.FMPQ.FFI
     HFlint.FMPQ.Internal
+
+    HFlint.FMPQPoly.FFI
+    HFlint.FMPQPoly.Internal
 
     HFlint.FMPZ.Arithmetic
     HFlint.FMPZ.Basic
