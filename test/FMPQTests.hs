@@ -21,6 +21,7 @@ import qualified Test.Tasty.QuickCheck as QC
 import qualified Test.Tasty.HUnit as HU
 
 import HFlint.FMPQ
+
 import qualified TestHFlint.Utils as U
 
 

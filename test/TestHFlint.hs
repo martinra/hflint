@@ -7,6 +7,11 @@ import Test.Tasty ( defaultMain
 
 import FMPZTests ( fmpzTestGroup )
 import FMPQTests ( fmpqTestGroup )
+import FMPQPolyTests ( fmpqPolyTestGroup )
 
-main = defaultMain $
-       testGroup "HFlint Tests" [fmpzTestGroup, fmpqTestGroup]
+
+main = defaultMain $ testGroup "HFlint Tests"
+       [ fmpzTestGroup
+       , fmpqTestGroup
+       , fmpqPolyTestGroup
+       ]
