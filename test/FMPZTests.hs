@@ -5,40 +5,40 @@
 module FMPZTests
 where
 
+import Control.Applicative ( (<$>) )
+import Control.Arrow ( (***) )
+import Control.Exception ( handle
+                         , ArithException( DivideByZero )
+                         , evaluate
+                         )
+import Control.Monad ( liftM
+                     , liftM2
+                     )
+import Data.Composition ( (.:) )
 import Test.Tasty ( testGroup,
                     TestTree
                   )
 import qualified Test.Tasty.SmallCheck as SC
 import qualified Test.Tasty.QuickCheck as QC
 import qualified Test.Tasty.HUnit as HU
+import System.IO.Unsafe ( unsafePerformIO )
 
 import HFlint.FMPZ
+import qualified TestHFlint.Utils as U
 
 
 fmpzTestGroup :: TestTree
-fmpzTestGroup = testGroup "FMPZ Tests" [properties, unitTests]
+fmpzTestGroup = testGroup "FMPZ Tests" [properties]
 
 
-equal :: Eq a
-      => (Integer -> a)
-      -> (FMPZ -> a)
-      -> Integer
-      -> Bool
-equal f g x = f x == (g $ fromInteger x)
-
-intertwining :: (Integer -> Integer)
-             -> (FMPZ -> FMPZ)
-             -> Integer
-             -> Bool
-intertwining f g x =
-  f x == (toInteger $ g $ fromInteger x)
-
-intertwining2 :: (Integer -> Integer -> Integer)
-              -> (FMPZ -> FMPZ -> FMPZ)
-              -> Integer -> Integer
-              -> Bool
-intertwining2 f g x y =
-  f x y == (toInteger $ g (fromInteger x) (fromInteger y))
+-- We need to specify the type, so that a is not specialized when infering the
+-- type on first occurence of equal and equal2
+equal :: Eq a => (Integer -> a) -> (FMPZ -> a) -> Integer -> Bool
+equal2 :: Eq a => (Integer -> Integer -> a) -> (FMPZ -> FMPZ -> a) -> Integer -> Integer -> Bool
+equal         = U.equal (fromInteger :: Integer -> FMPZ) toInteger
+equal2        = U.equal2 (fromInteger :: Integer -> FMPZ) toInteger
+intertwining  = U.intertwining (fromInteger :: Integer -> FMPZ) toInteger
+intertwining2 = U.intertwining2 (fromInteger :: Integer -> FMPZ) toInteger
 
 
 testProperty s p = testGroup "(QuickCheck & SmallCheck)"
@@ -51,21 +51,51 @@ properties = testGroup "Properties"
   [ -- Show instance
     testProperty "Show" $ equal show show 
 
+    -- Eq instance
+  , testProperty "Eq" $ equal2 (==) (==)
+
+    -- Ord instance
+  , testProperty "Ord" $ equal2 compare compare
+
+    -- Enum instance
+  , testProperty "toEnum" $
+      U.equal (toEnum :: Int -> FMPZ) undefined
+              (fromIntegral :: Int -> Integer) toInteger
+  , testProperty "fromEnum" $
+      U.equal (fromInteger :: Integer -> FMPZ) undefined fromEnum fromEnum
+
     -- Num instance
-  , testProperty "toIntegral . fromInteger == const" $ intertwining id id
-  , testProperty "Addition" $ intertwining2 (+) (+)
-  , testProperty "Substraction" $ intertwining2 (-) (-)
-  , testProperty "Negation" $ intertwining negate negate
-  , testProperty "Multiplication" $ intertwining2 (*) (*)
-  , testProperty "Absolute Value" $ intertwining signum signum
+  , testProperty "toInteger . fromInteger" $ intertwining id id
+  , testProperty "add" $ intertwining2 (+) (+)
+  , testProperty "sub" $ intertwining2 (-) (-)
+  , testProperty "mul" $ intertwining2 (*) (*)
+  , testProperty "negate" $ intertwining negate negate
+  , testProperty "abs" $ intertwining abs abs 
+  , testProperty "signum" $ intertwining signum signum
+
+    -- Real instace
+
+    -- Integral instance
+  , testProperty "quot" $ U.intertwining2
+      (liftM fromInteger :: Maybe Integer -> Maybe FMPZ) (liftM toInteger)
+      (wrapDivideByZero quot) (wrapDivideByZero quot)
+  , testProperty "quotRem" $ U.equal2
+      (liftM fromInteger :: Maybe Integer -> Maybe FMPZ) undefined
+      (wrapDivideByZero quotRem)
+      (liftM (toInteger *** toInteger) .: wrapDivideByZero quotRem)
+  , testProperty "div" $ U.intertwining2
+      (liftM fromInteger :: Maybe Integer -> Maybe FMPZ) (liftM toInteger)
+      (wrapDivideByZero div) (wrapDivideByZero div)
+  , testProperty "divMod" $ U.equal2
+      (liftM fromInteger :: Maybe Integer -> Maybe FMPZ) undefined
+      (wrapDivideByZero divMod)
+      (liftM (toInteger *** toInteger) .: wrapDivideByZero divMod)
   ]
 
-
-unitTests = testGroup "Unit tests" []
---   [ testCase "List comparison (different length)" $
---       [1, 2, 3] `compare` [1,2] @?= GT
--- 
---   -- the following test does not hold
---   , testCase "List comparison (same length)" $
---       [1, 2, 3] `compare` [1,2,2] @?= LT
---   ]
+wrapDivideByZero :: (a -> b -> c)
+                 -> Maybe a -> Maybe b -> Maybe c
+wrapDivideByZero f a b = unsafePerformIO $
+  handle (\DivideByZero -> return Nothing) $
+  case liftM2 f a b of
+    Nothing -> return Nothing
+    Just c' -> Just <$> evaluate c'

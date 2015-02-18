@@ -99,12 +99,13 @@ test-suite test-hflint
   default-language: Haskell2010
   build-depends:
     base,
+    hflint == 0.0.1,
+    composition,
     split,
     tasty,
     tasty-smallcheck,
     tasty-quickcheck,
-    tasty-hunit,
-    hflint == 0.0.1
+    tasty-hunit
 
   type:       exitcode-stdio-1.0
   main-is:    TestHFlint.hs
