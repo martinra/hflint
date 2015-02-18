@@ -1,7 +1,7 @@
 module HFlint.FMPQ.Arithmetic
 where
 
-import Control.Exception ( ArithException( DivideByZero ) )
+import Control.Exception ( ArithException( RatioZeroDenominator ) )
 
 import Data.Ratio ( numerator
                   , denominator
@@ -24,13 +24,13 @@ import HFlint.Internal.Utils ( throwBeforeIf
 
 throwBeforeDivideByZero :: (FMPQ -> b) -> FMPQ -> b
 throwBeforeDivideByZero =
-  throwBeforeIf DivideByZero
-  ((1==) . liftFlint0 (const fmpq_is_zero))
+  throwBeforeIf RatioZeroDenominator
+  ((0/=) . liftFlint0 (const fmpq_is_zero))
 
 throwBeforeDivideByZero2 :: (a -> FMPQ -> c) -> a -> FMPQ -> c
 throwBeforeDivideByZero2 =
-  throwBeforeIf2 DivideByZero
-  (const $ (1==) . liftFlint0 (const fmpq_is_zero))
+  throwBeforeIf2 RatioZeroDenominator
+  (const $ (0/=) . liftFlint0 (const fmpq_is_zero))
 
 
 instance Enum FMPQ where

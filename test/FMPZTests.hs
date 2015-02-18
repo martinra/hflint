@@ -5,15 +5,8 @@
 module FMPZTests
 where
 
-import Control.Applicative ( (<$>) )
 import Control.Arrow ( (***) )
-import Control.Exception ( handle
-                         , ArithException( DivideByZero )
-                         , evaluate
-                         )
-import Control.Monad ( liftM
-                     , liftM2
-                     )
+import Control.Monad ( liftM )
 import Data.Composition ( (.:) )
 import Test.Tasty ( testGroup,
                     TestTree
@@ -21,7 +14,6 @@ import Test.Tasty ( testGroup,
 import qualified Test.Tasty.SmallCheck as SC
 import qualified Test.Tasty.QuickCheck as QC
 import qualified Test.Tasty.HUnit as HU
-import System.IO.Unsafe ( unsafePerformIO )
 
 import HFlint.FMPZ
 import qualified TestHFlint.Utils as U
@@ -78,24 +70,16 @@ properties = testGroup "Properties"
     -- Integral instance
   , testProperty "quot" $ U.intertwining2
       (liftM fromInteger :: Maybe Integer -> Maybe FMPZ) (liftM toInteger)
-      (wrapDivideByZero quot) (wrapDivideByZero quot)
+      (U.wrapDivideByZero2 quot) (U.wrapDivideByZero2 quot)
   , testProperty "quotRem" $ U.equal2
       (liftM fromInteger :: Maybe Integer -> Maybe FMPZ) undefined
-      (wrapDivideByZero quotRem)
-      (liftM (toInteger *** toInteger) .: wrapDivideByZero quotRem)
+      (U.wrapDivideByZero2 quotRem)
+      (liftM (toInteger *** toInteger) .: U.wrapDivideByZero2 quotRem)
   , testProperty "div" $ U.intertwining2
       (liftM fromInteger :: Maybe Integer -> Maybe FMPZ) (liftM toInteger)
-      (wrapDivideByZero div) (wrapDivideByZero div)
+      (U.wrapDivideByZero2 div) (U.wrapDivideByZero2 div)
   , testProperty "divMod" $ U.equal2
       (liftM fromInteger :: Maybe Integer -> Maybe FMPZ) undefined
-      (wrapDivideByZero divMod)
-      (liftM (toInteger *** toInteger) .: wrapDivideByZero divMod)
+      (U.wrapDivideByZero2 divMod)
+      (liftM (toInteger *** toInteger) .: U.wrapDivideByZero2 divMod)
   ]
-
-wrapDivideByZero :: (a -> b -> c)
-                 -> Maybe a -> Maybe b -> Maybe c
-wrapDivideByZero f a b = unsafePerformIO $
-  handle (\DivideByZero -> return Nothing) $
-  case liftM2 f a b of
-    Nothing -> return Nothing
-    Just c' -> Just <$> evaluate c'

@@ -1,6 +1,18 @@
 module TestHFlint.Utils
 where
 
+import Control.Applicative ( (<$>) )
+import Control.Exception ( catch
+                         , throw
+                         , evaluate
+                         , ArithException(..)
+                         )
+import Control.Monad ( liftM
+                     , liftM2
+                     )
+import System.IO.Unsafe ( unsafePerformIO )
+
+
 equal :: Eq a
       => (b -> c) -> (c -> b)
       -> (b -> a)
@@ -53,7 +65,25 @@ intertwining2' :: Eq b
 intertwining2' bToC b'ToC' cToB f g x y
   = f x y == cToB ( g (bToC x) (b'ToC' y))
 
-forceNonZero :: (Eq a, Num a)
-             => a -> a
-forceNonZero a | a == 0    = 1
-               | otherwise = a
+
+catchDivisionByZero :: IO (Maybe a) -> IO (Maybe a)
+catchDivisionByZero a = a `catch` \e -> case e of
+  DivideByZero         -> return Nothing
+  RatioZeroDenominator -> return Nothing
+  _                    -> throw e
+
+wrapDivideByZero :: (a -> b)
+                  -> Maybe a -> Maybe b
+wrapDivideByZero f a = unsafePerformIO $
+  catchDivisionByZero $
+  case liftM f a of
+    Nothing -> return Nothing
+    Just c' -> Just <$> evaluate c'
+
+wrapDivideByZero2 :: (a -> b -> c)
+                  -> Maybe a -> Maybe b -> Maybe c
+wrapDivideByZero2 f a b = unsafePerformIO $
+  catchDivisionByZero $
+  case liftM2 f a b of
+    Nothing -> return Nothing
+    Just c' -> Just <$> evaluate c'

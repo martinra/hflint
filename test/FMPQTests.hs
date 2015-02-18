@@ -5,9 +5,8 @@
 module FMPQTests
 where
 
-import Control.Arrow ( second
-                     , (***)
-                     )
+import Control.Arrow ( (***) )
+import Control.Monad ( liftM )
 import Data.List ( delete
                  , intercalate )
 import Data.List.Split ( splitOn )
@@ -37,10 +36,6 @@ equal         = U.equal (fromRational :: Rational -> FMPQ) toRational
 equal2        = U.equal2 (fromRational :: Rational -> FMPQ) toRational
 intertwining  = U.intertwining (fromRational :: Rational -> FMPQ) toRational
 intertwining2 = U.intertwining2 (fromRational :: Rational -> FMPQ) toRational
-
-preRecip :: (Eq a, Num a) => a -> a
-preRecip a | a == 0    = 1
-           | otherwise = a
 
 
 testProperty s p = testGroup ("s " ++ "(QuickCheck & SmallCheck)")
@@ -80,10 +75,12 @@ properties = testGroup "Properties"
 
     -- Fractional instance
   , testProperty "toRational . fromRational" $ intertwining id id
-  , testProperty "div" $ intertwining2 (\x y -> x/preRecip y)
-                                       (\x y -> x/preRecip y)
-  , testProperty "recip" $ intertwining (recip . preRecip)
-                                        (recip . preRecip)
+  , testProperty "division (/)" $ U.intertwining2
+      (liftM fromRational :: Maybe Rational -> Maybe FMPQ) (liftM toRational)
+      (U.wrapDivideByZero2 (/)) (U.wrapDivideByZero2 (/))
+  , testProperty "recip" $ U.intertwining
+      (liftM fromRational :: Maybe Rational -> Maybe FMPQ) (liftM toRational)
+      (U.wrapDivideByZero recip) (U.wrapDivideByZero recip)
 
     -- RealFrac instance
   , testProperty "properFraction" $
