@@ -78,7 +78,7 @@ properties = testGroup "Properties"
   , testProperty "signum" $ intertwining signum signum
 
     -- Fractional instance
-  , testProperty "fromRational" $ intertwining id id
+  , testProperty "toRational . fromRational" $ intertwining id id
   , testProperty "div" $ intertwining2 (\x y -> x/preRecip y)
                                        (\x y -> x/preRecip y)
   , testProperty "recip" $ intertwining (recip . preRecip)
