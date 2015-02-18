@@ -44,7 +44,7 @@ foreign import ccall unsafe "fmpq_poly_init2"
 foreign import ccall unsafe "fmpq_poly_clear"
         fmpq_poly_clear :: Ptr CFMPQPoly -> IO ()
 
-foreign import capi "flint/fmpq.h value fmpq_poly_clear"
+foreign import capi "flint/fmpq_poly.h value fmpq_poly_clear"
         p_fmpq_poly_clear :: FunPtr (Ptr CFMPQPoly -> IO ())
 
 
@@ -82,7 +82,7 @@ foreign import ccall unsafe "fmpq_poly_inv"
         fmpq_poly_inv :: Ptr CFMPQPoly -> Ptr CFMPQPoly -> IO ()       
 
 
-foreign import ccall unsafe "fmpq_poly_truncate"
+foreign import capi unsafe "flint/fmpq_poly.h fmpq_poly_truncate"
         fmpq_poly_truncate :: Ptr CFMPQPoly -> CLong -> IO ()       
         
 
@@ -126,7 +126,7 @@ foreign import ccall unsafe "fmpq_poly_divrem"
         fmpq_poly_divrem :: Ptr CFMPQPoly -> Ptr CFMPQPoly -> Ptr CFMPQPoly -> Ptr CFMPQPoly -> IO ()
 
 
-foreign import ccall unsafe "fmpq_poly_inv_series"
+foreign import capi unsafe "flint/fmpq_poly.h fmpq_poly_inv_series"
         fmpq_poly_inv_series :: Ptr CFMPQPoly -> Ptr CFMPQPoly -> CLong -> IO ()
 
 foreign import ccall unsafe "fmpq_poly_div_series"

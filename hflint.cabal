@@ -79,6 +79,8 @@ library
     csrc
   includes:
     flint/flint.h
+    flint/fmpq.h
+    flint/fmpq_poly.h
     flint/fmpz.h
   c-sources:
     csrc/flint_define_wrappers.c
