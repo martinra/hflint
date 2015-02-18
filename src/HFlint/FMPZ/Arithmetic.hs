@@ -15,7 +15,7 @@ import HFlint.Internal.Utils ( throwBeforeIf2 )
 throwBeforeDivideByZero2 :: (a -> FMPZ -> c) -> a -> FMPZ -> c
 throwBeforeDivideByZero2 =
   throwBeforeIf2 DivideByZero
-  (const $ (1==) . liftFlint0 (const fmpz_is_zero))
+  (const $ (0/=) . liftFlint0 (const fmpz_is_zero))
 
 
 instance Enum FMPZ where
