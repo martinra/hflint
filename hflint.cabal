@@ -67,6 +67,7 @@ library
     HFlint.FMPZ.Limbs
 
     HFlint.Internal.Flint
+    HFlint.Internal.Utils
 
   build-tools:         hsc2hs
   GHC-options:         -Wall -fno-warn-orphans -static
