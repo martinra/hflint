@@ -63,6 +63,9 @@ foreign import ccall unsafe "fmpq_get_str"
 foreign import capi unsafe "fmpq_equal"
         fmpq_equal :: Ptr CFMPQ -> Ptr CFMPQ -> IO CInt
 
+foreign import capi unsafe "fmpq_is_zero"
+        fmpq_is_zero :: Ptr CFMPQ -> IO CInt
+
 foreign import ccall unsafe "fmpq_cmp"
         fmpq_cmp :: Ptr CFMPQ -> Ptr CFMPQ -> IO CInt
 

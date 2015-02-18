@@ -1,12 +1,12 @@
 module HFlint.FMPQ.Arithmetic
 where
 
+import Control.Exception ( ArithException( DivideByZero ) )
+
 import Data.Ratio ( numerator
                   , denominator
                   )
 import System.IO.Unsafe ( unsafePerformIO )
-
-import HFlint.Internal.Flint
 
 import HFlint.FMPZ
 import HFlint.FMPZ.FFI
@@ -15,6 +15,22 @@ import qualified HFlint.FMPZ.Limbs as L
 import HFlint.FMPQ.FFI
 import HFlint.FMPQ.Internal
 import HFlint.FMPQ.Basic ()
+
+import HFlint.Internal.Flint
+import HFlint.Internal.Utils ( throwBeforeIf
+                             , throwBeforeIf2
+                             )
+
+
+throwBeforeDivideByZero :: (FMPQ -> b) -> FMPQ -> b
+throwBeforeDivideByZero =
+  throwBeforeIf DivideByZero
+  ((1==) . liftFlint0 (const fmpq_is_zero))
+
+throwBeforeDivideByZero2 :: (a -> FMPQ -> c) -> a -> FMPQ -> c
+throwBeforeDivideByZero2 =
+  throwBeforeIf2 DivideByZero
+  (const $ (1==) . liftFlint0 (const fmpq_is_zero))
 
 
 instance Enum FMPQ where
@@ -36,7 +52,7 @@ instance Num FMPQ where
   negate = liftFlint_ $ const fmpq_neg
   abs = liftFlint_ $ const fmpq_abs
   signum = fromInteger . toInteger .
-           (liftFlint0 $ const fmpq_sgn)
+           liftFlint0 (const fmpq_sgn)
 
 instance Fractional FMPQ where
   fromRational a = unsafePerformIO $
@@ -48,8 +64,10 @@ instance Fractional FMPQ where
     num = numerator a
     den = denominator a
 
-  (/) = lift2Flint_ $ const fmpq_div
-  recip = liftFlint_ $ const fmpq_inv
+  (/) = throwBeforeDivideByZero2 $
+        lift2Flint_ (const fmpq_div)
+  recip = throwBeforeDivideByZero $
+          liftFlint_ (const fmpq_inv)
 
 instance Real FMPQ where
   toRational a = unsafePerformIO $ fmap snd $
