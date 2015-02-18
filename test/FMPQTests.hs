@@ -5,7 +5,9 @@
 module FMPQTests
 where
 
-import Control.Arrow ( second )
+import Control.Arrow ( second
+                     , (***)
+                     )
 import Data.List ( delete
                  , intercalate )
 import Data.List.Split ( splitOn )
@@ -19,44 +21,26 @@ import qualified Test.Tasty.QuickCheck as QC
 import qualified Test.Tasty.HUnit as HU
 
 import HFlint.FMPQ
+import qualified TestHFlint.Utils as U
 
 
 fmpqTestGroup :: TestTree
 fmpqTestGroup = testGroup "FMPQ Tests" [properties]
 
 
-equal :: Eq a
-      => (Rational -> a)
-      -> (FMPQ -> a)
-      -> Rational
-      -> Bool
-equal f g x = f x == g (fromRational x)
+-- We need to specify the type, so that a is not specialized when infering the
+-- type on first occurence of equal and equal2
+equal :: Eq a => (Rational -> a) -> (FMPQ -> a) -> Rational -> Bool
+equal2 :: Eq a => (Rational -> Rational -> a) -> (FMPQ -> FMPQ -> a) -> Rational -> Rational -> Bool
+equal         = U.equal (fromRational :: Rational -> FMPQ) toRational
+equal2        = U.equal2 (fromRational :: Rational -> FMPQ) toRational
+intertwining  = U.intertwining (fromRational :: Rational -> FMPQ) toRational
+intertwining2 = U.intertwining2 (fromRational :: Rational -> FMPQ) toRational
 
-equal2 :: Eq a
-       => (Rational -> Rational -> a)
-       -> (FMPQ -> FMPQ -> a)
-       -> Rational -> Rational
-       -> Bool
-equal2 f g x y = f x y == g (fromRational x) (fromRational y)
-
-intertwining :: (Rational -> Rational)
-             -> (FMPQ -> FMPQ)
-             -> Rational
-             -> Bool
-intertwining f g x =
-  f x == toRational ( g (fromRational x))
-
-intertwining2 :: (Rational -> Rational -> Rational)
-              -> (FMPQ -> FMPQ -> FMPQ)
-              -> Rational -> Rational
-              -> Bool
-intertwining2 f g x y =
-  f x y == toRational ( g (fromRational x) (fromRational y))
-
-preRecip :: (Eq a, Num a)
-         => a -> a
+preRecip :: (Eq a, Num a) => a -> a
 preRecip a | a == 0    = 1
            | otherwise = a
+
 
 testProperty s p = testGroup ("s " ++ "(QuickCheck & SmallCheck)")
   [ QC.testProperty s p,
@@ -78,13 +62,14 @@ properties = testGroup "Properties"
 
      -- Enum instance
    , testProperty "toEnum" $
-       \x -> (truncate (toEnum x :: FMPQ) :: Integer) == toEnum (x :: Int)
+       U.equal (toEnum :: Int -> FMPQ) undefined
+               (fromIntegral :: Int -> Integer) truncate
    , testProperty "fromEnum" $
-       \x -> fromEnum (fromInteger x :: FMPQ) == fromEnum (x :: Integer)
+       U.equal (fromInteger :: Integer -> FMPQ) undefined fromEnum fromEnum
      
      -- Num instance
    , testProperty "fromInteger" $ 
-       \x -> toRational (fromInteger x :: FMPQ) == toRational x
+       U.equal (fromInteger :: Integer -> FMPQ) undefined toRational toRational
    , testProperty "add" $ intertwining2 (+) (+)
    , testProperty "sub" $ intertwining2 (-) (-)
    , testProperty "mul" $ intertwining2 (*) (*)
@@ -101,8 +86,5 @@ properties = testGroup "Properties"
 
      -- RealFrac instance
    , testProperty "properFraction" $
-       \x -> let
-       (q,r) = properFraction (fromRational x :: FMPQ)
-       (q',r') = properFraction x
-       in q == q' && toRational r == r'
+       equal properFraction ((id *** toRational) . properFraction)
    ] 
