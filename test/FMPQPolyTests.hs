@@ -51,7 +51,8 @@ testProperty s p = testGroup ("(QuickCheck & SmallCheck)")
 properties :: TestTree
 properties = testGroup "Properties"
   [ -- Eq instance
-    SC.testProperty "Eq" $ equal2
+    -- we use only QuickCheck, because SmallCheck is yields too slow tests
+    QC.testProperty "Eq" $ equal2
     ((==) `on` V.toList . V.reverse . V.dropWhile (0==) . V.reverse . V.fromList) (==)
   ] 
 
@@ -63,8 +64,6 @@ unitTests = testGroup "Unit Tests"
       show (fromRationals []) @?= "0"
   , HU.testCase "Show Deg 0" $ 
       show (fromRationals [1/2]) @?= "1/2"
-  , HU.testCase "Show Deg 1" $ 
-      show (fromRationals [1/2,1/4]) @?= "1/4*T+1/2"
-  , HU.testCase "Show Deg 2" $ 
+  , HU.testCase "Show Deg 1" $ show (fromRationals [1/2,1/4]) @?= "1/4*T+1/2" , HU.testCase "Show Deg 2" $ 
       show (fromRationals [2/7,1/4,3/5]) @?= "3/5*T^2 + 1/4*T + 2/7"
   ]
