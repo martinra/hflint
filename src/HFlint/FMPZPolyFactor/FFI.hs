@@ -1,4 +1,6 @@
+{-# LINE 1 "FFI.pre.hsc" #-}
 {-# LANGUAGE
+{-# LINE 2 "FFI.pre.hsc" #-}
     ForeignFunctionInterface
   , CApiFFI
   , EmptyDataDecls
@@ -9,7 +11,8 @@
 module HFlint.FMPZPolyFactor.FFI
 where
 
-#include <flint/fmpz_poly.h>
+
+{-# LINE 13 "FFI.pre.hsc" #-}
 
 import Foreign.C.String ( CString )
 import Foreign.C.Types ( CInt(..)
@@ -21,7 +24,8 @@ import Foreign.Storable ( Storable(..) )
 
 import HFlint.FMPZPoly.FFI
 
-#let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
+
+{-# LINE 25 "FFI.pre.hsc" #-}
 
 
 data CFMPZPolyFactor
@@ -30,8 +34,10 @@ data CFMPZPolyFactorType
 data FMPZPolyFactorType = FMPZPolyFactorType
 
 instance Storable CFMPZPolyFactor where
-    sizeOf _ = #size fmpz_poly_factor_struct
-    alignment _ = #alignment fmpz_poly_factor_struct
+    sizeOf _ = (40)
+{-# LINE 34 "FFI.pre.hsc" #-}
+    alignment _ = 8
+{-# LINE 35 "FFI.pre.hsc" #-}
     peek = error "CFMPZPolyFactor.peek: Not defined"
     poke = error "CFMPZPolyFactor.poke: Not defined"
 
