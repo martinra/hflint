@@ -13,15 +13,18 @@ module HFlint.Internal.Flint
   , lift2Flint0
 
   , liftFlintWithType
+  , liftFlintWithType_
   , liftFlint
   , liftFlint_
 
   , lift2FlintWithType
+  , lift2FlintWithType_
   , lift2Flint
   , lift2Flint_
   , lift2Flint'
 
   , lift2Flint2WithType
+  , lift2Flint2WithType_
   , lift2Flint2
   , lift2Flint2_
   , lift2Flint2'
@@ -30,7 +33,6 @@ where
 
 import Foreign.Ptr ( Ptr )
 import Control.Applicative ( (<$>) )
-import Control.Monad ( void )
 import Data.Composition
 import System.IO.Unsafe ( unsafePerformIO )
 
@@ -98,6 +100,15 @@ liftFlintWithType t f (!a) =
   withFlint a $ \_ aptr ->
   f ctype cptr aptr
 
+liftFlintWithType_ :: ( Flint c, Flint a )
+                   => FlintType c
+                   -> (  Ptr (CFlintType c)
+                      -> Ptr (CFlint c) -> Ptr (CFlint a)
+                      -> IO r)
+                   -> a -> c
+liftFlintWithType_ = fst .:. liftFlintWithType
+
+
 liftFlint :: ( Flint c, Flint a
              , FlintType c ~ FlintType a )
           => (  Ptr (CFlintType c)
@@ -113,7 +124,7 @@ liftFlint_ :: ( Flint c, Flint a
               -> Ptr (CFlint a)
               -> IO r)
            -> a -> c
-liftFlint_ = fst `compose2` liftFlint
+liftFlint_ f a = liftFlintWithType_ (flintType a) f a
 
 --------------------------------------------------
 --- FMPZ -> FMPZ -> FMPZ
@@ -133,6 +144,16 @@ lift2FlintWithType t f (!a) (!b) =
   withFlint b $ \_ bptr ->
   f ctype cptr aptr bptr
 
+lift2FlintWithType_ :: ( Flint c, Flint a, Flint b)
+                    => FlintType c
+                    -> (  Ptr (CFlintType c)
+                       -> Ptr (CFlint c)
+                       -> Ptr (CFlint a) -> Ptr (CFlint b)
+                       -> IO r)
+                    -> a -> b -> c
+lift2FlintWithType_ = fst .:: lift2FlintWithType
+
+
 lift2Flint :: ( Flint c, Flint a, Flint b
               , FlintType c ~ FlintType a )
            => (  Ptr (CFlintType c)
@@ -149,7 +170,7 @@ lift2Flint_ :: ( Flint c, Flint a, Flint b
                -> Ptr (CFlint a) -> Ptr (CFlint b)
                -> IO r)
             -> a -> b -> c
-lift2Flint_ = fst `compose3` lift2Flint
+lift2Flint_ f a b = lift2FlintWithType_ (flintType a) f a b
 
 lift2Flint' :: forall a b r .
                ( Flint a, Flint b )
@@ -161,7 +182,7 @@ lift2Flint' :: forall a b r .
 lift2Flint' f a b = snd cr
   where
   cr = lift2Flint f a b
-  c = fst cr :: a
+  _ = fst cr :: a
 
 --------------------------------------------------
 --- FMPZ -> FMPZ -> (FMPZ, FMPZ)
@@ -183,6 +204,16 @@ lift2Flint2WithType tc td f (!a) (!b) = ((c,d), r)
     withFlint a $ \_ aptr -> fmap snd $
     withFlint b $ \_ bptr ->
     f ctype dtype cptr dptr aptr bptr
+
+lift2Flint2WithType_ :: ( Flint c, Flint d, Flint a, Flint b )
+                     => FlintType c -> FlintType d
+                     -> (  Ptr (CFlintType c) -> Ptr (CFlintType d)
+                        -> Ptr (CFlint c) -> Ptr (CFlint d)
+                        -> Ptr (CFlint a) -> Ptr (CFlint b)
+                        -> IO r )
+                     -> a -> b -> (c,d)
+lift2Flint2WithType_ = fst .::. lift2Flint2WithType
+
 
 lift2Flint2 :: ( Flint c, Flint d, Flint a, Flint b
                , FlintType c ~ FlintType a, FlintType d ~ FlintType a )
@@ -212,4 +243,4 @@ lift2Flint2' :: forall a b r .
 lift2Flint2' f a b = snd cr
   where
   cr = lift2Flint2 f a b
-  c = fst cr :: (a,a)
+  _ = fst cr :: (a,a)
