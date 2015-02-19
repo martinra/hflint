@@ -5,11 +5,12 @@
 module FMPQTests
 where
 
-import Control.Arrow ( (***) )
+import Control.Arrow ( (***), second )
 import Control.Monad ( liftM )
-import Data.List ( delete
-                 , intercalate )
+import Data.Composition ( (.:) )
+import Data.List ( delete, intercalate )
 import Data.List.Split ( splitOn )
+import Data.Ratio ( (%) )
 
 import Test.Tasty ( testGroup
                   , TestTree
@@ -46,9 +47,9 @@ testProperty s p = testGroup ("s " ++ "(QuickCheck & SmallCheck)")
 properties :: TestTree
 properties = testGroup "Properties"
   [ -- Show instance
-    testProperty "Show" $ equal (delete '(' . delete ')' .
-                                 intercalate "/" . splitOn " % " . show)
-                                show
+    testProperty "Show" $ equal
+      (delete '(' . delete ')' . intercalate "/" . splitOn " % " . show)
+      show
 
     -- Eq instance
   , testProperty "Eq" $ equal2 (==) (==)
@@ -57,15 +58,17 @@ properties = testGroup "Properties"
   , testProperty "Ord" $ equal2 compare compare
 
     -- Enum instance
-  , testProperty "toEnum" $
-      U.equal (toEnum :: Int -> FMPQ) undefined
-              (fromIntegral :: Int -> Integer) truncate
-  , testProperty "fromEnum" $
-      U.equal (fromInteger :: Integer -> FMPQ) undefined fromEnum fromEnum
+  , testProperty "toEnum" $ U.equal 
+      (toEnum :: Int -> FMPQ) undefined
+      (fromIntegral :: Int -> Integer) truncate
+  , testProperty "fromEnum" $ U.equal
+      (fromInteger :: Integer -> FMPQ) undefined
+       fromEnum fromEnum
     
     -- Num instance
-  , testProperty "fromInteger" $ 
-      U.equal (fromInteger :: Integer -> FMPQ) undefined toRational toRational
+  , testProperty "fromInteger" $ U.equal
+      (fromInteger :: Integer -> FMPQ) undefined
+      toRational toRational
   , testProperty "add" $ intertwining2 (+) (+)
   , testProperty "sub" $ intertwining2 (-) (-)
   , testProperty "mul" $ intertwining2 (*) (*)
@@ -83,6 +86,13 @@ properties = testGroup "Properties"
       (U.wrapDivideByZero recip) (U.wrapDivideByZero recip)
 
     -- RealFrac instance
-  , testProperty "properFraction" $
-      equal properFraction ((id *** toRational) . properFraction)
+  , testProperty "properFraction" $ equal
+      properFraction (second toRational . properFraction)
+
+    -- various functions
+  , testProperty "fromFMPZs" $ U.equal2
+      (id :: Maybe Integer -> Maybe Integer) undefined
+      (U.wrapDivideByZero2 $
+       curry $ uncurry fromFMPZs . (fromInteger***fromInteger))
+      (U.wrapDivideByZero2 $ fromRational .: (%))
   ] 
