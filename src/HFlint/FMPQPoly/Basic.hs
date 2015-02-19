@@ -32,9 +32,6 @@ instance Show FMPQPoly where
 instance Eq FMPQPoly where
   (==) = (1==) .: (lift2Flint0 $ const fmpq_poly_equal)
 
-instance Ord FMPQPoly where
-  compare = (toEnum . (+1) . fromIntegral) .:
-            (lift2Flint0 $ const fmpq_poly_cmp)
 
 fromVector :: Vector FMPQ -> FMPQPoly
 fromVector as = unsafePerformIO $

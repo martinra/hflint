@@ -46,7 +46,4 @@ properties :: TestTree
 properties = testGroup "Properties"
   [ -- Eq instance
     testProperty "Eq" $ equal2 (==) (==)
---      -- Ord instance
---    , testProperty "Ord" $ equal2 compare compare
--- 
   ] 
