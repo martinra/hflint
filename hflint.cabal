@@ -92,6 +92,9 @@ library
     flint/fmpq.h
     flint/fmpq_poly.h
     flint/fmpz.h
+
+    csrc/flint_define_additionals.h
+    csrc/flint_define_wrappers.h
   c-sources:
     csrc/flint_define_additionals.c
     csrc/flint_define_wrappers.c

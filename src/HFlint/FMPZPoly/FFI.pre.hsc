@@ -136,8 +136,6 @@ foreign import ccall unsafe "fmpz_poly_gcd"
 foreign import ccall unsafe "fmpz_poly_lcm"
         fmpz_poly_lcm :: Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZPoly -> IO ()
 
-foreign import ccall unsafe "fmpz_poly_xgcd"
-        fmpz_poly_xgcd :: Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZPoly -> IO ()
 
 foreign import ccall unsafe "fmpz_poly_content"
         fmpz_poly_content :: Ptr CFMPZ -> Ptr CFMPZPoly -> IO ()

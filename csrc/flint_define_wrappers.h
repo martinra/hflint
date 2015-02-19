@@ -6,6 +6,7 @@
 #include <flint/flint.h>
 #include <flint/fmpq.h>
 #include <flint/fmpq_mat.h>
+#include <flint/fmpz_poly.h>
 
 // todo: when GHCi supports capi for #define statements, then remove these wrappers
 
@@ -15,5 +16,7 @@ fmpz* fmpq_denref_wrapper(fmpq_t x);
 slong fmpq_mat_nrows_wrapper(const fmpq_mat_t m);
 slong fmpq_mat_ncols_wrapper(const fmpq_mat_t m);
 fmpq* fmpq_mat_entryref_wrapper(const slong i, const slong j, const fmpq_mat_t m);
+
+int fmpz_poly_is_zero_wrapper(const fmpz_poly_t p);
 
 #endif
