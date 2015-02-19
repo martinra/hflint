@@ -9,6 +9,7 @@ import Data.Ratio ( numerator
 import System.IO.Unsafe ( unsafePerformIO )
 
 import HFlint.FMPZ
+import qualified HFlint.FMPZ.Arithmetic as FMPZArith
 import HFlint.FMPZ.FFI
 import qualified HFlint.FMPZ.Limbs as L
 
@@ -39,9 +40,9 @@ instance Enum FMPQ where
 
 instance Num FMPQ where
   fromInteger a = unsafePerformIO $
-                  withNewFMPQ_ $ const $ \cptr ->
-                  withFMPZ_ (fromInteger a) $ const $ \aptr ->
-                  withNewFMPZ $ const $ \bptr -> do
+                  withNewFMPQ_ $ \_ cptr ->
+                  withFMPZ_ (fromInteger a) $ \_ aptr ->
+                  withNewFMPZ $ \_ bptr -> do
                     fmpz_one bptr
                     fmpq_set_fmpz_frac cptr aptr bptr
 
@@ -51,14 +52,13 @@ instance Num FMPQ where
 
   negate = liftFlint_ $ const fmpq_neg
   abs = liftFlint_ $ const fmpq_abs
-  signum = fromInteger . toInteger .
-           liftFlint0 (const fmpq_sgn)
+  signum = fromIntegral . liftFlint0 (const fmpq_sgn)
 
 instance Fractional FMPQ where
   fromRational a = unsafePerformIO $
-                   withNewFMPQ_ $ const $ \cptr ->
-                   withFMPZ (fromInteger num) $ const $ \aptr ->
-                   withFMPZ (fromInteger den) $ const $ \bptr ->
+                   withNewFMPQ_ $ \_ cptr ->
+                   withFMPZ (fromInteger num) $ \_ aptr ->
+                   withFMPZ (fromInteger den) $ \_ bptr ->
                    fmpq_set_fmpz_frac cptr aptr bptr
     where
     num = numerator a
@@ -71,7 +71,7 @@ instance Fractional FMPQ where
 
 instance Real FMPQ where
   toRational a = unsafePerformIO $ fmap snd $
-                 withFMPQ a $ const $ \aptr -> do
+                 withFMPQ a $ \_ aptr -> do
                    numLimbs <- L.fromCFMPZ =<< fmpq_numref aptr
                    denLimbs <- L.fromCFMPZ =<< fmpq_denref aptr
                    let num = toRational $ L.toInteger numLimbs
@@ -83,11 +83,16 @@ instance RealFrac FMPQ where
                    | otherwise = (fromInteger $ fromIntegral q, r)
     where
     (q,r) = unsafePerformIO $
-      withNewFMPZ $ const $ \qptr ->
-      withNewFMPQ_ $ const $ \bptr ->
-      withFMPQ_ a $ const $ \aptr ->
-      withNewFMPZ_ $ const $ \rptr -> do
+      withNewFMPZ  $ \_ qptr ->
+      withNewFMPQ_ $ \_ bptr ->
+      withFMPQ_ a  $ \_ aptr ->
+      withNewFMPZ_ $ \_ rptr -> do
         numptr <- fmpq_numref aptr
         denptr <- fmpq_denref aptr
         fmpz_tdiv_qr qptr rptr numptr denptr
         fmpq_set_fmpz_frac bptr rptr denptr
+
+fromFMPZs :: FMPZ -> FMPZ -> FMPQ
+fromFMPZs = FMPZArith.throwBeforeDivideByZero2 $
+            lift2FlintWithType_ FMPQType
+            (const fmpq_set_fmpz_frac)
