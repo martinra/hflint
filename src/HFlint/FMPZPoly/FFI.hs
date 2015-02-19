@@ -111,13 +111,13 @@ foreign import ccall unsafe "fmpz_poly_scalar_mul_fmpz"
         fmpz_poly_scalar_mul_fmpz :: Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZ -> IO ()
 
 foreign import ccall unsafe "fmpz_poly_scalar_fdiv_fmpz"
-        fmpz_poly_scalar_div_fmpz :: Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZ -> IO ()
+        fmpz_poly_scalar_fdiv_fmpz :: Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZ -> IO ()
 
 foreign import ccall unsafe "fmpz_poly_scalar_tdiv_fmpz"
-        fmpz_poly_scalar_div_fmpz :: Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZ -> IO ()
+        fmpz_poly_scalar_tdiv_fmpz :: Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZ -> IO ()
 
 foreign import ccall unsafe "fmpz_poly_scalar_divexact_fmpz"
-        fmpz_poly_scalar_div_fmpz :: Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZ -> IO ()
+        fmpz_poly_scalar_divexact_fmpz :: Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZ -> IO ()
 
 
 foreign import ccall unsafe "fmpz_poly_mul"
@@ -153,7 +153,7 @@ foreign import ccall unsafe "fmpz_poly_divrem"
         fmpz_poly_divrem :: Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZPoly -> IO ()
 
 foreign import ccall unsafe "fmpz_poly_div"
-        fmpz_poly_divrem :: Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZPoly -> IO ()
+        fmpz_poly_div :: Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZPoly -> IO ()
 
 
 foreign import capi unsafe "flint/fmpz_poly.h fmpz_poly_inv_series"
