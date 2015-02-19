@@ -5,7 +5,9 @@ import Control.Applicative ( (<$>) )
 import Data.Composition ( (.:) )
 import qualified Data.Vector as V
 import Data.Vector ( Vector )
-import Foreign.C.String ( peekCString )
+import Foreign.C.String ( peekCString
+                        , withCString
+                        )
 import Foreign.Marshal ( free )
 import System.IO.Unsafe ( unsafePerformIO )
 
@@ -23,8 +25,10 @@ import HFlint.FMPZPoly.Internal ( withFMPZPoly
 
 
 instance Show FMPZPoly where
-    show a = unsafePerformIO $ do
-      (_,cstr) <- withFlint a $ const fmpz_poly_get_str
+    show a = unsafePerformIO $ 
+      withCString "T" $ \cvar -> do
+      (_,cstr) <- withFMPZPoly a $ const $ \aptr ->
+                  fmpz_poly_get_str_pretty aptr cvar
       str <- peekCString cstr
       free cstr
       return str
@@ -35,7 +39,8 @@ instance Eq FMPZPoly where
 fromVector :: Vector FMPZ -> FMPZPoly
 fromVector as = unsafePerformIO $
   withNewFMPZPoly_ $ const $ \bptr -> do
-  sequence_ $ (flip V.imap) as $ \ix a ->
+  fmpz_poly_realloc bptr (fromIntegral $ V.length as)
+  sequence_ $ flip V.imap as $ \ix a ->
      withFMPZ_ a $ const $ \aptr ->
      fmpz_poly_set_coeff_fmpz bptr (fromIntegral ix) aptr 
 

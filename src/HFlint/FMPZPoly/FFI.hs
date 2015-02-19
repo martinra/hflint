@@ -48,6 +48,9 @@ foreign import ccall unsafe "fmpz_poly_init"
 foreign import ccall unsafe "fmpz_poly_init2"
         fmpz_poly_init2 :: Ptr CFMPZPoly -> CLong -> IO ()
 
+foreign import ccall unsafe "fmpz_poly_realloc"
+        fmpz_poly_realloc :: Ptr CFMPZPoly -> CLong -> IO ()
+
 foreign import ccall unsafe "fmpz_poly_clear"
         fmpz_poly_clear :: Ptr CFMPZPoly -> IO ()
 
@@ -66,7 +69,7 @@ foreign import ccall unsafe "fmpz_poly_get_str"
         fmpz_poly_get_str :: Ptr CFMPZPoly -> IO CString
 
 foreign import ccall unsafe "fmpz_poly_get_str_pretty"
-        fmpz_poly_get_str_pretty :: Ptr CFMPZPoly -> IO CString
+        fmpz_poly_get_str_pretty :: Ptr CFMPZPoly -> CString -> IO CString
 
 
 foreign import capi unsafe "flint/fmpz_poly.h fmpz_poly_truncate"
