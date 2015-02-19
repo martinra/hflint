@@ -49,6 +49,9 @@ foreign import ccall unsafe "fmpq_poly_init"
 foreign import ccall unsafe "fmpq_poly_init2"
         fmpq_poly_init2 :: Ptr CFMPQPoly -> CLong -> IO ()
 
+foreign import ccall unsafe "fmpq_poly_realloc"
+        fmpq_poly_realloc :: Ptr CFMPQPoly -> CLong -> IO ()
+
 foreign import ccall unsafe "fmpq_poly_clear"
         fmpq_poly_clear :: Ptr CFMPQPoly -> IO ()
 
@@ -73,7 +76,7 @@ foreign import ccall unsafe "fmpq_poly_get_str"
         fmpq_poly_get_str :: Ptr CFMPQPoly -> IO CString
 
 foreign import ccall unsafe "fmpq_poly_get_str_pretty"
-        fmpq_poly_get_str_pretty :: Ptr CFMPQPoly -> IO CString
+        fmpq_poly_get_str_pretty :: Ptr CFMPQPoly -> CString -> IO CString
 
 
 foreign import ccall unsafe "fmpq_poly_zero"
@@ -98,7 +101,7 @@ foreign import ccall unsafe "fmpq_poly_get_coeff_fmpq"
         fmpq_poly_get_coeff_fmpq :: Ptr CFMPQ -> Ptr CFMPQPoly -> CLong -> IO ()
 
 foreign import ccall unsafe "fmpq_poly_set_coeff_fmpq"
-        fmpq_poly_set_coeff_fmpq :: Ptr CFMPQPoly -> Ptr CFMPQ -> CLong -> IO ()
+        fmpq_poly_set_coeff_fmpq :: Ptr CFMPQPoly -> CLong -> Ptr CFMPQ -> IO ()
 
 foreign import ccall unsafe "fmpq_poly_equal"
         fmpq_poly_equal :: Ptr CFMPQPoly -> Ptr CFMPQPoly -> IO CInt

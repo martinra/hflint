@@ -5,7 +5,9 @@ import Control.Applicative ( (<$>) )
 import Data.Composition ( (.:) )
 import qualified Data.Vector as V
 import Data.Vector ( Vector )
-import Foreign.C.String ( peekCString )
+import Foreign.C.String ( peekCString
+                        , withCString
+                        )
 import Foreign.Marshal ( free )
 import System.IO.Unsafe ( unsafePerformIO )
 
@@ -23,8 +25,10 @@ import HFlint.FMPQPoly.Internal ( withFMPQPoly
 
 
 instance Show FMPQPoly where
-    show a = unsafePerformIO $ do
-      (_,cstr) <- withFlint a $ const $ fmpq_poly_get_str
+    show a = unsafePerformIO $
+      withCString "T" $ \cvar -> do
+      (_,cstr) <- withFMPQPoly a $ const $ \aptr ->
+                  fmpq_poly_get_str_pretty aptr cvar
       str <- peekCString cstr
       free cstr
       return str
@@ -36,9 +40,10 @@ instance Eq FMPQPoly where
 fromVector :: Vector FMPQ -> FMPQPoly
 fromVector as = unsafePerformIO $
   withNewFMPQPoly_ $ const $ \bptr -> do
-  sequence_ $ (flip V.imap) as $ \ix a ->
+  fmpq_poly_realloc bptr (fromIntegral $ V.length as)
+  sequence_ $ flip V.imap as $ \ix a ->
      withFMPQ_ a $ const $ \aptr ->
-     fmpq_poly_set_coeff_fmpq bptr aptr (fromIntegral ix)
+     fmpq_poly_set_coeff_fmpq bptr (fromIntegral ix) aptr 
 
 toVector :: FMPQPoly -> Vector FMPQ
 toVector a = unsafePerformIO $ fmap snd $
@@ -47,7 +52,6 @@ toVector a = unsafePerformIO $ fmap snd $
   V.generateM (deg+1) $ \ix ->
     withNewFMPQ_ $ const $ \bptr ->
     fmpq_poly_get_coeff_fmpq bptr aptr (fromIntegral ix)
-  where
 
 fromList :: [FMPQ] -> FMPQPoly
 fromList = fromVector . V.fromList
