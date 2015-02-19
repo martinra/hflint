@@ -59,6 +59,7 @@ library
     HFlint.FMPQ.Internal
 
     HFlint.FMPQPoly.Basic
+    HFlint.FMPQPoly.Factor
     HFlint.FMPQPoly.FFI
     HFlint.FMPQPoly.Internal
 
