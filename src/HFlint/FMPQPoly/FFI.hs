@@ -27,16 +27,17 @@ import HFlint.FMPQ.FFI
 
 {-# LINE 25 "FFI.pre.hsc" #-}
 
+
 data CFMPQPoly
 newtype FMPQPoly = FMPQPoly (ForeignPtr CFMPQPoly)
 data CFMPQPolyType
 data FMPQPolyType = FMPQPolyType
 
 instance Storable CFMPQPoly where
-    sizeOf _ = (16)
-{-# LINE 33 "FFI.pre.hsc" #-}
-    alignment _ = 8
+    sizeOf _ = (32)
 {-# LINE 34 "FFI.pre.hsc" #-}
+    alignment _ = 8
+{-# LINE 35 "FFI.pre.hsc" #-}
     peek = error "CFMPQPoly.peek: Not defined"
     poke = error "CFMPQPoly.poke: Not defined"
 

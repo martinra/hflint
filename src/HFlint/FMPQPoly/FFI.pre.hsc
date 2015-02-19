@@ -23,14 +23,15 @@ import HFlint.FMPQ.FFI
 
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 
+
 data CFMPQPoly
 newtype FMPQPoly = FMPQPoly (ForeignPtr CFMPQPoly)
 data CFMPQPolyType
 data FMPQPolyType = FMPQPolyType
 
 instance Storable CFMPQPoly where
-    sizeOf _ = #size fmpq
-    alignment _ = #alignment fmpq
+    sizeOf _ = #size fmpq_poly_struct
+    alignment _ = #alignment fmpq_poly_struct
     peek = error "CFMPQPoly.peek: Not defined"
     poke = error "CFMPQPoly.poke: Not defined"
 
