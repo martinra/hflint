@@ -1,4 +1,4 @@
-#include "flint_definie_additionals.h"
+#include "flint_define_additionals.h"
 
 void
 fmpz_poly_factor_get_content_additional(
@@ -6,7 +6,7 @@ fmpz_poly_factor_get_content_additional(
   const fmpz_poly_factor_t fac
   )
 {
-  fmpz_set(c, fac->c);
+  fmpz_set(c, &(fac->c));
 }
 
 slong

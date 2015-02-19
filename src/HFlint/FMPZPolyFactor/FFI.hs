@@ -14,18 +14,16 @@ where
 
 {-# LINE 13 "FFI.pre.hsc" #-}
 
-import Foreign.C.String ( CString )
-import Foreign.C.Types ( CInt(..)
-                       , CLong(..)
-                       )
+import Foreign.C.Types ( CLong(..) )
 import Foreign.ForeignPtr ( ForeignPtr )
 import Foreign.Ptr ( Ptr, FunPtr )
 import Foreign.Storable ( Storable(..) )
 
+import HFlint.FMPZ.FFI
 import HFlint.FMPZPoly.FFI
 
 
-{-# LINE 25 "FFI.pre.hsc" #-}
+{-# LINE 23 "FFI.pre.hsc" #-}
 
 
 data CFMPZPolyFactor
@@ -35,9 +33,9 @@ data FMPZPolyFactorType = FMPZPolyFactorType
 
 instance Storable CFMPZPolyFactor where
     sizeOf _ = (40)
-{-# LINE 34 "FFI.pre.hsc" #-}
+{-# LINE 32 "FFI.pre.hsc" #-}
     alignment _ = 8
-{-# LINE 35 "FFI.pre.hsc" #-}
+{-# LINE 33 "FFI.pre.hsc" #-}
     peek = error "CFMPZPolyFactor.peek: Not defined"
     poke = error "CFMPZPolyFactor.poke: Not defined"
 

@@ -11,14 +11,12 @@ where
 
 #include <flint/fmpz_poly.h>
 
-import Foreign.C.String ( CString )
-import Foreign.C.Types ( CInt(..)
-                       , CLong(..)
-                       )
+import Foreign.C.Types ( CLong(..) )
 import Foreign.ForeignPtr ( ForeignPtr )
 import Foreign.Ptr ( Ptr, FunPtr )
 import Foreign.Storable ( Storable(..) )
 
+import HFlint.FMPZ.FFI
 import HFlint.FMPZPoly.FFI
 
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)

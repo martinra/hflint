@@ -11,7 +11,7 @@ import System.IO.Unsafe ( unsafePerformIO )
 
 import HFlint.Internal.Flint
 
-import HFlint.FMPZ
+import HFlint.FMPZ ()
 import HFlint.FMPZ.FFI
 import HFlint.FMPZ.Internal ( withFMPZ_
                             , withNewFMPZ_
@@ -37,7 +37,7 @@ fromVector as = unsafePerformIO $
   withNewFMPZPoly_ $ const $ \bptr -> do
   sequence_ $ (flip V.imap) as $ \ix a ->
      withFMPZ_ a $ const $ \aptr ->
-     fmpz_poly_set_coeff_fmpz bptr aptr (fromIntegral ix)
+     fmpz_poly_set_coeff_fmpz bptr (fromIntegral ix) aptr 
 
 toVector :: FMPZPoly -> Vector FMPZ
 toVector a = unsafePerformIO $ fmap snd $
