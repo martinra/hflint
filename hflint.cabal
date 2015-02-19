@@ -115,7 +115,8 @@ test-suite test-hflint
     tasty,
     tasty-smallcheck,
     tasty-quickcheck,
-    tasty-hunit
+    tasty-hunit,
+    vector
 
   type:       exitcode-stdio-1.0
   main-is:    TestHFlint.hs
