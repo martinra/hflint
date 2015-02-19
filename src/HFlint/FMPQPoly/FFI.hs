@@ -23,9 +23,10 @@ import Foreign.Ptr ( Ptr, FunPtr )
 import Foreign.Storable ( Storable(..) )
 
 import HFlint.FMPQ.FFI
+import HFlint.FMPZPoly.FFI
 
 
-{-# LINE 25 "FFI.pre.hsc" #-}
+{-# LINE 26 "FFI.pre.hsc" #-}
 
 
 data CFMPQPoly
@@ -35,9 +36,9 @@ data FMPQPolyType = FMPQPolyType
 
 instance Storable CFMPQPoly where
     sizeOf _ = (32)
-{-# LINE 34 "FFI.pre.hsc" #-}
-    alignment _ = 8
 {-# LINE 35 "FFI.pre.hsc" #-}
+    alignment _ = 8
+{-# LINE 36 "FFI.pre.hsc" #-}
     peek = error "CFMPQPoly.peek: Not defined"
     poke = error "CFMPQPoly.poke: Not defined"
 
@@ -55,8 +56,8 @@ foreign import capi "flint/fmpq_poly.h value fmpq_poly_clear"
         p_fmpq_poly_clear :: FunPtr (Ptr CFMPQPoly -> IO ())
 
 
--- foreign import capi unsafe "flint/fmpq_poly.h fmpq_poly_get_numerator"
---         fmpq_poly_get_numerator :: Ptr CFMPZPoly -> Ptr CFMPQPoly -> IO ()
+foreign import capi unsafe "flint/fmpq_poly.h fmpq_poly_get_numerator"
+        fmpq_poly_get_numerator :: Ptr CFMPZPoly -> Ptr CFMPQPoly -> IO ()
 
 
 foreign import capi unsafe "flint/fmpq_poly.h fmpq_poly_degree"
@@ -65,8 +66,8 @@ foreign import capi unsafe "flint/fmpq_poly.h fmpq_poly_degree"
 foreign import ccall unsafe "fmpq_poly_set_fmpq"
         fmpq_poly_set_fmpq :: Ptr CFMPQPoly -> Ptr CFMPQ -> IO ()
 
--- foreign import ccall unsafe "fmpq_poly_set_fmpz_poly"
---         fmpq_poly_set_fmpz_poly :: Ptr CFMPQPoly -> Ptr CFMPZPoly -> IO ()
+foreign import ccall unsafe "fmpq_poly_set_fmpz_poly"
+        fmpq_poly_set_fmpz_poly :: Ptr CFMPQPoly -> Ptr CFMPZPoly -> IO ()
 
 foreign import ccall unsafe "fmpq_poly_get_str"
         fmpq_poly_get_str :: Ptr CFMPQPoly -> IO CString
@@ -152,4 +153,3 @@ foreign import ccall unsafe "fmpq_poly_lcm"
 
 foreign import ccall unsafe "fmpq_poly_make_monic"
         fmpq_poly_make_monic :: Ptr CFMPQPoly -> Ptr CFMPQPoly -> IO ()
-
