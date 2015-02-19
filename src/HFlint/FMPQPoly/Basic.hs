@@ -14,14 +14,12 @@ import System.IO.Unsafe ( unsafePerformIO )
 import HFlint.Internal.Flint
 
 import HFlint.FMPQ
-import HFlint.FMPQ.FFI
-import HFlint.FMPQ.Internal ( withFMPQ_
-                            , withNewFMPQ_
-                            )
+import HFlint.FMPZ
+import HFlint.FMPZ.FFI
 import HFlint.FMPQPoly.FFI
-import HFlint.FMPQPoly.Internal ( withFMPQPoly
-                                , withNewFMPQPoly_
-                                )
+import HFlint.FMPQPoly.Internal
+import HFlint.FMPZPoly ()
+import HFlint.FMPZPoly.FFI
 
 
 instance Show FMPQPoly where
@@ -65,3 +63,17 @@ fromRationals = fromVector . V.map fromRational . V.fromList
 toRationals :: FMPQPoly -> [Rational]
 toRationals = V.toList . V.map toRational . toVector
 
+
+fromFMPZPoly :: FMPZPoly -> FMPQPoly
+fromFMPZPoly = liftFlintWithType_ FMPQPolyType $
+               const fmpq_poly_set_fmpz_poly
+
+toFMPZPoly :: FMPQPoly -> (FMPZ, FMPZPoly)
+toFMPZPoly a = (den a, num a)
+  where
+  num :: FMPQPoly -> FMPZPoly
+  num = liftFlintWithType_ FMPZPolyType $
+        const fmpq_poly_get_numerator
+  den :: FMPQPoly -> FMPZ
+  den = liftFlintWithType_ FMPZType $ const $ \denptr aptr ->
+        fmpz_set denptr =<< fmpq_poly_denref aptr

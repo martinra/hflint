@@ -42,6 +42,14 @@ fmpq_mat_entryref_wrapper(
   return fmpq_mat_entry(m, i,j);
 }
 
+fmpz*
+fmpq_poly_denref_wrapper(
+  fmpq_poly_t x
+  )
+{
+  return fmpq_poly_denref(x);
+}
+
 int
 fmpz_poly_is_zero_wrapper(
   const fmpz_poly_t p

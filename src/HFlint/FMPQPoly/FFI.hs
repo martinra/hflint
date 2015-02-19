@@ -23,6 +23,7 @@ import Foreign.Ptr ( Ptr, FunPtr )
 import Foreign.Storable ( Storable(..) )
 
 import HFlint.FMPQ.FFI
+import HFlint.FMPZ.FFI
 import HFlint.FMPZPoly.FFI
 
 
@@ -58,6 +59,9 @@ foreign import ccall unsafe "fmpq_poly_clear"
 foreign import capi "flint/fmpq_poly.h value fmpq_poly_clear"
         p_fmpq_poly_clear :: FunPtr (Ptr CFMPQPoly -> IO ())
 
+
+foreign import ccall unsafe "fmpq_poly_denref_wrapper"
+        fmpq_poly_denref :: Ptr CFMPQPoly -> IO (Ptr CFMPZ)
 
 foreign import capi unsafe "flint/fmpq_poly.h fmpq_poly_get_numerator"
         fmpq_poly_get_numerator :: Ptr CFMPZPoly -> Ptr CFMPQPoly -> IO ()

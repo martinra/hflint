@@ -12,6 +12,9 @@ module HFlint.FMPQPoly
   , toList
   , fromRationals
   , toRationals
+
+  , fromFMPZPoly
+  , toFMPZPoly
   )
 where
 
