@@ -69,12 +69,14 @@ library
     HFlint.FMPZ.Limbs
 
     HFlint.FMPZPoly.Basic
+    HFlint.FMPZPoly.Factor
     HFlint.FMPZPoly.FFI
     HFlint.FMPZPoly.Internal
 
     HFlint.FMPZPolyFactor.FFI
     HFlint.FMPZPolyFactor.Internal
 
+    HFlint.Internal.Factor
     HFlint.Internal.Flint
     HFlint.Internal.Utils
 

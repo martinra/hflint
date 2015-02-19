@@ -51,7 +51,7 @@ foreign import ccall unsafe "fmpz_poly_factor_zassenhaus"
 
 
 foreign import ccall unsafe "fmpz_poly_factor_get_content_additional"
-        fmpz_poly_factor_get_content :: Ptr FMPZ -> Ptr CFMPZPolyFactor -> IO ()
+        fmpz_poly_factor_get_content :: Ptr CFMPZ -> Ptr CFMPZPolyFactor -> IO ()
 
 foreign import ccall unsafe "fmpz_poly_factor_number_factors_additional"
         fmpz_poly_factor_number_factors :: Ptr CFMPZPolyFactor -> IO CLong
