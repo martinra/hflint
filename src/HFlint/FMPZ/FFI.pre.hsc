@@ -53,6 +53,16 @@ foreign import capi unsafe "flint/fmpz.h fmpz_one"
 foreign import capi unsafe "flint/fmpz.h fmpz_is_zero"
         fmpz_is_zero :: Ptr CFMPZ -> IO CInt
 
+foreign import capi unsafe "flint/fmpz.h fmpz_is_one"
+        fmpz_is_one :: Ptr CFMPZ -> IO CInt
+
+foreign import capi unsafe "flint/fmpz.h fmpz_is_pm1"
+        fmpz_is_pm1 :: Ptr CFMPZ -> IO CInt
+
+
+foreign import ccall unsafe "fmpz_set"
+        fmpz_set :: Ptr CFMPZ -> Ptr CFMPZ -> IO ()
+
 foreign import capi unsafe "flint/fmpz.h fmpz_set_ui"
         fmpz_set_ui :: Ptr CFMPZ -> CULong -> IO ()
 
@@ -61,17 +71,15 @@ foreign import ccall unsafe "fmpz_get_str"
         fmpz_get_str :: CString -> CInt -> Ptr CFMPZ -> IO CString
 
 
-foreign import ccall unsafe "fmpz_sgn"
-        fmpz_sgn :: Ptr CFMPZ -> IO CInt
-
-foreign import ccall unsafe "fmpz_set"
-        fmpz_set :: Ptr CFMPZ -> Ptr CFMPZ -> IO ()
-
 foreign import ccall unsafe "fmpz_equal"
 	fmpz_equal :: Ptr CFMPZ -> Ptr CFMPZ -> IO CInt
 
 foreign import ccall unsafe "fmpz_cmp"
 	fmpz_cmp :: Ptr CFMPZ -> Ptr CFMPZ -> IO CInt
+
+
+foreign import ccall unsafe "fmpz_sgn"
+        fmpz_sgn :: Ptr CFMPZ -> IO CInt
 
 foreign import capi unsafe "flint/fmpz.h fmpz_neg"
         fmpz_neg :: Ptr CFMPZ -> Ptr CFMPZ -> IO ()
@@ -98,6 +106,9 @@ foreign import ccall unsafe "fmpz_mul_ui"
 foreign import ccall unsafe "fmpz_fdiv_q"
         fmpz_fdiv_q :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
+foreign import ccall unsafe "fmpz_fdiv_r"
+        fmpz_fdiv_r :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
+
 foreign import ccall unsafe "fmpz_fdiv_qr"
         fmpz_fdiv_qr :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
@@ -112,3 +123,10 @@ foreign import ccall unsafe "fmpz_fdiv_ui"
 
 foreign import ccall unsafe "fmpz_fdiv_q_ui"
         fmpz_fdiv_q_ui :: Ptr CFMPZ -> Ptr CFMPZ -> CULong -> IO ()
+
+
+foreign import ccall unsafe "fmpz_gcd"
+        fmpz_gcd :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
+
+foreign import ccall unsafe "fmpz_xgcd"
+        fmpz_xgcd :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()

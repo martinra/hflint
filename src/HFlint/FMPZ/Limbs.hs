@@ -20,12 +20,11 @@ import Foreign.Ptr ( Ptr )
 import Foreign.C.Types ( CULong(..) )
 import System.IO.Unsafe ( unsafePerformIO )
 
+import HFlint.FMPZ.Basic ()
 import HFlint.FMPZ.FFI
 import HFlint.FMPZ.Internal ( withFMPZ
                             , withNewFMPZ
                             , withNewFMPZ_ )
-import HFlint.FMPZ.Basic
-
 
 data Sign = Positive
           | Zero

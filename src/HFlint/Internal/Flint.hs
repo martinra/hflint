@@ -12,6 +12,9 @@ module HFlint.Internal.Flint
   , liftFlint0
   , lift2Flint0
 
+  , lift0FlintWithType
+  , lift0FlintWithType_
+
   , liftFlintWithType
   , liftFlintWithType_
   , liftFlint
@@ -28,6 +31,12 @@ module HFlint.Internal.Flint
   , lift2Flint2
   , lift2Flint2_
   , lift2Flint2'
+
+  , lift2Flint3WithType
+  , lift2Flint3WithType_
+  , lift2Flint3
+  , lift2Flint3_
+  , lift2Flint3'
   )
 where
 
@@ -83,6 +92,29 @@ lift2Flint0 f (!a) (!b) = unsafePerformIO $ fmap snd $
                           withFlint a $ \atype aptr -> fmap snd $
                           withFlint b $ \_ bptr ->
                           f atype aptr bptr
+
+--------------------------------------------------
+--- () -> FMPZ
+--------------------------------------------------
+
+lift0FlintWithType :: ( Flint c )
+                   => FlintType c
+                   -> (  Ptr (CFlintType c)
+                      -> Ptr (CFlint c)
+                      -> IO r)
+                   -> (c, r)
+lift0FlintWithType t f =
+  unsafePerformIO $
+  withNewFlint t $ \ctype cptr ->
+  f ctype cptr
+
+lift0FlintWithType_ :: ( Flint c )
+                    => FlintType c
+                    -> (  Ptr (CFlintType c)
+                       -> Ptr (CFlint c)
+                       -> IO r)
+                    -> c
+lift0FlintWithType_ = fst .: lift0FlintWithType
 
 --------------------------------------------------
 --- FMPZ -> FMPZ
@@ -231,7 +263,7 @@ lift2Flint2_ :: ( Flint c, Flint d, Flint a, Flint b
                 -> Ptr (CFlint a) -> Ptr (CFlint b)
                 -> IO r)
              -> a -> b -> (c,d)
-lift2Flint2_ = fst `compose3` lift2Flint2 
+lift2Flint2_ = fst .:. lift2Flint2 
 
 lift2Flint2' :: forall a b r .
                 ( Flint a, Flint b )
@@ -240,7 +272,73 @@ lift2Flint2' :: forall a b r .
                 -> Ptr (CFlint a) -> Ptr (CFlint b)
                 -> IO r)
              -> a -> b -> r
-lift2Flint2' f a b = snd cr
+lift2Flint2' f a b = snd cdr
   where
-  cr = lift2Flint2 f a b
-  _ = fst cr :: (a,a)
+  cdr = lift2Flint2 f a b
+  _ = fst cdr :: (a,a)
+
+--------------------------------------------------
+--- FMPZ -> FMPZ -> (FMPZ, FMPZ, FMPZ)
+--------------------------------------------------
+
+lift2Flint3WithType :: ( Flint c, Flint d, Flint e, Flint a, Flint b )
+                    => FlintType c -> FlintType d -> FlintType e
+                    -> (  Ptr (CFlintType c) -> Ptr (CFlintType d) -> Ptr (CFlintType e)
+
+                       -> Ptr (CFlint c) -> Ptr (CFlint d) -> Ptr (CFlint e)
+                       -> Ptr (CFlint a) -> Ptr (CFlint b)
+                       -> IO r )
+                    -> a -> b -> ((c,d,e), r)
+lift2Flint3WithType tc td te f (!a) (!b) = ((c,d,e), r)
+  where
+  (c, (d, (e,r))) = 
+    unsafePerformIO $
+    withNewFlint tc $ \ctype cptr ->
+    withNewFlint td $ \dtype dptr ->
+    withNewFlint te $ \etype eptr -> fmap snd $
+    withFlint a $ \_ aptr -> fmap snd $
+    withFlint b $ \_ bptr ->
+    f ctype dtype etype cptr dptr eptr aptr bptr
+
+lift2Flint3WithType_ :: ( Flint c, Flint d, Flint e, Flint a, Flint b )
+                     => FlintType c -> FlintType d -> FlintType e
+                     -> (  Ptr (CFlintType c) -> Ptr (CFlintType d) -> Ptr (CFlintType e)
+
+                        -> Ptr (CFlint c) -> Ptr (CFlint d) -> Ptr (CFlint e)
+                        -> Ptr (CFlint a) -> Ptr (CFlint b)
+                        -> IO r )
+                     -> a -> b -> (c,d,e)
+lift2Flint3WithType_ = fst .::: lift2Flint3WithType
+
+lift2Flint3 :: ( Flint c, Flint d, Flint e, Flint a, Flint b
+               , FlintType c ~ FlintType a, FlintType d ~ FlintType a
+               , FlintType e ~ FlintType a )
+            => (  Ptr (CFlintType c) -> Ptr (CFlintType d) -> Ptr (CFlintType e)
+               -> Ptr (CFlint c) -> Ptr (CFlint d) -> Ptr (CFlint e)
+               -> Ptr (CFlint a) -> Ptr (CFlint b)
+               -> IO r)
+            -> a -> b -> ((c,d,e), r)
+lift2Flint3 f a b = lift2Flint3WithType (flintType a) (flintType a) (flintType a) f a b
+
+
+lift2Flint3_ :: ( Flint c, Flint d, Flint e, Flint a, Flint b
+               , FlintType c ~ FlintType a, FlintType d ~ FlintType a
+               , FlintType e ~ FlintType a )
+            => (  Ptr (CFlintType c) -> Ptr (CFlintType d) -> Ptr (CFlintType e)
+               -> Ptr (CFlint c) -> Ptr (CFlint d) -> Ptr (CFlint e)
+               -> Ptr (CFlint a) -> Ptr (CFlint b)
+               -> IO r)
+            -> a -> b -> (c,d,e)
+lift2Flint3_ = fst .:. lift2Flint3
+
+lift2Flint3' :: forall a b r .
+               ( Flint a, Flint b )
+            => (  Ptr (CFlintType a) -> Ptr (CFlintType a) -> Ptr (CFlintType a)
+               -> Ptr (CFlint a) -> Ptr (CFlint a) -> Ptr (CFlint a)
+               -> Ptr (CFlint a) -> Ptr (CFlint b)
+               -> IO r)
+            -> a -> b -> r
+lift2Flint3' f a b = snd cder
+  where
+  cder = lift2Flint3 f a b
+  _ = fst cder :: (a,a,a)
