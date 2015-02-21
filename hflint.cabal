@@ -43,6 +43,7 @@ library
     , mtl >= 2.2.1
     , vector > 0.10
     , safe >= 0.3.8
+    , template-haskell >= 2.10
     , transformers >= 0.4.1
 
   exposed-modules:
@@ -80,6 +81,7 @@ library
     HFlint.Internal.Factor
     HFlint.Internal.Flint
     HFlint.Internal.Utils
+    HFlint.Internal.TH
 
   build-tools:         hsc2hs
   GHC-options:         -Wall -fno-warn-orphans -static
