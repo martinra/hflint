@@ -23,26 +23,12 @@ import qualified Test.Tasty.HUnit as HU
 import HFlint.FMPQ
 
 import qualified TestHFlint.Utils as U
+import TestHFlint.Utils ( testProperty )
+import FMPQTests.Utils
 
 
 fmpqTestGroup :: TestTree
 fmpqTestGroup = testGroup "FMPQ Tests" [properties]
-
-
--- We need to specify the type, so that a is not specialized when infering the
--- type on first occurence of equal and equal2
-equal :: Eq a => (Rational -> a) -> (FMPQ -> a) -> Rational -> Bool
-equal2 :: Eq a => (Rational -> Rational -> a) -> (FMPQ -> FMPQ -> a) -> Rational -> Rational -> Bool
-equal         = U.equal (fromRational :: Rational -> FMPQ) toRational
-equal2        = U.equal2 (fromRational :: Rational -> FMPQ) toRational
-intertwining  = U.intertwining (fromRational :: Rational -> FMPQ) toRational
-intertwining2 = U.intertwining2 (fromRational :: Rational -> FMPQ) toRational
-
-
-testProperty s p = testGroup ("s " ++ "(QuickCheck & SmallCheck)")
-  [ QC.testProperty s p,
-    SC.testProperty s p
-  ]
 
 properties :: TestTree
 properties = testGroup "Properties"
