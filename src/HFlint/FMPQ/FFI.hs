@@ -66,14 +66,23 @@ foreign import ccall unsafe "fmpq_set_fmpz_frac"
 foreign import ccall unsafe "fmpq_get_str"
         fmpq_get_str :: CString -> CInt -> Ptr CFMPQ -> IO CString
 
-foreign import capi unsafe "fmpq_equal"
-        fmpq_equal :: Ptr CFMPQ -> Ptr CFMPQ -> IO CInt
+
+foreign import capi unsafe "fmpq_zero"
+        fmpq_zero :: Ptr CFMPQ -> IO ()
+
+foreign import capi unsafe "fmpq_one"
+        fmpq_one :: Ptr CFMPQ -> IO ()
+
 
 foreign import capi unsafe "fmpq_is_zero"
         fmpq_is_zero :: Ptr CFMPQ -> IO CInt
 
+foreign import capi unsafe "fmpq_equal"
+        fmpq_equal :: Ptr CFMPQ -> Ptr CFMPQ -> IO CInt
+
 foreign import ccall unsafe "fmpq_cmp"
         fmpq_cmp :: Ptr CFMPQ -> Ptr CFMPQ -> IO CInt
+
 
 foreign import capi "flint/fmpq.h fmpq_sgn"
         fmpq_sgn :: Ptr CFMPQ -> IO CInt
