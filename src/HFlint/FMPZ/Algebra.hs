@@ -1,12 +1,14 @@
 {-# LANGUAGE
     MultiParamTypeClasses
-  , TemplateHaskell
   #-}
 
 module HFlint.FMPZ.Algebra
 where
 
-import Prelude ( (.), ($), (/=),  const, flip, Integer, otherwise )
+import Prelude ( (.), ($), (/=)
+               , (&&)
+               ,  const, flip, Integer, otherwise
+               )
 import qualified Prelude as P
 import Data.Maybe
 import Data.Ord
@@ -17,7 +19,7 @@ import Numeric.Domain.Euclidean
 import Numeric.Semiring.Integral
 
 import HFlint.Internal.Flint
-import HFlint.Internal.TH
+import HFlint.Internal.Const
 import HFlint.FMPZ.Arithmetic ()
 import HFlint.FMPZ.FFI
 import HFlint.FMPZ.Internal ()
@@ -84,10 +86,10 @@ instance Euclidean FMPZ where
    LT -> (-1,negate a)
   degree a | isZero a  = Nothing
            | otherwise = Just $ P.fromIntegral $ P.abs a
-  divide = lift2Flint2_ $ $(constTH 2) fmpz_fdiv_qr
+  divide = lift2Flint2_ $ const2 fmpz_fdiv_qr
   quot = lift2Flint_ $ const fmpz_fdiv_q
   rem = lift2Flint_ $ const fmpz_fdiv_r
   gcd a b | isZero a && isZero b = 0
           | otherwise = (lift2Flint_ $ const fmpz_gcd) a b
   xgcd a b | isZero a && isZero b = (0,1,0)
-           | otherwise = (lift2Flint3_ $ $(constTH 3) fmpz_xgcd) a b
+           | otherwise = (lift2Flint3_ $ const3 fmpz_xgcd) a b

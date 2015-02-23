@@ -81,6 +81,7 @@ library
     HFlint.FMPZPolyFactor.FFI
     HFlint.FMPZPolyFactor.Internal
 
+    HFlint.Internal.Const
     HFlint.Internal.Factor
     HFlint.Internal.Flint
     HFlint.Internal.Utils
