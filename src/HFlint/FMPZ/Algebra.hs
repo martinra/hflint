@@ -87,5 +87,7 @@ instance Euclidean FMPZ where
   divide = lift2Flint2_ $ $(constTH 2) fmpz_fdiv_qr
   quot = lift2Flint_ $ const fmpz_fdiv_q
   rem = lift2Flint_ $ const fmpz_fdiv_r
-  gcd = lift2Flint_ $ const fmpz_gcd
-  xgcd = lift2Flint3_ $ $(constTH 3) fmpz_xgcd
+  gcd a b | isZero a && isZero b = 0
+          | otherwise = (lift2Flint_ $ const fmpz_gcd) a b
+  xgcd a b | isZero a && isZero b = (0,1,0)
+           | otherwise = (lift2Flint3_ $ $(constTH 3) fmpz_xgcd) a b
