@@ -1,3 +1,7 @@
+{-# LANGUAGE
+    FlexibleContexts
+  #-}
+
 module TestHFlint.Utils
 where
 
@@ -11,6 +15,16 @@ import Control.Monad ( liftM
                      , liftM2
                      )
 import System.IO.Unsafe ( unsafePerformIO )
+
+import Test.Tasty
+import qualified Test.Tasty.SmallCheck as SC
+import qualified Test.Tasty.QuickCheck as QC
+
+
+testProperty s p = testGroup "(QuickCheck & SmallCheck)"
+  [ QC.testProperty s p,
+    SC.testProperty s p
+  ]
 
 
 equal :: Eq a
