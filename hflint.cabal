@@ -42,8 +42,10 @@ library
     , dlist >= 0.7.1
     , monad-loops >= 0.4.2.1
     , mtl >= 2.2.1
+    , QuickCheck >= 2.7 && < 2.8
     , vector > 0.10
     , safe >= 0.3.8
+    , smallcheck >= 1.1 && < 1.2
     , template-haskell >= 2.10
     , transformers >= 0.4.1
 
@@ -72,6 +74,8 @@ library
     HFlint.FMPZ.FFI
     HFlint.FMPZ.Internal
     HFlint.FMPZ.Limbs
+    HFlint.FMPZ.Tasty.QuickCheck
+    HFlint.FMPZ.Tasty.SmallCheck
 
     HFlint.FMPZPoly.Algebra
     HFlint.FMPZPoly.Basic

@@ -15,3 +15,5 @@ import HFlint.FMPZ.Internal
 import HFlint.FMPZ.Algebra ()
 import HFlint.FMPZ.Arithmetic ()
 import HFlint.FMPZ.Basic ()
+import HFlint.FMPZ.Tasty.QuickCheck ()
+import HFlint.FMPZ.Tasty.SmallCheck ()
