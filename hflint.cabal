@@ -62,6 +62,8 @@ library
     HFlint.FMPQ.Basic
     HFlint.FMPQ.FFI
     HFlint.FMPQ.Internal
+    HFlint.FMPQ.Tasty.QuickCheck
+    HFlint.FMPQ.Tasty.SmallCheck
 
     HFlint.FMPQPoly.Algebra
     HFlint.FMPQPoly.Basic
