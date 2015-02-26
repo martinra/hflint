@@ -35,7 +35,7 @@ library
   default-language: Haskell2010
   build-depends:
       base > 3 && < 5
-    , algebra >= 4.3 && < 4.4
+    , algebra-structures
     , composition > 1 && < 2
     , containers >= 0.5
     , data-default
@@ -61,8 +61,8 @@ library
     HFlint.FMPQ.FFI
     HFlint.FMPQ.Internal
 
+    HFlint.FMPQPoly.Algebra
     HFlint.FMPQPoly.Basic
-    HFlint.FMPQPoly.Factor
     HFlint.FMPQPoly.FFI
     HFlint.FMPQPoly.Internal
 
@@ -73,8 +73,8 @@ library
     HFlint.FMPZ.Internal
     HFlint.FMPZ.Limbs
 
+    HFlint.FMPZPoly.Algebra
     HFlint.FMPZPoly.Basic
-    HFlint.FMPZPoly.Factor
     HFlint.FMPZPoly.FFI
     HFlint.FMPZPoly.Internal
 
@@ -82,7 +82,6 @@ library
     HFlint.FMPZPolyFactor.Internal
 
     HFlint.Internal.Const
-    HFlint.Internal.Factor
     HFlint.Internal.Flint
     HFlint.Internal.Utils
     HFlint.Internal.TH
@@ -121,7 +120,7 @@ test-suite test-hflint
   default-language: Haskell2010
   build-depends:
     base,
-    algebra,
+    algebra-structures,
     hflint == 0.0.1,
     composition,
     split,

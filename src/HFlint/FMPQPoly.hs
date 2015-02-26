@@ -21,5 +21,5 @@ where
 import HFlint.FMPQPoly.FFI
 import HFlint.FMPQPoly.Internal
 
+import HFlint.FMPZPoly.Algebra ()
 import HFlint.FMPQPoly.Basic
-import HFlint.FMPQPoly.Factor

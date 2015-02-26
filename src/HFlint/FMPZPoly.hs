@@ -18,5 +18,5 @@ where
 import HFlint.FMPZPoly.FFI
 import HFlint.FMPZPoly.Internal
 
+import HFlint.FMPZPoly.Algebra ()
 import HFlint.FMPZPoly.Basic
-import HFlint.FMPZPoly.Factor ()

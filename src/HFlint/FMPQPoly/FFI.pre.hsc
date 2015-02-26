@@ -20,6 +20,7 @@ import Foreign.Ptr ( Ptr, FunPtr )
 import Foreign.Storable ( Storable(..) )
 
 import HFlint.FMPQ.FFI
+import HFlint.FMPZ.FFI
 import HFlint.FMPZPoly.FFI
 
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
@@ -106,6 +107,12 @@ foreign import ccall unsafe "fmpq_poly_equal"
 foreign import ccall unsafe "fmpq_poly_cmp"
         fmpq_poly_cmp :: Ptr CFMPQPoly -> Ptr CFMPQPoly -> IO CInt
 
+foreign import capi unsafe "flint/fmpq_poly.h fmpq_poly_is_zero"
+        fmpq_poly_is_zero :: Ptr CFMPQPoly -> IO CInt
+
+foreign import capi unsafe "flint/fmpq_poly.h fmpq_poly_is_one"
+        fmpq_poly_is_one :: Ptr CFMPQPoly -> IO CInt
+
 
 foreign import ccall unsafe "fmpq_poly_add"
         fmpq_poly_add :: Ptr CFMPQPoly -> Ptr CFMPQPoly -> Ptr CFMPQPoly -> IO ()
@@ -132,6 +139,12 @@ foreign import ccall unsafe "fmpq_poly_shift_right"
 
 foreign import ccall unsafe "fmpq_poly_divrem"
         fmpq_poly_divrem :: Ptr CFMPQPoly -> Ptr CFMPQPoly -> Ptr CFMPQPoly -> Ptr CFMPQPoly -> IO ()
+
+foreign import ccall unsafe "fmpq_poly_div"
+        fmpq_poly_div :: Ptr CFMPQPoly -> Ptr CFMPQPoly -> Ptr CFMPQPoly -> IO ()
+
+foreign import ccall unsafe "fmpq_poly_rem"
+        fmpq_poly_rem :: Ptr CFMPQPoly -> Ptr CFMPQPoly -> Ptr CFMPQPoly -> IO ()
 
 
 foreign import capi unsafe "flint/fmpq_poly.h fmpq_poly_inv_series"

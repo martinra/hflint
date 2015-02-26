@@ -136,6 +136,9 @@ foreign import ccall unsafe "fmpz_poly_gcd"
 foreign import ccall unsafe "fmpz_poly_lcm"
         fmpz_poly_lcm :: Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZPoly -> IO ()
 
+foreign import ccall unsafe "fmpz_poly_xgcd"
+        fmpz_poly_xgcd :: Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZPoly -> IO ()
+
 
 foreign import ccall unsafe "fmpz_poly_content"
         fmpz_poly_content :: Ptr CFMPZ -> Ptr CFMPZPoly -> IO ()
@@ -149,6 +152,9 @@ foreign import ccall unsafe "fmpz_poly_divrem"
 
 foreign import ccall unsafe "fmpz_poly_div"
         fmpz_poly_div :: Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZPoly -> IO ()
+
+foreign import ccall unsafe "fmpz_poly_rem"
+        fmpz_poly_rem :: Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZPoly -> IO ()
 
 
 foreign import capi unsafe "flint/fmpz_poly.h fmpz_poly_inv_series"
