@@ -26,6 +26,7 @@ import Test.Tasty.HUnit ( (@?=) )
 
 import HFlint.FMPQ
 import HFlint.FMPQPoly
+import HFlint.FMPZPoly
 
 import qualified TestHFlint.Utils as U
 
@@ -53,7 +54,27 @@ properties = testGroup "Properties"
   [ -- Eq instance
     -- we use only QuickCheck, because SmallCheck is yields too slow tests
     QC.testProperty "Eq" $ equal2
-    ((==) `on` V.toList . V.reverse . V.dropWhile (0==) . V.reverse . V.fromList) (==)
+    ( let
+      dropTrailingZeros = V.toList . V.reverse . V.dropWhile (0==) .
+                          V.reverse . V.fromList
+      in (==) `on` dropTrailingZeros )
+    (==)
+
+    -- conversion from and to FMPZPoly
+  , testProperty "fromFMPZPoly" $ U.equal
+      (id :: [Integer] -> [Integer]) undefined
+      (fromRationals . map fromInteger)
+      (fromFMPZPoly . fromIntegers)
+--  , testProperty "toFMPZPoly" $ U.equal
+--      fromRationals undefined
+--      id
+--      (uncurry (.*) . ((flip fromFMPZs 1)***fromFMPZPoly) . toFMPZPoly)
+
+    -- factorization
+--  , testProperty "factor" $ U.equal
+--      fromRationals undefined
+--      id
+--      (unfactor . factor)
   ] 
 
 
