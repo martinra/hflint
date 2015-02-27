@@ -19,7 +19,7 @@ import Math.Structure
 import System.IO.Unsafe ( unsafePerformIO )
 
 import HFlint.FMPZ.Internal
-import HFlint.FMPZPoly.Basic
+import HFlint.FMPZPoly.Base
 import HFlint.FMPZPoly.FFI
 import HFlint.FMPZPoly.Internal
 import HFlint.FMPZPolyFactor

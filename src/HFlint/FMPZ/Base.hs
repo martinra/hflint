@@ -1,4 +1,4 @@
-module HFlint.FMPZ.Basic
+module HFlint.FMPZ.Base
 where
 
 import Foreign.C.String ( peekCString )

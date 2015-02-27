@@ -1,4 +1,4 @@
-module HFlint.FMPQPoly.Basic
+module HFlint.FMPQPoly.Base
 where
 
 import Control.Applicative ( (<$>) )

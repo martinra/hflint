@@ -1,4 +1,4 @@
-module HFlint.FMPQ.Basic
+module HFlint.FMPQ.Base
 where
 
 import Data.Composition ( (.:) )

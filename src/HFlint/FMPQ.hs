@@ -15,6 +15,6 @@ import HFlint.FMPQ.Internal
 
 import HFlint.FMPQ.Algebra ()
 import HFlint.FMPQ.Arithmetic
-import HFlint.FMPQ.Basic ()
+import HFlint.FMPQ.Base ()
 import HFlint.FMPQ.Tasty.QuickCheck ()
 import HFlint.FMPQ.Tasty.SmallCheck ()

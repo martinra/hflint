@@ -15,7 +15,7 @@ import qualified HFlint.FMPZ.Limbs as L
 
 import HFlint.FMPQ.FFI
 import HFlint.FMPQ.Internal
-import HFlint.FMPQ.Basic ()
+import HFlint.FMPQ.Base ()
 
 import HFlint.Internal.Flint
 import HFlint.Internal.Utils ( throwBeforeIf

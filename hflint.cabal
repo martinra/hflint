@@ -59,20 +59,20 @@ library
   other-modules:
     HFlint.FMPQ.Algebra
     HFlint.FMPQ.Arithmetic
-    HFlint.FMPQ.Basic
+    HFlint.FMPQ.Base
     HFlint.FMPQ.FFI
     HFlint.FMPQ.Internal
     HFlint.FMPQ.Tasty.QuickCheck
     HFlint.FMPQ.Tasty.SmallCheck
 
     HFlint.FMPQPoly.Algebra
-    HFlint.FMPQPoly.Basic
+    HFlint.FMPQPoly.Base
     HFlint.FMPQPoly.FFI
     HFlint.FMPQPoly.Internal
 
     HFlint.FMPZ.Algebra
     HFlint.FMPZ.Arithmetic
-    HFlint.FMPZ.Basic
+    HFlint.FMPZ.Base
     HFlint.FMPZ.FFI
     HFlint.FMPZ.Internal
     HFlint.FMPZ.Limbs
@@ -80,7 +80,7 @@ library
     HFlint.FMPZ.Tasty.SmallCheck
 
     HFlint.FMPZPoly.Algebra
-    HFlint.FMPZPoly.Basic
+    HFlint.FMPZPoly.Base
     HFlint.FMPZPoly.FFI
     HFlint.FMPZPoly.Internal
 
