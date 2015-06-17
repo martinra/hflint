@@ -36,18 +36,18 @@ library
   build-depends:
       base > 3 && < 5
     , algebra-structures
-    , composition > 1 && < 2
-    , containers >= 0.5
+    , composition
+    , containers
     , data-default
-    , dlist >= 0.7.1
-    , monad-loops >= 0.4.2.1
-    , mtl >= 2.2.1
-    , QuickCheck >= 2.7 && < 2.8
-    , vector > 0.10
-    , safe >= 0.3.8
-    , smallcheck >= 1.1 && < 1.2
-    , template-haskell >= 2.10
-    , transformers >= 0.4.1
+    , dlist
+    , monad-loops
+    , mtl
+    , QuickCheck
+    , vector
+    , safe
+    , smallcheck
+    , template-haskell
+    , transformers
 
   exposed-modules:
     HFlint.FMPQ
