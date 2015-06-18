@@ -1,8 +1,10 @@
 {-# LANGUAGE
-    ForeignFunctionInterface
-  , CApiFFI
+    CApiFFI
   , EmptyDataDecls
   , FlexibleInstances
+  , ForeignFunctionInterface
+  , MultiParamTypeClasses
+  , TupleSections
   , TypeFamilies
   #-}
 
@@ -11,25 +13,61 @@ where
 
 #include <flint/fmpq_poly.h>
 
+import Control.Monad ( (>=>) )
+import Control.Monad.IO.Class ( liftIO )
+
 import Foreign.C.String ( CString )
 import Foreign.C.Types ( CInt(..)
                        , CLong(..)
                        )
-import Foreign.ForeignPtr ( ForeignPtr )
-import Foreign.Ptr ( Ptr, FunPtr )
+import Foreign.ForeignPtr ( ForeignPtr
+                          , addForeignPtrFinalizer
+                          , mallocForeignPtr
+                          , withForeignPtr )
+import Foreign.Ptr ( Ptr, FunPtr, nullPtr )
 import Foreign.Storable ( Storable(..) )
 
 import HFlint.FMPQ.FFI
 import HFlint.FMPZ.FFI
 import HFlint.FMPZPoly.FFI
+import HFlint.Internal.Flint
+import HFlint.Internal.FlintWithContext
+
 
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 
 
-data CFMPQPoly
 newtype FMPQPoly = FMPQPoly (ForeignPtr CFMPQPoly)
-data CFMPQPolyType
-data FMPQPolyType = FMPQPolyType
+type CFMPQPoly = CFlint FMPQPoly
+
+instance FlintWithContext FlintTrivialContext FMPQPoly where
+  data CFlint FMPQPoly
+
+  newFlintCtx = liftIO $ do
+    a <- mallocForeignPtr
+    withForeignPtr a fmpq_poly_init
+    addForeignPtrFinalizer p_fmpq_poly_clear a
+    return $ FMPQPoly a
+
+  withFlintCtx (FMPQPoly a) f = liftIO $
+    withForeignPtr a $ f nullPtr >=>
+    return . (FMPQPoly a,)
+
+
+instance Flint FMPQPoly
+
+withFMPQPoly :: FMPQPoly -> (Ptr CFMPQPoly -> IO b) -> IO (FMPQPoly, b)
+withFMPQPoly = withFlint
+
+withFMPQPoly_ :: FMPQPoly -> (Ptr CFMPQPoly -> IO b) -> IO FMPQPoly
+withFMPQPoly_ = withFlint_
+
+withNewFMPQPoly :: (Ptr CFMPQPoly -> IO b) -> IO (FMPQPoly, b)
+withNewFMPQPoly = withNewFlint
+
+withNewFMPQPoly_ :: (Ptr CFMPQPoly -> IO b) -> IO FMPQPoly
+withNewFMPQPoly_ = withNewFlint_
+
 
 instance Storable CFMPQPoly where
     sizeOf _ = #size fmpq_poly_struct

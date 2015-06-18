@@ -1,10 +1,12 @@
 {-# LINE 1 "FFI.pre.hsc" #-}
 {-# LANGUAGE
 {-# LINE 2 "FFI.pre.hsc" #-}
-    ForeignFunctionInterface
-  , CApiFFI
+    CApiFFI
   , EmptyDataDecls
   , FlexibleInstances
+  , ForeignFunctionInterface
+  , MultiParamTypeClasses
+  , TupleSections
   , TypeFamilies
   #-}
 
@@ -12,34 +14,70 @@ module HFlint.FMPQPoly.FFI
 where
 
 
-{-# LINE 13 "FFI.pre.hsc" #-}
+{-# LINE 15 "FFI.pre.hsc" #-}
+
+import Control.Monad ( (>=>) )
+import Control.Monad.IO.Class ( liftIO )
 
 import Foreign.C.String ( CString )
 import Foreign.C.Types ( CInt(..)
                        , CLong(..)
                        )
-import Foreign.ForeignPtr ( ForeignPtr )
-import Foreign.Ptr ( Ptr, FunPtr )
+import Foreign.ForeignPtr ( ForeignPtr
+                          , addForeignPtrFinalizer
+                          , mallocForeignPtr
+                          , withForeignPtr )
+import Foreign.Ptr ( Ptr, FunPtr, nullPtr )
 import Foreign.Storable ( Storable(..) )
 
 import HFlint.FMPQ.FFI
 import HFlint.FMPZ.FFI
 import HFlint.FMPZPoly.FFI
+import HFlint.Internal.Flint
+import HFlint.Internal.FlintWithContext
 
 
-{-# LINE 27 "FFI.pre.hsc" #-}
+
+{-# LINE 38 "FFI.pre.hsc" #-}
 
 
-data CFMPQPoly
 newtype FMPQPoly = FMPQPoly (ForeignPtr CFMPQPoly)
-data CFMPQPolyType
-data FMPQPolyType = FMPQPolyType
+type CFMPQPoly = CFlint FMPQPoly
+
+instance FlintWithContext FlintTrivialContext FMPQPoly where
+  data CFlint FMPQPoly
+
+  newFlintCtx = liftIO $ do
+    a <- mallocForeignPtr
+    withForeignPtr a fmpq_poly_init
+    addForeignPtrFinalizer p_fmpq_poly_clear a
+    return $ FMPQPoly a
+
+  withFlintCtx (FMPQPoly a) f = liftIO $
+    withForeignPtr a $ f nullPtr >=>
+    return . (FMPQPoly a,)
+
+
+instance Flint FMPQPoly
+
+withFMPQPoly :: FMPQPoly -> (Ptr CFMPQPoly -> IO b) -> IO (FMPQPoly, b)
+withFMPQPoly = withFlint
+
+withFMPQPoly_ :: FMPQPoly -> (Ptr CFMPQPoly -> IO b) -> IO FMPQPoly
+withFMPQPoly_ = withFlint_
+
+withNewFMPQPoly :: (Ptr CFMPQPoly -> IO b) -> IO (FMPQPoly, b)
+withNewFMPQPoly = withNewFlint
+
+withNewFMPQPoly_ :: (Ptr CFMPQPoly -> IO b) -> IO FMPQPoly
+withNewFMPQPoly_ = withNewFlint_
+
 
 instance Storable CFMPQPoly where
     sizeOf _ = (32)
-{-# LINE 36 "FFI.pre.hsc" #-}
+{-# LINE 74 "FFI.pre.hsc" #-}
     alignment _ = 8
-{-# LINE 37 "FFI.pre.hsc" #-}
+{-# LINE 75 "FFI.pre.hsc" #-}
     peek = error "CFMPQPoly.peek: Not defined"
     poke = error "CFMPQPoly.poke: Not defined"
 

@@ -1,10 +1,12 @@
 {-# LINE 1 "FFI.pre.hsc" #-}
 {-# LANGUAGE
 {-# LINE 2 "FFI.pre.hsc" #-}
-    ForeignFunctionInterface
-  , CApiFFI
+    CApiFFI
   , EmptyDataDecls
   , FlexibleInstances
+  , ForeignFunctionInterface
+  , MultiParamTypeClasses
+  , TupleSections
   , TypeFamilies
   #-}
 
@@ -12,32 +14,67 @@ module HFlint.FMPZPoly.FFI
 where
 
 
-{-# LINE 13 "FFI.pre.hsc" #-}
+{-# LINE 15 "FFI.pre.hsc" #-}
 
+import Control.Monad ( (>=>) )
+import Control.Monad.IO.Class ( liftIO )
 import Foreign.C.String ( CString )
 import Foreign.C.Types ( CInt(..)
                        , CLong(..)
                        )
-import Foreign.ForeignPtr ( ForeignPtr )
-import Foreign.Ptr ( Ptr, FunPtr )
+import Foreign.ForeignPtr ( ForeignPtr
+                          , mallocForeignPtr, withForeignPtr
+                          , addForeignPtrFinalizer
+                          )
+import Foreign.Ptr ( Ptr, FunPtr, nullPtr )
 import Foreign.Storable ( Storable(..) )
 
 import HFlint.FMPZ.FFI
+import HFlint.Internal.Flint
+import HFlint.Internal.FlintWithContext
 
 
-{-# LINE 25 "FFI.pre.hsc" #-}
+
+{-# LINE 35 "FFI.pre.hsc" #-}
 
 
-data CFMPZPoly
 newtype FMPZPoly = FMPZPoly (ForeignPtr CFMPZPoly)
-data CFMPZPolyType
-data FMPZPolyType = FMPZPolyType
+type CFMPZPoly = CFlint FMPZPoly
+
+instance FlintWithContext FlintTrivialContext FMPZPoly where
+  data CFlint FMPZPoly
+
+  newFlintCtx = liftIO $ do
+    a <- mallocForeignPtr
+    withForeignPtr a fmpz_poly_init
+    addForeignPtrFinalizer p_fmpz_poly_clear a
+    return $ FMPZPoly a
+
+  withFlintCtx (FMPZPoly a) f = liftIO $
+    withForeignPtr a $ f nullPtr >=>
+    return . (FMPZPoly a,)
+
+
+instance Flint FMPZPoly
+
+withFMPZPoly :: FMPZPoly -> (Ptr CFMPZPoly -> IO b) -> IO (FMPZPoly, b)
+withFMPZPoly = withFlint
+
+withFMPZPoly_ :: FMPZPoly -> (Ptr CFMPZPoly -> IO b) -> IO FMPZPoly
+withFMPZPoly_ = withFlint_
+
+withNewFMPZPoly :: (Ptr CFMPZPoly -> IO b) -> IO (FMPZPoly, b)
+withNewFMPZPoly = withNewFlint
+
+withNewFMPZPoly_ :: (Ptr CFMPZPoly -> IO b) -> IO FMPZPoly
+withNewFMPZPoly_ = withNewFlint_
+
 
 instance Storable CFMPZPoly where
     sizeOf _ = (24)
-{-# LINE 34 "FFI.pre.hsc" #-}
+{-# LINE 71 "FFI.pre.hsc" #-}
     alignment _ = 8
-{-# LINE 35 "FFI.pre.hsc" #-}
+{-# LINE 72 "FFI.pre.hsc" #-}
     peek = error "CFMPZPoly.peek: Not defined"
     poke = error "CFMPZPoly.poke: Not defined"
 

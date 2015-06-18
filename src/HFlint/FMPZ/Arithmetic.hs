@@ -6,16 +6,15 @@ import Control.Exception ( ArithException( DivideByZero ) )
 import qualified HFlint.FMPZ.Limbs as L
 
 import HFlint.FMPZ.FFI
-import HFlint.FMPZ.Internal ()
 
-import HFlint.Internal.Flint
+import HFlint.Internal.Lift
 import HFlint.Internal.Utils ( throwBeforeIf2 )
 
 
 throwBeforeDivideByZero2 :: (a -> FMPZ -> c) -> a -> FMPZ -> c
 throwBeforeDivideByZero2 =
-  throwBeforeIf2 DivideByZero
-  (const $ (0/=) . liftFlint0 (const fmpz_is_zero))
+  throwBeforeIf2 DivideByZero $
+  const $ (0/=) . liftFlint0 fmpz_is_zero
 
 
 instance Enum FMPZ where
@@ -25,29 +24,28 @@ instance Enum FMPZ where
 instance Num FMPZ where
     fromInteger = L.toNewFMPZ . L.fromInteger
 
-    (+) = lift2Flint_ $ const fmpz_add
-    (-) = lift2Flint_ $ const fmpz_sub
-    (*) = lift2Flint_ $ const fmpz_mul
+    (+) = lift2Flint_ fmpz_add
+    (-) = lift2Flint_ fmpz_sub
+    (*) = lift2Flint_ fmpz_mul
 
-    negate = liftFlint_ $ const fmpz_neg
-    abs = liftFlint_ $ const fmpz_abs
+    negate = liftFlint_ fmpz_neg
+    abs = liftFlint_ fmpz_abs
     signum = L.toNewFMPZ . L.fromInteger . toInteger .
-             liftFlint0 (const fmpz_sgn)
+             liftFlint0 fmpz_sgn
 
 instance Real FMPZ where
   toRational = toRational . L.toInteger . L.fromFMPZ
 
 instance Integral FMPZ where
-  -- todo: use specialized methods
-  quot = throwBeforeDivideByZero2
-         (lift2Flint_ $ const fmpz_tdiv_q)
+  quot = throwBeforeDivideByZero2 $
+         lift2Flint_ fmpz_tdiv_q
   quotRem = throwBeforeDivideByZero2 $
-            lift2Flint2_ $ const $ const fmpz_tdiv_qr
+            lift2Flint2_ fmpz_tdiv_qr
 
   div = throwBeforeDivideByZero2 $
-        lift2Flint_ $ const fmpz_fdiv_q
+        lift2Flint_ fmpz_fdiv_q
   divMod = throwBeforeDivideByZero2 $
-           lift2Flint2_ $ const $ const fmpz_fdiv_qr
+           lift2Flint2_ fmpz_fdiv_qr
 
   toInteger = L.toInteger . L.fromFMPZ
 

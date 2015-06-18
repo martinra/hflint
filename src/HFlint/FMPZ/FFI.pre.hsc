@@ -1,31 +1,69 @@
 {-# LANGUAGE
-    ForeignFunctionInterface
-  , CApiFFI
+    CApiFFI
   , EmptyDataDecls
   , FlexibleInstances
+  , ForeignFunctionInterface
+  , MultiParamTypeClasses
+  , TupleSections
   , TypeFamilies
   #-}
 
 module HFlint.FMPZ.FFI
 where
 
-
 #include <flint/fmpz.h>
+
+import Control.Monad ( (>=>) )
+import Control.Monad.IO.Class ( liftIO )
 
 import Foreign.C.String ( CString )
 import Foreign.C.Types ( CULong(..)
                        , CInt(..) )
-import Foreign.ForeignPtr ( ForeignPtr )
-import Foreign.Ptr ( Ptr, FunPtr )
+import Foreign.ForeignPtr ( ForeignPtr
+                          , addForeignPtrFinalizer
+                          , mallocForeignPtr
+                          , withForeignPtr )
+import Foreign.Ptr ( Ptr, FunPtr, nullPtr )
 import Foreign.Storable ( Storable(..) )
+
+import HFlint.Internal.Flint
+import HFlint.Internal.FlintWithContext
 
 
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 
-data CFMPZ
+
 newtype FMPZ = FMPZ (ForeignPtr CFMPZ)
-data CFMPZType
-data FMPZType = FMPZType
+type CFMPZ = CFlint FMPZ
+
+instance FlintWithContext FlintTrivialContext FMPZ where
+  data CFlint FMPZ
+
+  newFlintCtx = liftIO $ do
+    a <- mallocForeignPtr
+    withForeignPtr a fmpz_init
+    addForeignPtrFinalizer p_fmpz_clear a
+    return $ FMPZ a
+
+  withFlintCtx (FMPZ a) f = liftIO $
+    withForeignPtr a $ f nullPtr >=>
+    return . (FMPZ a,)
+
+
+instance Flint FMPZ
+
+withFMPZ :: FMPZ -> (Ptr CFMPZ -> IO b) -> IO (FMPZ, b)
+withFMPZ = withFlint 
+
+withFMPZ_ :: FMPZ -> (Ptr CFMPZ -> IO b) -> IO FMPZ
+withFMPZ_ = withFlint_
+
+withNewFMPZ :: (Ptr CFMPZ -> IO b) -> IO (FMPZ, b)
+withNewFMPZ = withNewFlint
+
+withNewFMPZ_ :: (Ptr CFMPZ -> IO b) -> IO FMPZ
+withNewFMPZ_ = withNewFlint_
+
 
 instance Storable CFMPZ where
     sizeOf _ = #{size fmpz}

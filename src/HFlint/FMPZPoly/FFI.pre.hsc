@@ -1,8 +1,10 @@
 {-# LANGUAGE
-    ForeignFunctionInterface
-  , CApiFFI
+    CApiFFI
   , EmptyDataDecls
   , FlexibleInstances
+  , ForeignFunctionInterface
+  , MultiParamTypeClasses
+  , TupleSections
   , TypeFamilies
   #-}
 
@@ -11,23 +13,58 @@ where
 
 #include <flint/fmpz_poly.h>
 
+import Control.Monad ( (>=>) )
+import Control.Monad.IO.Class ( liftIO )
 import Foreign.C.String ( CString )
 import Foreign.C.Types ( CInt(..)
                        , CLong(..)
                        )
-import Foreign.ForeignPtr ( ForeignPtr )
-import Foreign.Ptr ( Ptr, FunPtr )
+import Foreign.ForeignPtr ( ForeignPtr
+                          , mallocForeignPtr, withForeignPtr
+                          , addForeignPtrFinalizer
+                          )
+import Foreign.Ptr ( Ptr, FunPtr, nullPtr )
 import Foreign.Storable ( Storable(..) )
 
 import HFlint.FMPZ.FFI
+import HFlint.Internal.Flint
+import HFlint.Internal.FlintWithContext
+
 
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 
 
-data CFMPZPoly
 newtype FMPZPoly = FMPZPoly (ForeignPtr CFMPZPoly)
-data CFMPZPolyType
-data FMPZPolyType = FMPZPolyType
+type CFMPZPoly = CFlint FMPZPoly
+
+instance FlintWithContext FlintTrivialContext FMPZPoly where
+  data CFlint FMPZPoly
+
+  newFlintCtx = liftIO $ do
+    a <- mallocForeignPtr
+    withForeignPtr a fmpz_poly_init
+    addForeignPtrFinalizer p_fmpz_poly_clear a
+    return $ FMPZPoly a
+
+  withFlintCtx (FMPZPoly a) f = liftIO $
+    withForeignPtr a $ f nullPtr >=>
+    return . (FMPZPoly a,)
+
+
+instance Flint FMPZPoly
+
+withFMPZPoly :: FMPZPoly -> (Ptr CFMPZPoly -> IO b) -> IO (FMPZPoly, b)
+withFMPZPoly = withFlint
+
+withFMPZPoly_ :: FMPZPoly -> (Ptr CFMPZPoly -> IO b) -> IO FMPZPoly
+withFMPZPoly_ = withFlint_
+
+withNewFMPZPoly :: (Ptr CFMPZPoly -> IO b) -> IO (FMPZPoly, b)
+withNewFMPZPoly = withNewFlint
+
+withNewFMPZPoly_ :: (Ptr CFMPZPoly -> IO b) -> IO FMPZPoly
+withNewFMPZPoly_ = withNewFlint_
+
 
 instance Storable CFMPZPoly where
     sizeOf _ = #size fmpz_poly_struct

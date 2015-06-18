@@ -19,7 +19,6 @@ module HFlint.FMPQPoly
 where
 
 import HFlint.FMPQPoly.FFI
-import HFlint.FMPQPoly.Internal
 
 import HFlint.FMPZPoly.Algebra ()
 import HFlint.FMPQPoly.Base

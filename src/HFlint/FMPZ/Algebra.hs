@@ -10,7 +10,7 @@ import Prelude hiding ( (+), (-), negate, subtract
                       , gcd
                       , quotRem, quot, rem
                       )
-import qualified Prelude as P
+-- import qualified Prelude as P
 
 import Math.Structure.Instances.TH.Additive
 import Math.Structure.Instances.TH.Multiplicative
@@ -19,6 +19,6 @@ import Math.Structure.Instances.TH.Ring
 import HFlint.FMPZ.Arithmetic ()
 import HFlint.FMPZ.FFI
 
-mkAbeleanGroupInstanceFromNum ''FMPZ
+mkAbelianGroupInstanceFromNum ''FMPZ
 mkCommutativeMonoidInstanceFromNum ''FMPZ
 mkEuclideanDomainInstanceFromIntegral ''FMPZ

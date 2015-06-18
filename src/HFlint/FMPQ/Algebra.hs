@@ -1,5 +1,8 @@
 {-# LANGUAGE
-    TemplateHaskell
+    FlexibleInstances
+  , GeneralizedNewtypeDeriving
+  , StandaloneDeriving
+  , TemplateHaskell
   #-}
 
 module HFlint.FMPQ.Algebra
@@ -10,7 +13,7 @@ import Prelude hiding ( (+), (-), negate, subtract
                       , gcd
                       , quotRem, quot, rem
                       )
-import qualified Prelude as P
+-- import qualified Prelude as P
 
 import Math.Structure.Instances.TH.Additive
 import Math.Structure.Instances.TH.Multiplicative
@@ -19,6 +22,6 @@ import Math.Structure.Instances.TH.Ring
 import HFlint.FMPQ.Arithmetic ()
 import HFlint.FMPQ.FFI
 
-mkAbeleanGroupInstanceFromNum ''FMPQ
-mkCommutativeGroupInstanceFromFractional ''FMPQ
+mkAbelianGroupInstanceFromNum ''FMPQ
+mkCommutativeGroupInstanceFromNonZeroFractional ''FMPQ
 mkFieldInstance ''FMPQ

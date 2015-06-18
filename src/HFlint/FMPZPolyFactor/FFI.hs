@@ -1,10 +1,12 @@
 {-# LINE 1 "FFI.pre.hsc" #-}
 {-# LANGUAGE
 {-# LINE 2 "FFI.pre.hsc" #-}
-    ForeignFunctionInterface
-  , CApiFFI
+    CApiFFI
   , EmptyDataDecls
   , FlexibleInstances
+  , ForeignFunctionInterface
+  , MultiParamTypeClasses
+  , TupleSections
   , TypeFamilies
   #-}
 
@@ -12,30 +14,73 @@ module HFlint.FMPZPolyFactor.FFI
 where
 
 
-{-# LINE 13 "FFI.pre.hsc" #-}
+{-# LINE 15 "FFI.pre.hsc" #-}
 
+import Control.Monad ( (>=>) )
+import Control.Monad.IO.Class ( liftIO )
 import Foreign.C.Types ( CLong(..) )
-import Foreign.ForeignPtr ( ForeignPtr )
-import Foreign.Ptr ( Ptr, FunPtr )
+import Foreign.ForeignPtr ( ForeignPtr
+                          , mallocForeignPtr, withForeignPtr
+                          , addForeignPtrFinalizer
+                          )
+import Foreign.Ptr ( Ptr, FunPtr, nullPtr )
 import Foreign.Storable ( Storable(..) )
 
 import HFlint.FMPZ.FFI
 import HFlint.FMPZPoly.FFI
+import HFlint.Internal.Flint
+import HFlint.Internal.FlintWithContext
 
 
-{-# LINE 23 "FFI.pre.hsc" #-}
+
+{-# LINE 33 "FFI.pre.hsc" #-}
 
 
-data CFMPZPolyFactor
 newtype FMPZPolyFactor = FMPZPolyFactor (ForeignPtr CFMPZPolyFactor)
-data CFMPZPolyFactorType
-data FMPZPolyFactorType = FMPZPolyFactorType
+type CFMPZPolyFactor = CFlint FMPZPolyFactor
+
+instance FlintWithContext FlintTrivialContext FMPZPolyFactor where
+  data CFlint FMPZPolyFactor
+
+  newFlintCtx = liftIO $ do
+    a <- mallocForeignPtr
+    withForeignPtr a fmpz_poly_factor_init
+    addForeignPtrFinalizer p_fmpz_poly_factor_clear a
+    return $ FMPZPolyFactor a
+
+  withFlintCtx (FMPZPolyFactor a) f = liftIO $
+    withForeignPtr a $ f nullPtr >=>
+    return . (FMPZPolyFactor a,)
+
+
+instance Flint FMPZPolyFactor
+
+withFMPZPolyFactor
+  :: FMPZPolyFactor -> (Ptr CFMPZPolyFactor -> IO b)
+  -> IO (FMPZPolyFactor, b)
+withFMPZPolyFactor = withFlint
+
+withFMPZPolyFactor_
+  :: FMPZPolyFactor -> (Ptr CFMPZPolyFactor -> IO b)
+  -> IO FMPZPolyFactor
+withFMPZPolyFactor_ = withFlint_
+
+withNewFMPZPolyFactor
+  :: (Ptr CFMPZPolyFactor -> IO b)
+  -> IO (FMPZPolyFactor, b)
+withNewFMPZPolyFactor = withNewFlint
+
+withNewFMPZPolyFactor_
+  :: (Ptr CFMPZPolyFactor -> IO b)
+  -> IO FMPZPolyFactor
+withNewFMPZPolyFactor_ = withNewFlint_
+
 
 instance Storable CFMPZPolyFactor where
     sizeOf _ = (40)
-{-# LINE 32 "FFI.pre.hsc" #-}
+{-# LINE 77 "FFI.pre.hsc" #-}
     alignment _ = 8
-{-# LINE 33 "FFI.pre.hsc" #-}
+{-# LINE 78 "FFI.pre.hsc" #-}
     peek = error "CFMPZPolyFactor.peek: Not defined"
     poke = error "CFMPZPolyFactor.poke: Not defined"
 

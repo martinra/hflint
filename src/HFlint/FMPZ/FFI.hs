@@ -1,10 +1,12 @@
 {-# LINE 1 "FFI.pre.hsc" #-}
 {-# LANGUAGE
 {-# LINE 2 "FFI.pre.hsc" #-}
-    ForeignFunctionInterface
-  , CApiFFI
+    CApiFFI
   , EmptyDataDecls
   , FlexibleInstances
+  , ForeignFunctionInterface
+  , MultiParamTypeClasses
+  , TupleSections
   , TypeFamilies
   #-}
 
@@ -12,30 +14,66 @@ module HFlint.FMPZ.FFI
 where
 
 
+{-# LINE 15 "FFI.pre.hsc" #-}
 
-{-# LINE 14 "FFI.pre.hsc" #-}
+import Control.Monad ( (>=>) )
+import Control.Monad.IO.Class ( liftIO )
 
 import Foreign.C.String ( CString )
 import Foreign.C.Types ( CULong(..)
                        , CInt(..) )
-import Foreign.ForeignPtr ( ForeignPtr )
-import Foreign.Ptr ( Ptr, FunPtr )
+import Foreign.ForeignPtr ( ForeignPtr
+                          , addForeignPtrFinalizer
+                          , mallocForeignPtr
+                          , withForeignPtr )
+import Foreign.Ptr ( Ptr, FunPtr, nullPtr )
 import Foreign.Storable ( Storable(..) )
 
+import HFlint.Internal.Flint
+import HFlint.Internal.FlintWithContext
 
 
-{-# LINE 24 "FFI.pre.hsc" #-}
 
-data CFMPZ
+{-# LINE 34 "FFI.pre.hsc" #-}
+
+
 newtype FMPZ = FMPZ (ForeignPtr CFMPZ)
-data CFMPZType
-data FMPZType = FMPZType
+type CFMPZ = CFlint FMPZ
+
+instance FlintWithContext FlintTrivialContext FMPZ where
+  data CFlint FMPZ
+
+  newFlintCtx = liftIO $ do
+    a <- mallocForeignPtr
+    withForeignPtr a fmpz_init
+    addForeignPtrFinalizer p_fmpz_clear a
+    return $ FMPZ a
+
+  withFlintCtx (FMPZ a) f = liftIO $
+    withForeignPtr a $ f nullPtr >=>
+    return . (FMPZ a,)
+
+
+instance Flint FMPZ
+
+withFMPZ :: FMPZ -> (Ptr CFMPZ -> IO b) -> IO (FMPZ, b)
+withFMPZ = withFlint 
+
+withFMPZ_ :: FMPZ -> (Ptr CFMPZ -> IO b) -> IO FMPZ
+withFMPZ_ = withFlint_
+
+withNewFMPZ :: (Ptr CFMPZ -> IO b) -> IO (FMPZ, b)
+withNewFMPZ = withNewFlint
+
+withNewFMPZ_ :: (Ptr CFMPZ -> IO b) -> IO FMPZ
+withNewFMPZ_ = withNewFlint_
+
 
 instance Storable CFMPZ where
     sizeOf _ = (8)
-{-# LINE 32 "FFI.pre.hsc" #-}
+{-# LINE 70 "FFI.pre.hsc" #-}
     alignment _ = 8
-{-# LINE 33 "FFI.pre.hsc" #-}
+{-# LINE 71 "FFI.pre.hsc" #-}
     peek = error "CFMPZ.peek: Not defined"
     poke = error "CFMPZ.poke: Not defined"
 

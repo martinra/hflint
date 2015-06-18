@@ -1,8 +1,10 @@
 {-# LANGUAGE
-    ForeignFunctionInterface
-  , CApiFFI
+    CApiFFI
   , EmptyDataDecls
   , FlexibleInstances
+  , ForeignFunctionInterface
+  , MultiParamTypeClasses
+  , TupleSections
   , TypeFamilies
   #-}
 
@@ -11,20 +13,57 @@ where
 
 #include <flint/fmpq.h>
 
+import Control.Monad ( (>=>) )
+import Control.Monad.IO.Class ( liftIO )
+
 import Foreign.C.String ( CString )
 import Foreign.C.Types ( CInt(..) )
-import Foreign.ForeignPtr ( ForeignPtr )
-import Foreign.Ptr ( Ptr, FunPtr )
+import Foreign.ForeignPtr ( ForeignPtr
+                          , addForeignPtrFinalizer
+                          , mallocForeignPtr
+                          , withForeignPtr )
+import Foreign.Ptr ( Ptr, FunPtr, nullPtr )
 import Foreign.Storable ( Storable(..) )
 
 import HFlint.FMPZ.FFI
+import HFlint.Internal.Flint
+import HFlint.Internal.FlintWithContext
+
 
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 
-data CFMPQ
+
 newtype FMPQ = FMPQ (ForeignPtr CFMPQ)
-data CFMPQType
-data FMPQType = FMPQType
+type CFMPQ = CFlint FMPQ
+
+instance FlintWithContext FlintTrivialContext FMPQ where
+  data CFlint FMPQ
+
+  newFlintCtx = liftIO $ do
+    a <- mallocForeignPtr
+    withForeignPtr a fmpq_init
+    addForeignPtrFinalizer p_fmpq_clear a
+    return $ FMPQ a
+
+  withFlintCtx (FMPQ a) f = liftIO $
+    withForeignPtr a $ f nullPtr >=>
+    return . (FMPQ a,)
+
+
+instance Flint FMPQ
+
+withFMPQ :: FMPQ -> (Ptr CFMPQ -> IO b) -> IO (FMPQ, b)
+withFMPQ = withFlint
+
+withFMPQ_ :: FMPQ -> (Ptr CFMPQ -> IO b) -> IO FMPQ
+withFMPQ_ = withFlint_
+
+withNewFMPQ :: (Ptr CFMPQ -> IO b) -> IO (FMPQ, b)
+withNewFMPQ = withNewFlint
+
+withNewFMPQ_ :: (Ptr CFMPQ -> IO b) -> IO FMPQ
+withNewFMPQ_ = withNewFlint_
+
 
 instance Storable CFMPQ where
     sizeOf _ = #size fmpq

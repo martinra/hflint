@@ -7,9 +7,8 @@ import Foreign.Ptr ( nullPtr )
 import Foreign.Marshal ( free )
 import System.IO.Unsafe ( unsafePerformIO )
 
-import HFlint.Internal.Flint
+import HFlint.Internal.Lift
 
-import HFlint.FMPQ.Internal ()
 import HFlint.FMPQ.FFI
 
 
@@ -21,14 +20,14 @@ toString base a = if '/' `elem` s then s
                   else s++"/1"
   where
   s = unsafePerformIO $ do
-    (_,cstr) <- withFlint a $ const $ fmpq_get_str nullPtr (fromIntegral base)
+    (_,cstr) <- withFMPQ a $ fmpq_get_str nullPtr (fromIntegral base)
     str <- peekCString cstr
     free cstr
     return str
 
 instance Eq FMPQ where
-  (==) = (1==) .: (lift2Flint0 $ const fmpq_equal)
+  (==) = (1==) .: (lift2Flint0 fmpq_equal)
 
 instance Ord FMPQ where
   compare = (toEnum . (+1) . fromInteger . toInteger) .:
-            (lift2Flint0 $ const fmpq_cmp)
+            (lift2Flint0 fmpq_cmp)

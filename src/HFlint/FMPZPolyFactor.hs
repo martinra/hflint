@@ -9,4 +9,3 @@ module HFlint.FMPZPolyFactor
 where
 
 import HFlint.FMPZPolyFactor.FFI
-import HFlint.FMPZPolyFactor.Internal

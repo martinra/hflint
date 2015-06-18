@@ -1,7 +1,6 @@
 module HFlint.FMPQPoly.Base
 where
 
-import Control.Applicative ( (<$>) )
 import Data.Composition ( (.:) )
 import qualified Data.Vector as V
 import Data.Vector ( Vector )
@@ -11,13 +10,12 @@ import Foreign.C.String ( peekCString
 import Foreign.Marshal ( free )
 import System.IO.Unsafe ( unsafePerformIO )
 
-import HFlint.Internal.Flint
+import HFlint.Internal.Lift
 
 import HFlint.FMPQ
 import HFlint.FMPZ
 import HFlint.FMPZ.FFI
 import HFlint.FMPQPoly.FFI
-import HFlint.FMPQPoly.Internal
 import HFlint.FMPZPoly ()
 import HFlint.FMPZPoly.FFI
 
@@ -25,30 +23,30 @@ import HFlint.FMPZPoly.FFI
 instance Show FMPQPoly where
     show a = unsafePerformIO $
       withCString "T" $ \cvar -> do
-      (_,cstr) <- withFMPQPoly a $ const $ \aptr ->
+      (_,cstr) <- withFMPQPoly a$ \aptr ->
                   fmpq_poly_get_str_pretty aptr cvar
       str <- peekCString cstr
       free cstr
       return str
 
 instance Eq FMPQPoly where
-  (==) = (1==) .: (lift2Flint0 $ const fmpq_poly_equal)
+  (==) = (1==) .: (lift2Flint0 fmpq_poly_equal)
 
 
 fromVector :: Vector FMPQ -> FMPQPoly
 fromVector as = unsafePerformIO $
-  withNewFMPQPoly_ $ const $ \bptr -> do
+  withNewFMPQPoly_ $ \bptr -> do
   fmpq_poly_realloc bptr (fromIntegral $ V.length as)
   sequence_ $ flip V.imap as $ \ix a ->
-     withFMPQ_ a $ const $ \aptr ->
+     withFMPQ_ a $ \aptr ->
      fmpq_poly_set_coeff_fmpq bptr (fromIntegral ix) aptr 
 
 toVector :: FMPQPoly -> Vector FMPQ
 toVector a = unsafePerformIO $ fmap snd $
-  withFMPQPoly a $ const $ \aptr -> do
+  withFMPQPoly a $ \aptr -> do
   deg <- fromIntegral <$> fmpq_poly_degree aptr
   V.generateM (deg+1) $ \ix ->
-    withNewFMPQ_ $ const $ \bptr ->
+    withNewFMPQ_ $ \bptr ->
     fmpq_poly_get_coeff_fmpq bptr aptr (fromIntegral ix)
 
 fromList :: [FMPQ] -> FMPQPoly
@@ -65,15 +63,14 @@ toRationals = V.toList . V.map toRational . toVector
 
 
 fromFMPZPoly :: FMPZPoly -> FMPQPoly
-fromFMPZPoly = liftFlintWithType_ FMPQPolyType $
-               const fmpq_poly_set_fmpz_poly
+fromFMPZPoly = liftFlint_ fmpq_poly_set_fmpz_poly
 
 toFMPZPoly :: FMPQPoly -> (FMPZ, FMPZPoly)
 toFMPZPoly a = (den a, num a)
   where
   num :: FMPQPoly -> FMPZPoly
-  num = liftFlintWithType_ FMPZPolyType $
-        const fmpq_poly_get_numerator
+  num = liftFlint_
+        fmpq_poly_get_numerator
   den :: FMPQPoly -> FMPZ
-  den = liftFlintWithType_ FMPZType $ const $ \denptr aptr ->
+  den = liftFlint_ $ \denptr aptr ->
         fmpz_set denptr =<< fmpq_poly_denref aptr

@@ -61,20 +61,17 @@ library
     HFlint.FMPQ.Arithmetic
     HFlint.FMPQ.Base
     HFlint.FMPQ.FFI
-    HFlint.FMPQ.Internal
     HFlint.FMPQ.Tasty.QuickCheck
     HFlint.FMPQ.Tasty.SmallCheck
 
     HFlint.FMPQPoly.Algebra
     HFlint.FMPQPoly.Base
     HFlint.FMPQPoly.FFI
-    HFlint.FMPQPoly.Internal
 
     HFlint.FMPZ.Algebra
     HFlint.FMPZ.Arithmetic
     HFlint.FMPZ.Base
     HFlint.FMPZ.FFI
-    HFlint.FMPZ.Internal
     HFlint.FMPZ.Limbs
     HFlint.FMPZ.Tasty.QuickCheck
     HFlint.FMPZ.Tasty.SmallCheck
@@ -82,13 +79,12 @@ library
     HFlint.FMPZPoly.Algebra
     HFlint.FMPZPoly.Base
     HFlint.FMPZPoly.FFI
-    HFlint.FMPZPoly.Internal
 
     HFlint.FMPZPolyFactor.FFI
-    HFlint.FMPZPolyFactor.Internal
 
-    HFlint.Internal.Const
     HFlint.Internal.Flint
+    HFlint.Internal.FlintWithContext
+    HFlint.Internal.LiftCtx
     HFlint.Internal.Utils
     HFlint.Internal.TH
 

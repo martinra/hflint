@@ -5,10 +5,7 @@ import Prelude hiding ( fromInteger )
 
 import qualified Prelude as P
 
-import Control.Applicative ( (<$>) )
-import Control.Monad ( forM_
-                     , when
-                     )
+import Control.Monad ( forM_, when )
 import Control.Monad.IO.Class ( liftIO )
 import Control.Monad.Loops ( untilM )
 import Control.Monad.Writer ( tell
@@ -22,9 +19,7 @@ import System.IO.Unsafe ( unsafePerformIO )
 
 import HFlint.FMPZ.Base ()
 import HFlint.FMPZ.FFI
-import HFlint.FMPZ.Internal ( withFMPZ
-                            , withNewFMPZ
-                            , withNewFMPZ_ )
+
 
 data Sign = Positive
           | Zero
@@ -49,11 +44,11 @@ fromInteger a = case compare a 0 of
                     in (q,r:ls)
 
 fromFMPZ :: FMPZ -> LimbRepr
-fromFMPZ a = unsafePerformIO $ fmap snd $
-             withFMPZ a $ const fromCFMPZ
+fromFMPZ a = unsafePerformIO $
+             snd <$> withFMPZ a fromCFMPZ
 
 fromCFMPZ :: Ptr CFMPZ -> IO LimbRepr
-fromCFMPZ aptr = fmap snd $ withNewFMPZ $ const $ \cptr -> do
+fromCFMPZ aptr = fmap snd $ withNewFMPZ $ \cptr -> do
   fmpz_set cptr aptr
   sgn <- fmpz_sgn aptr
   when (sgn < 0) $ fmpz_neg cptr cptr
@@ -81,7 +76,7 @@ toInteger (LimbRepr sgn ls) = let n = foldl' (\a l -> a*limbSize + l) 0 $
                                 Negative -> -n 
 
 toNewFMPZ :: LimbRepr -> FMPZ
-toNewFMPZ ls = unsafePerformIO . withNewFMPZ_ $ const $ \cptr ->
+toNewFMPZ ls = unsafePerformIO . withNewFMPZ_ $ \cptr ->
                toCFMPZ cptr ls
 
 toCFMPZ :: Ptr CFMPZ -> LimbRepr -> IO ()
