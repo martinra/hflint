@@ -1,7 +1,3 @@
-{-# LANGUAGE
-    TemplateHaskell
-  #-}
-
 module HFlint.FMPZPoly.Algebra
 where
 
@@ -10,9 +6,8 @@ import Prelude hiding ( (+), (-), negate, subtract
                       , gcd
                       , quotRem, quot, rem
                       )
-import qualified Prelude as P
+-- import qualified Prelude as P
 
-import Control.Applicative ( (<$>) )
 import Control.Arrow ( second )
 import qualified Data.Vector as V
 import Math.Structure

@@ -46,12 +46,18 @@ instance Num FMPQ where
                     fmpz_one bptr
                     fmpq_set_fmpz_frac cptr aptr bptr
 
+  {-# INLINE (+) #-}
   (+) = lift2Flint_ $ const fmpq_add
+  {-# INLINE (-) #-}
   (-) = lift2Flint_ $ const fmpq_sub
+  {-# INLINE (*) #-}
   (*) = lift2Flint_ $ const fmpq_mul
 
+  {-# INLINE negate #-}
   negate = liftFlint_ $ const fmpq_neg
+  {-# INLINE abs #-}
   abs = liftFlint_ $ const fmpq_abs
+  {-# INLINE signum #-}
   signum = fromIntegral . liftFlint0 (const fmpq_sgn)
 
 instance Fractional FMPQ where

@@ -78,13 +78,13 @@ foreign import ccall unsafe "fmpq_cmp"
         fmpq_cmp :: Ptr CFMPQ -> Ptr CFMPQ -> IO CInt
 
 
-foreign import capi "flint/fmpq.h fmpq_sgn"
+foreign import capi unsafe "flint/fmpq.h fmpq_sgn"
         fmpq_sgn :: Ptr CFMPQ -> IO CInt
 
 foreign import capi unsafe "flint/fmpq.h fmpq_neg"
         fmpq_neg :: Ptr CFMPQ -> Ptr CFMPQ -> IO ()
 
-foreign import capi "flint/fmpq.h fmpq_abs"
+foreign import capi unsafe "flint/fmpq.h fmpq_abs"
         fmpq_abs :: Ptr CFMPQ -> Ptr CFMPQ -> IO ()
 
 

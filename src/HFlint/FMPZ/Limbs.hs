@@ -5,7 +5,6 @@ import Prelude hiding ( fromInteger )
 
 import qualified Prelude as P
 
-import Control.Applicative ( (<$>) )
 import Control.Monad ( forM_
                      , when
                      )

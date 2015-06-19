@@ -1,7 +1,6 @@
 module HFlint.FMPZPoly.Base
 where
 
-import Control.Applicative ( (<$>) )
 import Control.DeepSeq ( NFData(..) )
 import Data.Composition ( (.:) )
 import qualified Data.Vector as V

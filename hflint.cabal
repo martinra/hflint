@@ -94,7 +94,10 @@ library
     HFlint.Internal.TH
 
   build-tools:         hsc2hs
-  GHC-options:         -Wall -fno-warn-orphans -static
+  GHC-options:
+    -Wall
+    -fno-warn-orphans -static
+    -O2
   GHC-prof-options:    -prof -auto
   cpp-options:         -fpic
   hs-source-dirs:      src
