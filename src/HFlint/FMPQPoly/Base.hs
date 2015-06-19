@@ -2,7 +2,6 @@ module HFlint.FMPQPoly.Base
 where
 
 import Control.DeepSeq ( NFData(..) )
-import Control.Applicative ( (<$>) )
 import Data.Composition ( (.:) )
 import qualified Data.Vector as V
 import Data.Vector ( Vector )

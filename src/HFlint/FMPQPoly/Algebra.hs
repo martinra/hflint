@@ -10,7 +10,7 @@ import Prelude hiding ( (+), (-), negate, subtract
                       , gcd
                       , quotRem, quot, rem
                       )
-import qualified Prelude as P
+-- import qualified Prelude as P
 
 import Control.Arrow ( first )
 import qualified Data.Vector as V
