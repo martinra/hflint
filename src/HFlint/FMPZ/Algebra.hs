@@ -19,6 +19,6 @@ import Math.Structure.Instances.TH.Ring
 import HFlint.FMPZ.Arithmetic ()
 import HFlint.FMPZ.FFI
 
-mkAbeleanGroupInstanceFromNum ''FMPZ
+mkAbelianGroupInstanceFromNum ''FMPZ
 mkCommutativeMonoidInstanceFromNum ''FMPZ
 mkEuclideanDomainInstanceFromIntegral ''FMPZ

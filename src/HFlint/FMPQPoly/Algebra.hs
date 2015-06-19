@@ -28,7 +28,7 @@ import HFlint.Internal.Flint
 instance AdditiveMagma FMPQPoly where
   (+) = lift2Flint_ $ const fmpq_poly_add
 
-instance Abelean FMPQPoly
+instance Abelian FMPQPoly
 
 instance AdditiveSemigroup FMPQPoly
 

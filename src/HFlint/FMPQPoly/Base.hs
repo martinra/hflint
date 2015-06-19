@@ -1,6 +1,7 @@
 module HFlint.FMPQPoly.Base
 where
 
+import Control.DeepSeq ( NFData(..) )
 import Control.Applicative ( (<$>) )
 import Data.Composition ( (.:) )
 import qualified Data.Vector as V
@@ -33,6 +34,9 @@ instance Show FMPQPoly where
 
 instance Eq FMPQPoly where
   (==) = (1==) .: (lift2Flint0 $ const fmpq_poly_equal)
+
+instance NFData FMPQPoly where
+  rnf _ = ()
 
 
 fromVector :: Vector FMPQ -> FMPQPoly

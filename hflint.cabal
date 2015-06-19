@@ -39,6 +39,7 @@ library
     , composition
     , containers
     , data-default
+    , deepseq
     , dlist
     , monad-loops
     , mtl
