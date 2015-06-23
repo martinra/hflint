@@ -13,7 +13,7 @@ import HFlint.Internal.Lift
 
 
 instance Show FMPZ where
-    show = toString 10 
+  show = toString 10 
 
 toString :: Int -> FMPZ -> String
 toString base a = unsafePerformIO $ do
@@ -23,9 +23,11 @@ toString base a = unsafePerformIO $ do
   return str
 
 instance Eq FMPZ where
+  {-# INLINE (==) #-}
   (==) = (1==) .: (lift2Flint0 fmpz_equal)
 
 instance Ord FMPZ where
+  {-# INLINE compare #-}
   compare = (toEnum . (+1) . fromInteger . toInteger) .:
             (lift2Flint0  fmpz_cmp)
 

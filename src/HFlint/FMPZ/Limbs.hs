@@ -27,10 +27,12 @@ data Sign = Positive
 
 data LimbRepr = LimbRepr Sign [CULong]
 
+{-# INLINE limbSize #-}
 limbSize :: Integral a => a
 limbSize = P.fromInteger . fromIntegral $ 1 + div (maxBound :: CULong) 2
 
 
+{-# INLINE fromInteger #-}
 fromInteger :: Integer -> LimbRepr
 fromInteger a = case compare a 0 of
   GT -> LimbRepr Positive $ fromInteger' a
@@ -43,10 +45,12 @@ fromInteger a = case compare a 0 of
   nextLimb (b,ls) = let (q,r) = b `divMod` limbSize
                     in (q,r:ls)
 
+{-# INLINE fromFMPZ #-}
 fromFMPZ :: FMPZ -> LimbRepr
 fromFMPZ a = unsafePerformIO $
              snd <$> withFMPZ a fromCFMPZ
 
+{-# INLINE fromCFMPZ #-}
 fromCFMPZ :: Ptr CFMPZ -> IO LimbRepr
 fromCFMPZ aptr = fmap snd $ withNewFMPZ $ \cptr -> do
   fmpz_set cptr aptr
@@ -66,19 +70,23 @@ fromCFMPZ aptr = fmap snd $ withNewFMPZ $ \cptr -> do
     tell =<< liftIO (Dual <$> (:[]) <$> fmpz_fdiv_ui bptr limbSize)
     liftIO $ fmpz_fdiv_q_ui bptr bptr limbSize
 
+{-# INLINE toInteger #-}
 toInteger :: LimbRepr -> Integer
 toInteger (LimbRepr _ [])   = 0
-toInteger (LimbRepr sgn ls) = let n = foldl' (\a l -> a*limbSize + l) 0 $
-                                             map fromIntegral ls
-                              in case sgn of
-                                Positive -> n 
-                                Zero     -> 0
-                                Negative -> -n 
+toInteger (LimbRepr sgn ls) =
+  let n = foldl' (\a l -> a*limbSize + l) 0 $
+          map fromIntegral ls
+  in case sgn of
+    Positive -> n 
+    Zero     -> 0
+    Negative -> -n 
 
+{-# INLINE toNewFMPZ #-}
 toNewFMPZ :: LimbRepr -> FMPZ
 toNewFMPZ ls = unsafePerformIO . withNewFMPZ_ $ \cptr ->
                toCFMPZ cptr ls
 
+{-# INLINE toCFMPZ #-}
 toCFMPZ :: Ptr CFMPZ -> LimbRepr -> IO ()
 toCFMPZ cptr (LimbRepr _ []) = fmpz_zero cptr
 toCFMPZ cptr (LimbRepr sgn (l:ls)) = do

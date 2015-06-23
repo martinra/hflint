@@ -39,12 +39,14 @@ type CFMPZ = CFlint FMPZ
 instance FlintWithContext FlintTrivialContext FMPZ where
   data CFlint FMPZ
 
+  {-# INLINE newFlintCtx #-}
   newFlintCtx = liftIO $ do
     a <- mallocForeignPtr
     withForeignPtr a fmpz_init
     addForeignPtrFinalizer p_fmpz_clear a
     return $ FMPZ a
 
+  {-# INLINE withFlintCtx #-}
   withFlintCtx (FMPZ a) f = liftIO $
     withForeignPtr a $ f nullPtr >=>
     return . (FMPZ a,)
@@ -52,21 +54,27 @@ instance FlintWithContext FlintTrivialContext FMPZ where
 
 instance Flint FMPZ
 
+{-# INLINE withFMPZ #-}
 withFMPZ :: FMPZ -> (Ptr CFMPZ -> IO b) -> IO (FMPZ, b)
 withFMPZ = withFlint 
 
+{-# INLINE withFMPZ_ #-}
 withFMPZ_ :: FMPZ -> (Ptr CFMPZ -> IO b) -> IO FMPZ
 withFMPZ_ = withFlint_
 
+{-# INLINE withNewFMPZ #-}
 withNewFMPZ :: (Ptr CFMPZ -> IO b) -> IO (FMPZ, b)
 withNewFMPZ = withNewFlint
 
+{-# INLINE withNewFMPZ_ #-}
 withNewFMPZ_ :: (Ptr CFMPZ -> IO b) -> IO FMPZ
 withNewFMPZ_ = withNewFlint_
 
 
 instance Storable CFMPZ where
+    {-# INLINE sizeOf #-}
     sizeOf _ = #{size fmpz}
+    {-# INLINE alignment #-}
     alignment _ = #{alignment fmpz}
     peek = error "CFMPZ.peek: Not defined"
     poke = error "CFMPZ.poke: Not defined"
