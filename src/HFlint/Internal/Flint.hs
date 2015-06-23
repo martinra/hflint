@@ -25,33 +25,39 @@ data FlintTrivialContext = FlintTrivialContext
 instance FlintContext FlintTrivialContext where
   data CFlintCtx FlintTrivialContext
 
+  {-# INLINE implicitCtx #-}
   implicitCtx f ctxptr aptr = runReaderT (f aptr) ctxptr
 
 type CFlintTrivialContext = CFlintCtx FlintTrivialContext
 
+{-# INLINE runTrivialContext #-}
 runTrivialContext :: Monad m => ReaderT (Ptr CFlintTrivialContext) m a -> m a
 runTrivialContext a = runReaderT a nullPtr 
 
 
 class FlintWithContext FlintTrivialContext a => Flint a where
-    newFlint :: IO a
-    newFlint = runTrivialContext newFlintCtx 
+  {-# INLINE newFlint #-}
+  newFlint :: IO a
+  newFlint = runTrivialContext newFlintCtx 
 
-    withFlint :: a
-              -> (Ptr (CFlint a) -> IO b)
-              -> IO (a, b)
-    withFlint a f = runTrivialContext $ withFlintCtx a (const f)
+  {-# INLINE withFlint #-}
+  withFlint :: a
+            -> (Ptr (CFlint a) -> IO b)
+            -> IO (a, b)
+  withFlint a f = runTrivialContext $ withFlintCtx a (const f)
 
-    withFlint_ :: a
-               -> (Ptr (CFlint a) -> IO b)
-               -> IO a
-    withFlint_ a f = runTrivialContext $ withFlintCtx_ a (const f)
+  {-# INLINE withFlint_ #-}
+  withFlint_ :: a
+             -> (Ptr (CFlint a) -> IO b)
+             -> IO a
+  withFlint_ a f = runTrivialContext $ withFlintCtx_ a (const f)
 
-    withNewFlint :: (Ptr (CFlint a) -> IO b)
-                 -> IO (a, b)
-    withNewFlint f = runTrivialContext $ withNewFlintCtx (const f)
+  {-# INLINE withNewFlint #-}
+  withNewFlint :: (Ptr (CFlint a) -> IO b)
+               -> IO (a, b)
+  withNewFlint f = runTrivialContext $ withNewFlintCtx (const f)
 
-    withNewFlint_ :: (Ptr (CFlint a) -> IO b)
-                  -> IO a
-    withNewFlint_ f = runTrivialContext $ withNewFlintCtx_ (const f)
-
+  {-# INLINE withNewFlint_ #-}
+  withNewFlint_ :: (Ptr (CFlint a) -> IO b)
+                -> IO a
+  withNewFlint_ f = runTrivialContext $ withNewFlintCtx_ (const f)
