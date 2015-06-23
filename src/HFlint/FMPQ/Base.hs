@@ -14,7 +14,7 @@ import HFlint.FMPQ.FFI
 
 
 instance Show FMPQ where
-    show = toString 10
+  show = toString 10
 
 toString :: Int -> FMPQ -> String
 toString base a = if '/' `elem` s then s
@@ -27,9 +27,11 @@ toString base a = if '/' `elem` s then s
     return str
 
 instance Eq FMPQ where
+  {-# INLINE (==) #-}
   (==) = (1==) .: (lift2Flint0 fmpq_equal)
 
 instance Ord FMPQ where
+  {-# INLINE compare #-}
   compare = (toEnum . (+1) . fromInteger . toInteger) .:
             (lift2Flint0 fmpq_cmp)
 

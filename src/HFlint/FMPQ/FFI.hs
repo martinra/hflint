@@ -43,12 +43,14 @@ type CFMPQ = CFlint FMPQ
 instance FlintWithContext FlintTrivialContext FMPQ where
   data CFlint FMPQ
 
+  {-# INLINE newFlintCtx #-}
   newFlintCtx = liftIO $ do
     a <- mallocForeignPtr
     withForeignPtr a fmpq_init
     addForeignPtrFinalizer p_fmpq_clear a
     return $ FMPQ a
 
+  {-# INLINE withFlintCtx #-}
   withFlintCtx (FMPQ a) f = liftIO $
     withForeignPtr a $ f nullPtr >=>
     return . (FMPQ a,)
@@ -56,26 +58,32 @@ instance FlintWithContext FlintTrivialContext FMPQ where
 
 instance Flint FMPQ
 
+{-# INLINE withFMPQ #-}
 withFMPQ :: FMPQ -> (Ptr CFMPQ -> IO b) -> IO (FMPQ, b)
 withFMPQ = withFlint
 
+{-# INLINE withFMPQ_ #-}
 withFMPQ_ :: FMPQ -> (Ptr CFMPQ -> IO b) -> IO FMPQ
 withFMPQ_ = withFlint_
 
+{-# INLINE withNewFMPQ #-}
 withNewFMPQ :: (Ptr CFMPQ -> IO b) -> IO (FMPQ, b)
 withNewFMPQ = withNewFlint
 
+{-# INLINE withNewFMPQ_ #-}
 withNewFMPQ_ :: (Ptr CFMPQ -> IO b) -> IO FMPQ
 withNewFMPQ_ = withNewFlint_
 
 
 instance Storable CFMPQ where
-    sizeOf _ = (16)
-{-# LINE 70 "FFI.pre.hsc" #-}
-    alignment _ = 8
-{-# LINE 71 "FFI.pre.hsc" #-}
-    peek = error "CFMPQ.peek: Not defined"
-    poke = error "CFMPQ.poke: Not defined"
+  {-# INLINE sizeOf #-}
+  sizeOf _ = (16)
+{-# LINE 77 "FFI.pre.hsc" #-}
+  {-# INLINE alignment #-}
+  alignment _ = 8
+{-# LINE 79 "FFI.pre.hsc" #-}
+  peek = error "CFMPQ.peek: Not defined"
+  poke = error "CFMPQ.poke: Not defined"
 
 
 foreign import capi unsafe "flint/fmpq.h fmpq_init"

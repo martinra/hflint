@@ -94,6 +94,7 @@ library
     -Wall
     -fno-warn-orphans
     -static
+    -fsimpl-tick-factor=500
   GHC-prof-options:
     -prof -auto
   cpp-options:
