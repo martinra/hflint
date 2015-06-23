@@ -90,10 +90,15 @@ library
     HFlint.Internal.Utils
     HFlint.Internal.TH
 
+  GHC-options:
+    -Wall
+    -fno-warn-orphans
+    -static
+  GHC-prof-options:
+    -prof -auto
+  cpp-options:
+    -fpic
   build-tools:         hsc2hs
-  GHC-options:         -Wall -fno-warn-orphans -static
-  GHC-prof-options:    -prof -auto
-  cpp-options:         -fpic
   hs-source-dirs:      src
 
   include-dirs:
