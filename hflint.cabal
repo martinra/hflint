@@ -38,6 +38,7 @@ library
     , algebra-structures
     , composition
     , containers
+    , deepseq
     , data-default
     , dlist
     , monad-loops

@@ -1,6 +1,7 @@
 module HFlint.FMPQ.Base
 where
 
+import Control.DeepSeq ( NFData(..) )
 import Data.Composition ( (.:) )
 import Foreign.C.String ( peekCString )
 import Foreign.Ptr ( nullPtr )
@@ -31,3 +32,6 @@ instance Eq FMPQ where
 instance Ord FMPQ where
   compare = (toEnum . (+1) . fromInteger . toInteger) .:
             (lift2Flint0 fmpq_cmp)
+
+instance NFData FMPQ where
+  rnf _ = ()

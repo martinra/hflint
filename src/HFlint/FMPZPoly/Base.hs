@@ -1,6 +1,7 @@
 module HFlint.FMPZPoly.Base
 where
 
+import Control.DeepSeq ( NFData(..) )
 import Data.Composition ( (.:) )
 import qualified Data.Vector as V
 import Data.Vector ( Vector )
@@ -28,6 +29,10 @@ instance Show FMPZPoly where
 
 instance Eq FMPZPoly where
   (==) = (1==) .: (lift2Flint0 fmpz_poly_equal)
+
+instance NFData FMPZPoly where
+  rnf _ = ()
+
 
 fromVector :: Vector FMPZ -> FMPZPoly
 fromVector as = unsafePerformIO $
