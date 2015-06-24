@@ -13,7 +13,6 @@ where
 
 #include <flint/fmpz.h>
 
-import Control.Monad ( (>=>) )
 import Control.Monad.IO.Class ( liftIO )
 
 import Foreign.C.String ( CString )
@@ -48,8 +47,8 @@ instance FlintWithContext FlintTrivialContext FMPZ where
 
   {-# INLINE withFlintCtx #-}
   withFlintCtx (FMPZ a) f = liftIO $
-    withForeignPtr a $ f nullPtr >=>
-    return . (FMPZ a,)
+    withForeignPtr a $ \aptr ->
+    f aptr nullPtr >>= return . (FMPZ a,)
 
 
 instance Flint FMPZ

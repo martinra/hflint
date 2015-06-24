@@ -16,7 +16,6 @@ where
 
 {-# LINE 15 "FFI.pre.hsc" #-}
 
-import Control.Monad ( (>=>) )
 import Control.Monad.IO.Class ( liftIO )
 import Foreign.C.String ( CString )
 import Foreign.C.Types ( CInt(..)
@@ -35,7 +34,7 @@ import HFlint.Internal.FlintWithContext
 
 
 
-{-# LINE 35 "FFI.pre.hsc" #-}
+{-# LINE 34 "FFI.pre.hsc" #-}
 
 
 newtype FMPZPoly = FMPZPoly (ForeignPtr CFMPZPoly)
@@ -51,8 +50,8 @@ instance FlintWithContext FlintTrivialContext FMPZPoly where
     return $ FMPZPoly a
 
   withFlintCtx (FMPZPoly a) f = liftIO $
-    withForeignPtr a $ f nullPtr >=>
-    return . (FMPZPoly a,)
+    withForeignPtr a $ \aptr ->
+    f aptr nullPtr >>= return . (FMPZPoly a,)
 
 
 instance Flint FMPZPoly
@@ -72,9 +71,9 @@ withNewFMPZPoly_ = withNewFlint_
 
 instance Storable CFMPZPoly where
     sizeOf _ = (24)
-{-# LINE 71 "FFI.pre.hsc" #-}
+{-# LINE 70 "FFI.pre.hsc" #-}
     alignment _ = 8
-{-# LINE 72 "FFI.pre.hsc" #-}
+{-# LINE 71 "FFI.pre.hsc" #-}
     peek = error "CFMPZPoly.peek: Not defined"
     poke = error "CFMPZPoly.poke: Not defined"
 

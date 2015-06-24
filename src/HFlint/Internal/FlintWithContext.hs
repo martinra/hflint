@@ -14,16 +14,21 @@ module HFlint.Internal.FlintWithContext
 where
 
 import Control.Monad.Reader
+import Foreign.ForeignPtr ( ForeignPtr )
 import Foreign.Ptr ( Ptr )
 
 
 class FlintContext ctx where
   data CFlintCtx ctx :: *
 
+  newFlintContext :: IO (ForeignPtr (CFlintCtx ctx))
+
+  {-# INLINE implicitCtx #-}
   implicitCtx
     :: FlintWithContext ctx a
     => ( Ptr (CFlint a) -> RIOFlint ctx b )
-    -> Ptr (CFlintCtx ctx) -> Ptr (CFlint a) -> IO b
+    -> Ptr (CFlint a) -> Ptr (CFlintCtx ctx) -> IO b
+  implicitCtx f aptr ctxptr = runReaderT (f aptr) ctxptr
 
 type RFlint ctx a = Reader (Ptr (CFlintCtx ctx)) a
 type RIOFlint ctx a = ReaderT (Ptr (CFlintCtx ctx)) IO a
@@ -38,7 +43,7 @@ class FlintContext ctx => FlintWithContext ctx a | a -> ctx where
 
   withFlintCtx
     :: a
-    -> (Ptr (CFlintCtx ctx) -> Ptr (CFlint a) -> IO b)
+    -> (Ptr (CFlint a) -> Ptr (CFlintCtx ctx) -> IO b)
     -> RIOFlint ctx (a, b)
 
   {-# INLINE withFlintImplicitCtx #-}
@@ -50,7 +55,7 @@ class FlintContext ctx => FlintWithContext ctx a | a -> ctx where
 
   {-# INLINE withNewFlintCtx #-}
   withNewFlintCtx
-    :: (Ptr (CFlintCtx ctx) -> Ptr (CFlint a) -> IO b)
+    :: (Ptr (CFlint a) -> Ptr (CFlintCtx ctx) -> IO b)
     -> RIOFlint ctx (a, b)
   withNewFlintCtx f = flip withFlintCtx f =<< newFlintCtx
 
@@ -64,7 +69,7 @@ class FlintContext ctx => FlintWithContext ctx a | a -> ctx where
   {-# INLINE withFlintCtx_ #-}
   withFlintCtx_
     :: a
-    -> (Ptr (CFlintCtx ctx) -> Ptr (CFlint a) -> IO b)
+    -> (Ptr (CFlint a) -> Ptr (CFlintCtx ctx) -> IO b)
     -> RIOFlint ctx a
   withFlintCtx_ a f = fst <$> withFlintCtx a f
 
@@ -78,7 +83,7 @@ class FlintContext ctx => FlintWithContext ctx a | a -> ctx where
 
   {-# INLINE withNewFlintCtx_ #-}
   withNewFlintCtx_
-    :: (Ptr (CFlintCtx ctx) -> Ptr (CFlint a) -> IO b)
+    :: (Ptr (CFlint a) -> Ptr (CFlintCtx ctx) -> IO b)
     -> RIOFlint ctx a
   withNewFlintCtx_ f = fst <$> withNewFlintCtx f
 

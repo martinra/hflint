@@ -35,6 +35,7 @@ import Data.Functor.Identity
 import HFlint.Internal.Flint
 import HFlint.Internal.FlintWithContext
 import HFlint.Internal.LiftCtx
+import HFlint.Internal.Utils
 
 
 --------------------------------------------------
@@ -48,7 +49,7 @@ liftFlint0
   -> a
   -> r
 liftFlint0 f (!a) = runIdentity $ runTrivialContext $
-  liftFlint0Ctx (const f) (return a)
+  liftFlint0Ctx (constBack f) (return a)
 
 {-# INLINE lift2Flint0 #-}
 lift2Flint0
@@ -58,7 +59,7 @@ lift2Flint0
   -> a -> b
   -> r
 lift2Flint0 f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2Flint0Ctx (const f) (return a) (return b)
+  lift2Flint0Ctx (constBack2 f) (return a) (return b)
 
 --------------------------------------------------
 --- () -> FMPZ
@@ -70,7 +71,7 @@ lift0Flint
   => ( Ptr (CFlint c) -> IO r )
   -> (c, r)
 lift0Flint f = runIdentity $ runTrivialContext $
-  lift0FlintCtx (const f)
+  lift0FlintCtx (constBack f)
 
 {-# INLINE lift0Flint_ #-}
 lift0Flint_
@@ -78,7 +79,7 @@ lift0Flint_
   => ( Ptr (CFlint c) -> IO r )
   -> c
 lift0Flint_ f = runIdentity $ runTrivialContext $
-  lift0FlintCtx_ (const f)
+  lift0FlintCtx_ (constBack f)
 
 --------------------------------------------------
 --- FMPZ -> FMPZ
@@ -91,7 +92,7 @@ liftFlint
   -> a
   -> (c, r)
 liftFlint f (!a) = runIdentity $ runTrivialContext $
-  liftFlintCtx (const f) (return a)
+  liftFlintCtx (constBack2 f) (return a)
 
 {-# INLINE liftFlint_ #-}
 liftFlint_
@@ -100,7 +101,7 @@ liftFlint_
   -> a
   -> c
 liftFlint_ f (!a) = runIdentity $ runTrivialContext $
-  liftFlintCtx_ (const f) (return a)
+  liftFlintCtx_ (constBack2 f) (return a)
 
 --------------------------------------------------
 --- FMPZ -> FMPZ -> FMPZ
@@ -113,7 +114,7 @@ lift2Flint
        -> IO r )
   -> a -> b -> (c, r)
 lift2Flint f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2FlintCtx (const f) (return a) (return b)
+  lift2FlintCtx (constBack3 f) (return a) (return b)
 
 {-# INLINE lift2Flint_ #-}
 lift2Flint_
@@ -123,7 +124,7 @@ lift2Flint_
   -> a -> b
   -> c
 lift2Flint_ f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2FlintCtx_ (const f) (return a) (return b)
+  lift2FlintCtx_ (constBack3 f) (return a) (return b)
 
 {-# INLINE lift2Flint' #-}
 lift2Flint'
@@ -133,7 +134,7 @@ lift2Flint'
   -> a -> b
   -> r
 lift2Flint' f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2FlintCtx' (const f) (return a) (return b)
+  lift2FlintCtx' (constBack3 f) (return a) (return b)
 
 --------------------------------------------------
 --- FMPZ -> FMPZ -> (FMPZ, FMPZ)
@@ -148,7 +149,7 @@ lift2Flint2
   -> a -> b
   -> ((c,d), r)
 lift2Flint2 f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2Flint2Ctx (const f) (return a) (return b)
+  lift2Flint2Ctx (constBack4 f) (return a) (return b)
 
 {-# INLINE lift2Flint2_ #-}
 lift2Flint2_
@@ -159,7 +160,7 @@ lift2Flint2_
   -> a -> b
   -> (c,d)
 lift2Flint2_ f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2Flint2Ctx_ (const f) (return a) (return b)
+  lift2Flint2Ctx_ (constBack4 f) (return a) (return b)
 
 {-# INLINE lift2Flint2' #-}
 lift2Flint2'
@@ -170,7 +171,7 @@ lift2Flint2'
   -> a -> b
   -> r
 lift2Flint2' f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2Flint2Ctx' (const f) (return a) (return b)
+  lift2Flint2Ctx' (constBack4 f) (return a) (return b)
 
 --------------------------------------------------
 --- FMPZ -> FMPZ -> (FMPZ, FMPZ, FMPZ)
@@ -185,7 +186,7 @@ lift2Flint3
   -> a -> b
   -> ((c,d,e), r)
 lift2Flint3 f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2Flint3Ctx (const f) (return a) (return b)
+  lift2Flint3Ctx (constBack5 f) (return a) (return b)
 
 {-# INLINE lift2Flint3_ #-}
 lift2Flint3_
@@ -196,7 +197,7 @@ lift2Flint3_
   -> a -> b
   -> (c,d,e)
 lift2Flint3_ f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2Flint3Ctx_ (const f) (return a) (return b)
+  lift2Flint3Ctx_ (constBack5 f) (return a) (return b)
 
 {-# INLINE lift2Flint3' #-}
 lift2Flint3'
@@ -207,4 +208,4 @@ lift2Flint3'
   -> a -> b
   -> r
 lift2Flint3' f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2Flint3Ctx' (const f) (return a) (return b)
+  lift2Flint3Ctx' (constBack5 f) (return a) (return b)

@@ -16,17 +16,23 @@ module HFlint.Internal.Flint
 where
 
 import Control.Monad.Reader
+import Foreign.ForeignPtr ( newForeignPtr_ )
 import Foreign.Ptr ( Ptr, nullPtr )
 
 import HFlint.Internal.FlintWithContext
+import HFlint.Internal.Utils
 
 
 data FlintTrivialContext = FlintTrivialContext
+
 instance FlintContext FlintTrivialContext where
   data CFlintCtx FlintTrivialContext
 
+  {-# INLINE newFlintContext #-}
+  newFlintContext = newForeignPtr_ nullPtr
+
   {-# INLINE implicitCtx #-}
-  implicitCtx f ctxptr aptr = runReaderT (f aptr) ctxptr
+  implicitCtx f aptr ctxptr = runReaderT (f aptr) ctxptr
 
 type CFlintTrivialContext = CFlintCtx FlintTrivialContext
 
@@ -44,20 +50,20 @@ class FlintWithContext FlintTrivialContext a => Flint a where
   withFlint :: a
             -> (Ptr (CFlint a) -> IO b)
             -> IO (a, b)
-  withFlint a f = runTrivialContext $ withFlintCtx a (const f)
+  withFlint a f = runTrivialContext $ withFlintCtx a (constBack f)
 
   {-# INLINE withFlint_ #-}
   withFlint_ :: a
              -> (Ptr (CFlint a) -> IO b)
              -> IO a
-  withFlint_ a f = runTrivialContext $ withFlintCtx_ a (const f)
+  withFlint_ a f = runTrivialContext $ withFlintCtx_ a (constBack f)
 
   {-# INLINE withNewFlint #-}
   withNewFlint :: (Ptr (CFlint a) -> IO b)
                -> IO (a, b)
-  withNewFlint f = runTrivialContext $ withNewFlintCtx (const f)
+  withNewFlint f = runTrivialContext $ withNewFlintCtx (constBack f)
 
   {-# INLINE withNewFlint_ #-}
   withNewFlint_ :: (Ptr (CFlint a) -> IO b)
                 -> IO a
-  withNewFlint_ f = runTrivialContext $ withNewFlintCtx_ (const f)
+  withNewFlint_ f = runTrivialContext $ withNewFlintCtx_ (constBack f)

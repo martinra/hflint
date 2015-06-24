@@ -13,7 +13,6 @@ where
 
 #include <flint/fmpz_poly.h>
 
-import Control.Monad ( (>=>) )
 import Control.Monad.IO.Class ( liftIO )
 import Foreign.C.String ( CString )
 import Foreign.C.Types ( CInt(..)
@@ -47,8 +46,8 @@ instance FlintWithContext FlintTrivialContext FMPZPoly where
     return $ FMPZPoly a
 
   withFlintCtx (FMPZPoly a) f = liftIO $
-    withForeignPtr a $ f nullPtr >=>
-    return . (FMPZPoly a,)
+    withForeignPtr a $ \aptr ->
+    f aptr nullPtr >>= return . (FMPZPoly a,)
 
 
 instance Flint FMPZPoly
