@@ -32,10 +32,11 @@ where
 import Foreign.Ptr ( Ptr )
 import Data.Functor.Identity
 
+import HFlint.Internal.Context
 import HFlint.Internal.Flint
 import HFlint.Internal.FlintWithContext
 import HFlint.Internal.LiftCtx
-import HFlint.Internal.Utils
+import HFlint.Internal.Lift.Utils
 
 
 --------------------------------------------------

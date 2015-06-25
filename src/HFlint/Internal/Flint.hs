@@ -9,36 +9,14 @@
 module HFlint.Internal.Flint
   ( Flint(..)
 
-  , FlintTrivialContext
-  , CFlintTrivialContext
-  , runTrivialContext
-  )
+ )
 where
 
-import Control.Monad.Reader
-import Foreign.ForeignPtr ( newForeignPtr_ )
-import Foreign.Ptr ( Ptr, nullPtr )
+import Foreign.Ptr ( Ptr )
 
+import HFlint.Internal.Context
 import HFlint.Internal.FlintWithContext
-import HFlint.Internal.Utils
-
-
-data FlintTrivialContext = FlintTrivialContext
-
-instance FlintContext FlintTrivialContext where
-  data CFlintCtx FlintTrivialContext
-
-  {-# INLINE newFlintContext #-}
-  newFlintContext = newForeignPtr_ nullPtr
-
-  {-# INLINE implicitCtx #-}
-  implicitCtx f aptr ctxptr = runReaderT (f aptr) ctxptr
-
-type CFlintTrivialContext = CFlintCtx FlintTrivialContext
-
-{-# INLINE runTrivialContext #-}
-runTrivialContext :: Monad m => ReaderT (Ptr CFlintTrivialContext) m a -> m a
-runTrivialContext a = runReaderT a nullPtr 
+import HFlint.Internal.Lift.Utils
 
 
 class FlintWithContext FlintTrivialContext a => Flint a where

@@ -5,33 +5,14 @@
   #-}
 
 module HFlint.Internal.FlintWithContext
-  ( FlintContext(..)
-  , FlintWithContext(..)
-
-  , RFlint
-  , RIOFlint
+  ( FlintWithContext(..)
   )
 where
 
-import Control.Monad.Reader
-import Foreign.ForeignPtr ( ForeignPtr )
 import Foreign.Ptr ( Ptr )
 
+import HFlint.Internal.Context
 
-class FlintContext ctx where
-  data CFlintCtx ctx :: *
-
-  newFlintContext :: IO (ForeignPtr (CFlintCtx ctx))
-
-  {-# INLINE implicitCtx #-}
-  implicitCtx
-    :: FlintWithContext ctx a
-    => ( Ptr (CFlint a) -> RIOFlint ctx b )
-    -> Ptr (CFlint a) -> Ptr (CFlintCtx ctx) -> IO b
-  implicitCtx f aptr ctxptr = runReaderT (f aptr) ctxptr
-
-type RFlint ctx a = Reader (Ptr (CFlintCtx ctx)) a
-type RIOFlint ctx a = ReaderT (Ptr (CFlintCtx ctx)) IO a
 
 -- class of Flint types that do not require a context
 class FlintContext ctx => FlintWithContext ctx a | a -> ctx where

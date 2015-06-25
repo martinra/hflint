@@ -24,6 +24,7 @@ import Foreign.Storable ( Storable(..) )
 
 import HFlint.FMPZ.FFI
 import HFlint.FMPZPoly.FFI
+import HFlint.Internal.Context
 import HFlint.Internal.Flint
 import HFlint.Internal.FlintWithContext
 

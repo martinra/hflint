@@ -26,6 +26,7 @@ import Foreign.Ptr ( Ptr, FunPtr, nullPtr )
 import Foreign.Storable ( Storable(..) )
 
 import HFlint.FMPZ.FFI
+import HFlint.Internal.Context
 import HFlint.Internal.Flint
 import HFlint.Internal.FlintWithContext
 

@@ -30,22 +30,13 @@ module HFlint.Internal.LiftCtx
   )
 where
 
-import Control.Monad.Reader
 import Foreign.Ptr ( Ptr )
 import Data.Composition
-import Data.Functor.Identity
-import System.IO.Unsafe ( unsafePerformIO )
 
+import HFlint.Internal.Context
 import HFlint.Internal.FlintWithContext
+import HFlint.Internal.Lift.Utils
 
-
---------------------------------------------------
--- unsafePerformIO within ReaderT
---------------------------------------------------
-
-{-# INLINE fromIO #-}
-fromIO :: RIOFlint ctx a -> RFlint ctx a
-fromIO = mapReaderT (Identity . unsafePerformIO)
 
 --------------------------------------------------
 -- FMPZ -> ()

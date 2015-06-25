@@ -83,10 +83,14 @@ library
 
     HFlint.FMPZPolyFactor.FFI
 
+    HFlint.Internal.Context
     HFlint.Internal.Flint
+    HFlint.Internal.FlintPrim
     HFlint.Internal.FlintWithContext
     HFlint.Internal.Lift
     HFlint.Internal.LiftCtx
+    HFlint.Internal.LiftPrim
+    HFlint.Internal.Lift.Utils
     HFlint.Internal.Utils
     HFlint.Internal.TH
 

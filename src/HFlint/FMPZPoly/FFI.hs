@@ -29,12 +29,13 @@ import Foreign.Ptr ( Ptr, FunPtr, nullPtr )
 import Foreign.Storable ( Storable(..) )
 
 import HFlint.FMPZ.FFI
+import HFlint.Internal.Context
 import HFlint.Internal.Flint
 import HFlint.Internal.FlintWithContext
 
 
 
-{-# LINE 34 "FFI.pre.hsc" #-}
+{-# LINE 35 "FFI.pre.hsc" #-}
 
 
 newtype FMPZPoly = FMPZPoly (ForeignPtr CFMPZPoly)
@@ -71,9 +72,9 @@ withNewFMPZPoly_ = withNewFlint_
 
 instance Storable CFMPZPoly where
     sizeOf _ = (24)
-{-# LINE 70 "FFI.pre.hsc" #-}
-    alignment _ = 8
 {-# LINE 71 "FFI.pre.hsc" #-}
+    alignment _ = 8
+{-# LINE 72 "FFI.pre.hsc" #-}
     peek = error "CFMPZPoly.peek: Not defined"
     poke = error "CFMPZPoly.poke: Not defined"
 
