@@ -57,3 +57,61 @@ fmpz_poly_is_zero_wrapper(
 {
   return fmpz_poly_is_zero(p);
 }
+
+ulong
+nmod_add_wrapper(
+  ulong a,
+  ulong b,
+  nmod_t* mod
+  )
+{
+  return nmod_add(a,b,*mod);
+}
+
+ulong
+nmod_sub_wrapper(
+  ulong a,
+  ulong b,
+  nmod_t* mod
+  )
+{
+  return nmod_sub(a,b,*mod);
+}
+
+ulong
+nmod_neg_wrapper(
+  ulong a,
+  nmod_t* mod
+  )
+{
+  return nmod_neg(a,*mod);
+}
+
+ulong
+nmod_mul_wrapper(
+  ulong a,
+  ulong b,
+  nmod_t* mod
+  )
+{
+  return nmod_mul(a,b,*mod);
+}
+
+ulong
+nmod_inv_wrapper(
+  ulong a,
+  nmod_t* mod
+  )
+{
+  return nmod_inv(a,*mod);
+}
+
+ulong
+nmod_div_wrapper(
+  ulong a,
+  ulong b,
+  nmod_t* mod
+  )
+{
+  return nmod_div(a,b,*mod);
+}

@@ -22,4 +22,11 @@ int fmpz_poly_is_zero_wrapper(const fmpz_poly_t p);
 
 fmpz* fmpq_poly_denref_wrapper(fmpq_poly_t x);
 
+ulong nmod_add_wrapper(ulong a, ulong b, nmod_t* mod);
+ulong nmod_sub_wrapper(ulong a, ulong b, nmod_t* mod);
+ulong nmod_neg_wrapper(ulong a, nmod_t* mod);
+ulong nmod_mul_wrapper(ulong a, ulong b, nmod_t* mod);
+ulong nmod_inv_wrapper(ulong a, nmod_t* mod);
+ulong nmod_div_wrapper(ulong a, ulong b, nmod_t* mod);
+
 #endif
