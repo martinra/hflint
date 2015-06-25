@@ -1,11 +1,15 @@
 {-# LANGUAGE
     CApiFFI
   , EmptyDataDecls
+  , FlexibleContexts
   , FlexibleInstances
   , ForeignFunctionInterface
+  , InstanceSigs
   , MultiParamTypeClasses
+  , ScopedTypeVariables
   , TupleSections
   , TypeFamilies
+  , UndecidableInstances
   #-}
 
 module HFlint.NMod.FFI
@@ -14,8 +18,8 @@ where
 #include <flint/fmpz.h>
 
 import Control.Monad ( when )
-import Control.Monad.IO.Class ( liftIO )
-import Control.Monad.Reader ( ask )
+import Data.Proxy
+import Data.Reflection
 
 import Foreign.C.Types ( CULong(..) )
 import Foreign.ForeignPtr ( ForeignPtr
@@ -28,21 +32,19 @@ import System.IO.Unsafe ( unsafePerformIO )
 
 import HFlint.Internal.Context
 import HFlint.Internal.FlintPrim
-import HFlint.Internal.FlintWithContext
 
 
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 
-newtype NMod = NMod {unNMod :: CULong}
-type CNMod = CFlint NMod
+newtype NMod ctxProxy = NMod {unNMod :: CULong}
+--type CNMod ctx = CFlint (NMod ctx)
 
 newtype NModCtx = NModCtx (ForeignPtr CNModCtx)
 type CNModCtx = CFlintCtx NModCtx
 
-type RNMod = RFlint NModCtx NMod
 
-
-instance FlintContext NModCtx where
+instance FlintContext NModCtx
+  where
   data CFlintCtx NModCtx
   -- this should actually be the intersection of Natural and Int
   data FlintContextData NModCtx = NModCtxData Natural
@@ -57,7 +59,7 @@ instance FlintContext NModCtx where
   
   {-# INLINE withFlintContext #-}
   withFlintContext (NModCtx fptr) f = unsafePerformIO $
-    withForeignPtr fptr $ \ptr -> return $ f ptr
+    withForeignPtr fptr $ \ptr -> return $ reify ptr f
 
 instance Storable CNModCtx where
     {-# INLINE sizeOf #-}
@@ -68,17 +70,32 @@ instance Storable CNModCtx where
     poke = error "CNModCtx.poke: Not defined"
 
 
-instance FlintPrim NModCtx NMod where
+instance FlintPrim NModCtx NMod
+  where
   type CFlintPrim NMod = CULong
 
-  {-# INLINE withFlintPrim #-}
-  withFlintPrim (NMod a) f = do
-    ctxptr <- ask
-    liftIO $ f a ctxptr
+  {-# INLINE withFlintPrimCtx #-}
+  withFlintPrimCtx
+    :: forall ctxProxy b .
+       ReifiesFlintContext NModCtx ctxProxy
+    => NMod ctxProxy
+    -> (CFlintPrim NMod -> Ptr (CFlintCtx NModCtx) -> IO b)
+    -> IO b
+  withFlintPrimCtx (NMod a) f = 
+    f a $ reflect (Proxy :: Proxy ctxProxy)
 
-  {-# INLINE withNewFlintPrim #-}
-  withNewFlintPrim f = ask >>= liftIO . fmap NMod . f 
-    
+  {-# INLINE withNewFlintPrimCtx #-}
+  withNewFlintPrimCtx
+    :: forall ctxProxy .
+       ReifiesFlintContext NModCtx ctxProxy
+    => (Ptr (CFlintCtx NModCtx) -> IO (CFlintPrim NMod))
+    -> IO (NMod ctxProxy)
+  withNewFlintPrimCtx f =
+    NMod <$> f (reflect (Proxy :: Proxy ctxProxy))
+
+  {-# INLINE withFlintPrim #-}
+  withFlintPrim (NMod a) f = f a
+
 
 foreign import capi unsafe "flint/nmod_vec.h nmod_init"
         nmod_init :: Ptr CNModCtx -> CULong -> IO ()

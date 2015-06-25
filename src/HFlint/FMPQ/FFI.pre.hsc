@@ -13,21 +13,17 @@ where
 
 #include <flint/fmpq.h>
 
-import Control.Monad.IO.Class ( liftIO )
-
 import Foreign.C.String ( CString )
 import Foreign.C.Types ( CInt(..) )
 import Foreign.ForeignPtr ( ForeignPtr
                           , addForeignPtrFinalizer
                           , mallocForeignPtr
                           , withForeignPtr )
-import Foreign.Ptr ( Ptr, FunPtr, nullPtr )
+import Foreign.Ptr ( Ptr, FunPtr )
 import Foreign.Storable ( Storable(..) )
 
 import HFlint.FMPZ.FFI
-import HFlint.Internal.Context
 import HFlint.Internal.Flint
-import HFlint.Internal.FlintWithContext
 
 
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
@@ -36,23 +32,21 @@ import HFlint.Internal.FlintWithContext
 newtype FMPQ = FMPQ (ForeignPtr CFMPQ)
 type CFMPQ = CFlint FMPQ
 
-instance FlintWithContext FlintTrivialContext FMPQ where
+instance Flint FMPQ where
   data CFlint FMPQ
 
-  {-# INLINE newFlintCtx #-}
-  newFlintCtx = liftIO $ do
+  {-# INLINE newFlint #-}
+  newFlint = do
     a <- mallocForeignPtr
     withForeignPtr a fmpq_init
     addForeignPtrFinalizer p_fmpq_clear a
     return $ FMPQ a
 
-  {-# INLINE withFlintCtx #-}
-  withFlintCtx (FMPQ a) f = liftIO $
+  {-# INLINE withFlint #-}
+  withFlint (FMPQ a) f =
     withForeignPtr a $ \aptr ->
-    f aptr nullPtr >>= return . (FMPQ a,)
+    f aptr >>= return . (FMPQ a,)
 
-
-instance Flint FMPQ
 
 {-# INLINE withFMPQ #-}
 withFMPQ :: FMPQ -> (Ptr CFMPQ -> IO b) -> IO (FMPQ, b)

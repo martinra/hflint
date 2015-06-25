@@ -16,7 +16,6 @@ where
 
 {-# LINE 15 "FFI.pre.hsc" #-}
 
-import Control.Monad.IO.Class ( liftIO )
 import Foreign.C.String ( CString )
 import Foreign.C.Types ( CInt(..)
                        , CLong(..)
@@ -25,37 +24,32 @@ import Foreign.ForeignPtr ( ForeignPtr
                           , mallocForeignPtr, withForeignPtr
                           , addForeignPtrFinalizer
                           )
-import Foreign.Ptr ( Ptr, FunPtr, nullPtr )
+import Foreign.Ptr ( Ptr, FunPtr )
 import Foreign.Storable ( Storable(..) )
 
 import HFlint.FMPZ.FFI
-import HFlint.Internal.Context
 import HFlint.Internal.Flint
-import HFlint.Internal.FlintWithContext
 
 
 
-{-# LINE 35 "FFI.pre.hsc" #-}
+{-# LINE 32 "FFI.pre.hsc" #-}
 
 
 newtype FMPZPoly = FMPZPoly (ForeignPtr CFMPZPoly)
 type CFMPZPoly = CFlint FMPZPoly
 
-instance FlintWithContext FlintTrivialContext FMPZPoly where
+instance Flint FMPZPoly where
   data CFlint FMPZPoly
 
-  newFlintCtx = liftIO $ do
+  newFlint = do
     a <- mallocForeignPtr
     withForeignPtr a fmpz_poly_init
     addForeignPtrFinalizer p_fmpz_poly_clear a
     return $ FMPZPoly a
 
-  withFlintCtx (FMPZPoly a) f = liftIO $
+  withFlint (FMPZPoly a) f =
     withForeignPtr a $ \aptr ->
-    f aptr nullPtr >>= return . (FMPZPoly a,)
-
-
-instance Flint FMPZPoly
+    f aptr >>= return . (FMPZPoly a,)
 
 withFMPZPoly :: FMPZPoly -> (Ptr CFMPZPoly -> IO b) -> IO (FMPZPoly, b)
 withFMPZPoly = withFlint
@@ -72,9 +66,9 @@ withNewFMPZPoly_ = withNewFlint_
 
 instance Storable CFMPZPoly where
     sizeOf _ = (24)
-{-# LINE 71 "FFI.pre.hsc" #-}
+{-# LINE 65 "FFI.pre.hsc" #-}
     alignment _ = 8
-{-# LINE 72 "FFI.pre.hsc" #-}
+{-# LINE 66 "FFI.pre.hsc" #-}
     peek = error "CFMPZPoly.peek: Not defined"
     poke = error "CFMPZPoly.poke: Not defined"
 

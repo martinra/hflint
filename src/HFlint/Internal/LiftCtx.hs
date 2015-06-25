@@ -30,12 +30,13 @@ module HFlint.Internal.LiftCtx
   )
 where
 
-import Foreign.Ptr ( Ptr )
 import Data.Composition
+import Foreign.Ptr ( Ptr )
+import System.IO.Unsafe ( unsafePerformIO )
 
 import HFlint.Internal.Context
+import HFlint.Internal.Flint
 import HFlint.Internal.FlintWithContext
-import HFlint.Internal.Lift.Utils
 
 
 --------------------------------------------------
@@ -46,12 +47,9 @@ import HFlint.Internal.Lift.Utils
 liftFlint0Ctx
   :: ( FlintWithContext ctx a )
   => ( Ptr (CFlint a) -> Ptr (CFlintCtx ctx) -> IO r )
-  -> RFlint ctx a
-  -> RFlint ctx r
-liftFlint0Ctx f (!a) = do
-  a' <- a
-  fromIO $
-    fmap snd $ withFlintCtx a' f
+  -> a
+  -> r
+liftFlint0Ctx f (!a) = unsafePerformIO $ snd <$> withFlintCtx a f
 
 {-# INLINE lift2Flint0Ctx #-}
 lift2Flint0Ctx
@@ -59,15 +57,12 @@ lift2Flint0Ctx
   => (    Ptr (CFlint a) -> Ptr (CFlint b)
        -> Ptr (CFlintCtx ctx)
        -> IO r )
-  -> RFlint ctx a -> RFlint ctx b
-  -> RFlint ctx r
-lift2Flint0Ctx f (!a) (!b) = do
-  a' <- a
-  b' <- b
-  fromIO $
-    fmap snd $ withFlintImplicitCtx a' $ \aptr     ->
-    fmap snd $ withFlintCtx b'         $ \bptr ctx ->
-    f aptr bptr ctx
+  -> a -> b
+  -> r
+lift2Flint0Ctx f (!a) (!b) = unsafePerformIO $
+  fmap snd $ withFlint a    $ \aptr     ->
+  fmap snd $ withFlintCtx b $ \bptr ctx ->
+  f aptr bptr ctx
 
 --------------------------------------------------
 --- () -> FMPZ
@@ -77,18 +72,15 @@ lift2Flint0Ctx f (!a) (!b) = do
 lift0FlintCtx
   :: ( FlintWithContext ctx c )
   => ( Ptr (CFlint c) -> Ptr (CFlintCtx ctx) -> IO r )
-  -> RFlint ctx (c, r)
-lift0FlintCtx f = 
-  fromIO $
-    withNewFlintCtx $ \cptr ctx ->
-    f cptr ctx
+  -> (c, r)
+lift0FlintCtx f = unsafePerformIO $ withNewFlintCtx f
 
 {-# INLINE lift0FlintCtx_ #-}
 lift0FlintCtx_
   :: ( FlintWithContext ctx c )
   => ( Ptr (CFlint c) -> Ptr (CFlintCtx ctx) -> IO r )
-  -> RFlint ctx c
-lift0FlintCtx_ = fmap fst . lift0FlintCtx
+  -> c
+lift0FlintCtx_ = fst . lift0FlintCtx
 
 --------------------------------------------------
 --- FMPZ -> FMPZ
@@ -100,14 +92,12 @@ liftFlintCtx
   => (    Ptr (CFlint c) -> Ptr (CFlint a)
        -> Ptr (CFlintCtx ctx)
        -> IO r )
-  -> RFlint ctx a
-  -> RFlint ctx (c, r)
-liftFlintCtx f (!a) = do
-  a' <- a
-  fromIO $
-    withNewFlintImplicitCtx    $ \cptr     ->
-    fmap snd $ withFlintCtx a' $ \aptr ctx ->
-    f cptr aptr ctx
+  -> a
+  -> (c, r)
+liftFlintCtx f (!a) = unsafePerformIO $
+  fmap snd $ withFlint a     $ \aptr     ->
+             withNewFlintCtx $ \cptr ctx ->
+  f cptr aptr ctx
 
 {-# INLINE liftFlintCtx_ #-}
 liftFlintCtx_
@@ -115,9 +105,9 @@ liftFlintCtx_
   => (    Ptr (CFlint c) -> Ptr (CFlint a)
        -> Ptr (CFlintCtx ctx)
        -> IO r )
-  -> RFlint ctx a
-  -> RFlint ctx c
-liftFlintCtx_ = fmap fst .: liftFlintCtx
+  -> a
+  -> c
+liftFlintCtx_ = fst .: liftFlintCtx
 
 --------------------------------------------------
 --- FMPZ -> FMPZ -> FMPZ
@@ -127,43 +117,44 @@ liftFlintCtx_ = fmap fst .: liftFlintCtx
 lift2FlintCtx
   :: ( FlintWithContext ctx c
      , FlintWithContext ctx a, FlintWithContext ctx b )
-  => (    Ptr (CFlint c) -> Ptr (CFlint a) -> Ptr (CFlint b)
+  => (    Ptr (CFlint c)
+       -> Ptr (CFlint a) -> Ptr (CFlint b)
        -> Ptr (CFlintCtx ctx)
        -> IO r )
-  -> RFlint ctx a -> RFlint ctx b
-  -> RFlint ctx (c, r)
-lift2FlintCtx f (!a) (!b) = do
-  a' <- a; b' <- b
-  fromIO $
-    fmap snd $ withFlintImplicitCtx a' $ \aptr     ->
-    fmap snd $ withFlintImplicitCtx b' $ \bptr     ->
-               withNewFlintCtx         $ \cptr ctx ->
+  -> a -> b
+  -> (c, r)
+lift2FlintCtx f (!a) (!b) = unsafePerformIO $
+    fmap snd $ withFlint a     $ \aptr     ->
+    fmap snd $ withFlint b     $ \bptr     ->
+               withNewFlintCtx $ \cptr ctx ->
     f cptr aptr bptr ctx
 
 {-# INLINE lift2FlintCtx_ #-}
 lift2FlintCtx_
   :: ( FlintWithContext ctx c
      , FlintWithContext ctx a, FlintWithContext ctx b )
-  => (    Ptr (CFlint c) -> Ptr (CFlint a) -> Ptr (CFlint b)
+  => (    Ptr (CFlint c)
+       -> Ptr (CFlint a) -> Ptr (CFlint b)
        -> Ptr (CFlintCtx ctx)
        -> IO r )
-  -> RFlint ctx a -> RFlint ctx b
-  -> RFlint ctx c
-lift2FlintCtx_ = fmap fst .:. lift2FlintCtx
+  -> a -> b
+  -> c
+lift2FlintCtx_ = fst .:. lift2FlintCtx
 
 {-# INLINE lift2FlintCtx' #-}
 lift2FlintCtx'
   :: forall ctx a b r .
      ( FlintWithContext ctx a, FlintWithContext ctx b )
-  => (    Ptr (CFlint a) -> Ptr (CFlint a) -> Ptr (CFlint b)
+  => (    Ptr (CFlint a)
+       -> Ptr (CFlint a) -> Ptr (CFlint b)
        -> Ptr (CFlintCtx ctx)
        -> IO r)
-  -> RFlint ctx a -> RFlint ctx b
-  -> RFlint ctx r
-lift2FlintCtx' f a b = fmap snd cr
+  -> a -> b
+  -> r
+lift2FlintCtx' f a b = snd cr
   where
   cr = lift2FlintCtx f a b
-  _ = fmap fst cr :: RFlint ctx a
+  _ = fst cr :: a
 
 --------------------------------------------------
 --- FMPZ -> FMPZ -> (FMPZ, FMPZ)
@@ -177,16 +168,14 @@ lift2Flint2Ctx
        -> Ptr (CFlint a) -> Ptr (CFlint b)
        -> Ptr (CFlintCtx ctx)
        -> IO r )
-  -> RFlint ctx a -> RFlint ctx b
-  -> RFlint ctx ((c,d), r)
-lift2Flint2Ctx f (!a) (!b) = do
-  a' <- a; b' <- b
-  fromIO $
-    fmap snd $ withFlintImplicitCtx a' $ \aptr     ->
-    fmap snd $ withFlintImplicitCtx b' $ \bptr     ->
-    fmap cmb $ withNewFlintImplicitCtx $ \cptr     -> 
-               withNewFlintCtx         $ \dptr ctx -> 
-    f cptr dptr aptr bptr ctx
+  -> a -> b
+  -> ((c,d), r)
+lift2Flint2Ctx f (!a) (!b) = unsafePerformIO $
+  fmap snd $ withFlint a     $ \aptr     ->
+  fmap snd $ withFlint b     $ \bptr     ->
+  fmap cmb $ withNewFlint    $ \cptr     -> 
+             withNewFlintCtx $ \dptr ctx -> 
+  f cptr dptr aptr bptr ctx
   where
    cmb (c, (d,r)) = ((c,d), r)
 
@@ -198,9 +187,9 @@ lift2Flint2Ctx_
        -> Ptr (CFlint a) -> Ptr (CFlint b)
        -> Ptr (CFlintCtx ctx)
        -> IO r )
-  -> RFlint ctx a -> RFlint ctx b
-  -> RFlint ctx (c,d)
-lift2Flint2Ctx_ = fmap fst .:. lift2Flint2Ctx
+  -> a -> b
+  -> (c,d)
+lift2Flint2Ctx_ = fst .:. lift2Flint2Ctx
 
 {-# INLINE lift2Flint2Ctx' #-}
 lift2Flint2Ctx'
@@ -210,12 +199,12 @@ lift2Flint2Ctx'
        -> Ptr (CFlint a) -> Ptr (CFlint b)
        -> Ptr (CFlintCtx ctx)
        -> IO r )
-  -> RFlint ctx a -> RFlint ctx b
-  -> RFlint ctx r
-lift2Flint2Ctx' f a b = fmap snd cdr
+  -> a -> b
+  -> r
+lift2Flint2Ctx' f a b = snd cdr
   where
   cdr = lift2Flint2Ctx f a b
-  _ = fmap fst cdr :: RFlint ctx (a,a)
+  _ = fst cdr :: (a,a)
 
 --------------------------------------------------
 --- FMPZ -> FMPZ -> (FMPZ, FMPZ, FMPZ)
@@ -230,16 +219,14 @@ lift2Flint3Ctx
        -> Ptr (CFlint a) -> Ptr (CFlint b)
        -> Ptr (CFlintCtx ctx)
        -> IO r )
-  -> RFlint ctx a -> RFlint ctx b
-  -> RFlint ctx ((c,d,e), r)
-lift2Flint3Ctx f (!a) (!b) = do
-  a' <- a; b' <- b
-  fromIO $
-    fmap snd $ withFlintImplicitCtx a' $ \aptr     ->
-    fmap snd $ withFlintImplicitCtx b' $ \bptr     ->
-    fmap cmb $ withNewFlintImplicitCtx $ \cptr     ->
-               withNewFlintImplicitCtx $ \dptr     ->
-               withNewFlintCtx         $ \eptr ctx ->
+  -> a -> b
+  -> ((c,d,e), r)
+lift2Flint3Ctx f (!a) (!b) = unsafePerformIO $
+    fmap snd $ withFlint a     $ \aptr     ->
+    fmap snd $ withFlint b     $ \bptr     ->
+    fmap cmb $ withNewFlint    $ \cptr     ->
+               withNewFlint    $ \dptr     ->
+               withNewFlintCtx $ \eptr ctx ->
     f cptr dptr eptr aptr bptr ctx
   where
     cmb (c,(d,(e,r))) = ((c,d,e),r)
@@ -253,9 +240,9 @@ lift2Flint3Ctx_
        -> Ptr (CFlint a) -> Ptr (CFlint b)
        -> Ptr (CFlintCtx ctx)
        -> IO r )
-  -> RFlint ctx a -> RFlint ctx b
-  -> RFlint ctx (c,d,e)
-lift2Flint3Ctx_ = fmap fst .:. lift2Flint3Ctx
+  -> a -> b
+  -> (c,d,e)
+lift2Flint3Ctx_ = fst .:. lift2Flint3Ctx
 
 {-# INLINE lift2Flint3Ctx' #-}
 lift2Flint3Ctx'
@@ -265,8 +252,8 @@ lift2Flint3Ctx'
        -> Ptr (CFlint a) -> Ptr (CFlint b)
        -> Ptr (CFlintCtx ctx)
        -> IO r)
-  -> RFlint ctx a -> RFlint ctx b
-  -> RFlint ctx r
-lift2Flint3Ctx' f a b = fmap snd cder where
+  -> a -> b
+  -> r
+lift2Flint3Ctx' f a b = snd cder where
   cder = lift2Flint3Ctx f a b
-  _ = fmap fst cder :: RFlint ctx (a,a,a)
+  _ = fst cder :: (a,a,a)

@@ -1,8 +1,9 @@
 {-# LANGUAGE
     BangPatterns
-  , TypeFamilies
   , FlexibleContexts
   , FlexibleInstances
+  , ScopedTypeVariables
+  , TypeFamilies
   #-}
 
 module HFlint.Internal.Lift
@@ -29,14 +30,11 @@ module HFlint.Internal.Lift
   )
 where
 
+import Data.Composition
 import Foreign.Ptr ( Ptr )
-import Data.Functor.Identity
+import System.IO.Unsafe ( unsafePerformIO )
 
-import HFlint.Internal.Context
 import HFlint.Internal.Flint
-import HFlint.Internal.FlintWithContext
-import HFlint.Internal.LiftCtx
-import HFlint.Internal.Lift.Utils
 
 
 --------------------------------------------------
@@ -49,8 +47,7 @@ liftFlint0
   => ( Ptr (CFlint a) -> IO r )
   -> a
   -> r
-liftFlint0 f (!a) = runIdentity $ runTrivialContext $
-  liftFlint0Ctx (constBack f) (return a)
+liftFlint0 f (!a) = unsafePerformIO $ snd <$> withFlint a f
 
 {-# INLINE lift2Flint0 #-}
 lift2Flint0
@@ -59,8 +56,10 @@ lift2Flint0
        -> IO r )
   -> a -> b
   -> r
-lift2Flint0 f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2Flint0Ctx (constBack2 f) (return a) (return b)
+lift2Flint0 f (!a) (!b) = unsafePerformIO $
+  fmap snd $ withFlint a $ \aptr ->
+  fmap snd $ withFlint b $ \bptr ->
+  f aptr bptr
 
 --------------------------------------------------
 --- () -> FMPZ
@@ -71,16 +70,14 @@ lift0Flint
   :: ( Flint c )
   => ( Ptr (CFlint c) -> IO r )
   -> (c, r)
-lift0Flint f = runIdentity $ runTrivialContext $
-  lift0FlintCtx (constBack f)
+lift0Flint f = unsafePerformIO $ withNewFlint f
 
 {-# INLINE lift0Flint_ #-}
 lift0Flint_
   :: ( Flint c )
   => ( Ptr (CFlint c) -> IO r )
   -> c
-lift0Flint_ f = runIdentity $ runTrivialContext $
-  lift0FlintCtx_ (constBack f)
+lift0Flint_ = fst . lift0Flint
 
 --------------------------------------------------
 --- FMPZ -> FMPZ
@@ -92,8 +89,10 @@ liftFlint
   => ( Ptr (CFlint c) -> Ptr (CFlint a) -> IO r )
   -> a
   -> (c, r)
-liftFlint f (!a) = runIdentity $ runTrivialContext $
-  liftFlintCtx (constBack2 f) (return a)
+liftFlint f (!a) = unsafePerformIO $
+  fmap snd $ withFlint a  $ \aptr ->
+             withNewFlint $ \cptr ->
+  f cptr aptr
 
 {-# INLINE liftFlint_ #-}
 liftFlint_
@@ -101,8 +100,7 @@ liftFlint_
   => ( Ptr (CFlint c) -> Ptr (CFlint a) -> IO r )
   -> a
   -> c
-liftFlint_ f (!a) = runIdentity $ runTrivialContext $
-  liftFlintCtx_ (constBack2 f) (return a)
+liftFlint_ = fst .: liftFlint
 
 --------------------------------------------------
 --- FMPZ -> FMPZ -> FMPZ
@@ -111,31 +109,39 @@ liftFlint_ f (!a) = runIdentity $ runTrivialContext $
 {-# INLINE lift2Flint #-}
 lift2Flint
   :: ( Flint c, Flint a, Flint b )
-  => (    Ptr (CFlint c) -> Ptr (CFlint a) -> Ptr (CFlint b)
+  => (    Ptr (CFlint c)
+       -> Ptr (CFlint a) -> Ptr (CFlint b)
        -> IO r )
   -> a -> b -> (c, r)
-lift2Flint f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2FlintCtx (constBack3 f) (return a) (return b)
+lift2Flint f (!a) (!b) = unsafePerformIO $
+    fmap snd $ withFlint a  $ \aptr ->
+    fmap snd $ withFlint b  $ \bptr ->
+               withNewFlint $ \cptr ->
+    f cptr aptr bptr
 
 {-# INLINE lift2Flint_ #-}
 lift2Flint_
   :: ( Flint c, Flint a, Flint b )
-  => (    Ptr (CFlint c) -> Ptr (CFlint a) -> Ptr (CFlint b)
+  => (    Ptr (CFlint c)
+       -> Ptr (CFlint a) -> Ptr (CFlint b)
        -> IO r )
   -> a -> b
   -> c
-lift2Flint_ f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2FlintCtx_ (constBack3 f) (return a) (return b)
+lift2Flint_ = fst .:. lift2Flint
 
 {-# INLINE lift2Flint' #-}
 lift2Flint'
-  :: ( Flint a, Flint b )
-  => (    Ptr (CFlint a) -> Ptr (CFlint a) -> Ptr (CFlint b)
+  :: forall a b r .
+     ( Flint a, Flint b )
+  => (    Ptr (CFlint a)
+       -> Ptr (CFlint a) -> Ptr (CFlint b)
        -> IO r)
   -> a -> b
   -> r
-lift2Flint' f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2FlintCtx' (constBack3 f) (return a) (return b)
+lift2Flint' f a b = snd cr
+  where
+  cr = lift2Flint f a b
+  _ = fst cr :: a
 
 --------------------------------------------------
 --- FMPZ -> FMPZ -> (FMPZ, FMPZ)
@@ -149,8 +155,14 @@ lift2Flint2
        -> IO r )
   -> a -> b
   -> ((c,d), r)
-lift2Flint2 f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2Flint2Ctx (constBack4 f) (return a) (return b)
+lift2Flint2 f (!a) (!b) = unsafePerformIO $
+  fmap snd $ withFlint a  $ \aptr ->
+  fmap snd $ withFlint b  $ \bptr ->
+  fmap cmb $ withNewFlint $ \cptr -> 
+             withNewFlint $ \dptr -> 
+  f cptr dptr aptr bptr
+  where
+   cmb (c, (d,r)) = ((c,d), r)
 
 {-# INLINE lift2Flint2_ #-}
 lift2Flint2_
@@ -160,19 +172,21 @@ lift2Flint2_
        -> IO r )
   -> a -> b
   -> (c,d)
-lift2Flint2_ f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2Flint2Ctx_ (constBack4 f) (return a) (return b)
+lift2Flint2_ = fst .:. lift2Flint2
 
 {-# INLINE lift2Flint2' #-}
 lift2Flint2'
-  :: ( Flint a, Flint b )
+  :: forall a b r .
+     ( Flint a, Flint b )
   => (    Ptr (CFlint a) -> Ptr (CFlint a)
        -> Ptr (CFlint a) -> Ptr (CFlint b)
        -> IO r )
   -> a -> b
   -> r
-lift2Flint2' f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2Flint2Ctx' (constBack4 f) (return a) (return b)
+lift2Flint2' f a b = snd cdr
+  where
+  cdr = lift2Flint2 f a b
+  _ = fst cdr :: (a,a)
 
 --------------------------------------------------
 --- FMPZ -> FMPZ -> (FMPZ, FMPZ, FMPZ)
@@ -186,8 +200,15 @@ lift2Flint3
        -> IO r )
   -> a -> b
   -> ((c,d,e), r)
-lift2Flint3 f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2Flint3Ctx (constBack5 f) (return a) (return b)
+lift2Flint3 f (!a) (!b) = unsafePerformIO $
+    fmap snd $ withFlint a  $ \aptr ->
+    fmap snd $ withFlint b  $ \bptr ->
+    fmap cmb $ withNewFlint $ \cptr ->
+               withNewFlint $ \dptr ->
+               withNewFlint $ \eptr ->
+    f cptr dptr eptr aptr bptr
+  where
+    cmb (c,(d,(e,r))) = ((c,d,e),r)
 
 {-# INLINE lift2Flint3_ #-}
 lift2Flint3_
@@ -197,16 +218,17 @@ lift2Flint3_
        -> IO r )
   -> a -> b
   -> (c,d,e)
-lift2Flint3_ f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2Flint3Ctx_ (constBack5 f) (return a) (return b)
+lift2Flint3_ = fst .:. lift2Flint3
 
 {-# INLINE lift2Flint3' #-}
 lift2Flint3'
-  :: ( Flint a, Flint b )
+  :: forall a b r .
+     ( Flint a, Flint b )
   => (    Ptr (CFlint a) -> Ptr (CFlint a) -> Ptr (CFlint a)
        -> Ptr (CFlint a) -> Ptr (CFlint b)
        -> IO r)
   -> a -> b
   -> r
-lift2Flint3' f (!a) (!b) = runIdentity $ runTrivialContext $
-  lift2Flint3Ctx' (constBack5 f) (return a) (return b)
+lift2Flint3' f a b = snd cder where
+  cder = lift2Flint3 f a b
+  _ = fst cder :: (a,a,a)

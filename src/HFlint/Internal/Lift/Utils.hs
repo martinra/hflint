@@ -1,21 +1,6 @@
 module HFlint.Internal.Lift.Utils
 where
 
-import Control.Monad.Reader
-import Data.Functor.Identity
-import System.IO.Unsafe ( unsafePerformIO )
-
-import HFlint.Internal.Context
-
-
---------------------------------------------------
--- unsafePerformIO within ReaderT
---------------------------------------------------
-
-{-# INLINE fromIO #-}
-fromIO :: RIOFlint ctx a -> RFlint ctx a
-fromIO = mapReaderT (Identity . unsafePerformIO)
-
 --------------------------------------------------
 -- functions which are constant in the last argument
 --------------------------------------------------

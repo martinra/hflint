@@ -1,6 +1,5 @@
 module HFlint.NMod
   ( NMod
-  , RNMod
   )
 where
 

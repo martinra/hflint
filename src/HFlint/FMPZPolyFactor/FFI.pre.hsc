@@ -13,13 +13,12 @@ where
 
 #include <flint/fmpz_poly.h>
 
-import Control.Monad.IO.Class ( liftIO )
 import Foreign.C.Types ( CLong(..) )
 import Foreign.ForeignPtr ( ForeignPtr
                           , mallocForeignPtr, withForeignPtr
                           , addForeignPtrFinalizer
                           )
-import Foreign.Ptr ( Ptr, FunPtr, nullPtr )
+import Foreign.Ptr ( Ptr, FunPtr )
 import Foreign.Storable ( Storable(..) )
 
 import HFlint.FMPZ.FFI
@@ -35,21 +34,19 @@ import HFlint.Internal.FlintWithContext
 newtype FMPZPolyFactor = FMPZPolyFactor (ForeignPtr CFMPZPolyFactor)
 type CFMPZPolyFactor = CFlint FMPZPolyFactor
 
-instance FlintWithContext FlintTrivialContext FMPZPolyFactor where
+instance Flint FMPZPolyFactor where
   data CFlint FMPZPolyFactor
 
-  newFlintCtx = liftIO $ do
+  newFlint = do
     a <- mallocForeignPtr
     withForeignPtr a fmpz_poly_factor_init
     addForeignPtrFinalizer p_fmpz_poly_factor_clear a
     return $ FMPZPolyFactor a
 
-  withFlintCtx (FMPZPolyFactor a) f = liftIO $
+  withFlint (FMPZPolyFactor a) f =
     withForeignPtr a $ \aptr ->
-    f aptr nullPtr >>= return . (FMPZPolyFactor a,)
+    f aptr >>= return . (FMPZPolyFactor a,)
 
-
-instance Flint FMPZPolyFactor
 
 withFMPZPolyFactor
   :: FMPZPolyFactor -> (Ptr CFMPZPolyFactor -> IO b)

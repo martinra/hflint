@@ -16,47 +16,41 @@ where
 
 {-# LINE 15 "FFI.pre.hsc" #-}
 
-import Control.Monad.IO.Class ( liftIO )
-
 import Foreign.C.String ( CString )
 import Foreign.C.Types ( CInt(..) )
 import Foreign.ForeignPtr ( ForeignPtr
                           , addForeignPtrFinalizer
                           , mallocForeignPtr
                           , withForeignPtr )
-import Foreign.Ptr ( Ptr, FunPtr, nullPtr )
+import Foreign.Ptr ( Ptr, FunPtr )
 import Foreign.Storable ( Storable(..) )
 
 import HFlint.FMPZ.FFI
-import HFlint.Internal.Context
 import HFlint.Internal.Flint
-import HFlint.Internal.FlintWithContext
 
 
 
-{-# LINE 34 "FFI.pre.hsc" #-}
+{-# LINE 30 "FFI.pre.hsc" #-}
 
 
 newtype FMPQ = FMPQ (ForeignPtr CFMPQ)
 type CFMPQ = CFlint FMPQ
 
-instance FlintWithContext FlintTrivialContext FMPQ where
+instance Flint FMPQ where
   data CFlint FMPQ
 
-  {-# INLINE newFlintCtx #-}
-  newFlintCtx = liftIO $ do
+  {-# INLINE newFlint #-}
+  newFlint = do
     a <- mallocForeignPtr
     withForeignPtr a fmpq_init
     addForeignPtrFinalizer p_fmpq_clear a
     return $ FMPQ a
 
-  {-# INLINE withFlintCtx #-}
-  withFlintCtx (FMPQ a) f = liftIO $
+  {-# INLINE withFlint #-}
+  withFlint (FMPQ a) f =
     withForeignPtr a $ \aptr ->
-    f aptr nullPtr >>= return . (FMPQ a,)
+    f aptr >>= return . (FMPQ a,)
 
-
-instance Flint FMPQ
 
 {-# INLINE withFMPQ #-}
 withFMPQ :: FMPQ -> (Ptr CFMPQ -> IO b) -> IO (FMPQ, b)
@@ -78,10 +72,10 @@ withNewFMPQ_ = withNewFlint_
 instance Storable CFMPQ where
   {-# INLINE sizeOf #-}
   sizeOf _ = (16)
-{-# LINE 77 "FFI.pre.hsc" #-}
+{-# LINE 71 "FFI.pre.hsc" #-}
   {-# INLINE alignment #-}
   alignment _ = 8
-{-# LINE 79 "FFI.pre.hsc" #-}
+{-# LINE 73 "FFI.pre.hsc" #-}
   peek = error "CFMPQ.peek: Not defined"
   poke = error "CFMPQ.poke: Not defined"
 

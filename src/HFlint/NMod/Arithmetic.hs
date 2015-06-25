@@ -1,27 +1,32 @@
 {-# LANGUAGE
-    FlexibleInstances
+    FlexibleContexts
+  , FlexibleInstances
+  , InstanceSigs
+  , ScopedTypeVariables
   , TypeSynonymInstances
+  , UndecidableInstances
   #-}
 
 module HFlint.NMod.Arithmetic
 where
 
-import Control.Monad.Reader
+import Data.Proxy
+import Data.Reflection
 import Data.Ratio ( numerator, denominator )
+import System.IO.Unsafe ( unsafePerformIO )
 
+import HFlint.Internal.Context
 import HFlint.Internal.LiftPrim
-import HFlint.Internal.Lift.Utils
 import HFlint.NMod.FFI
 
 
-instance Num RNMod where
+instance    ReifiesFlintContext NModCtx ctxProxy
+         => Num (NMod ctxProxy) where
   {-# INLINE fromInteger #-}
-  fromInteger a = 
-    fromIO $ do
-      ctx <- ask
-      n <- liftIO $ nmod_n ctx
-      return $ NMod $ fromInteger $
-        a `mod` fromIntegral n
+  fromInteger a = unsafePerformIO $ do
+    n <- nmod_n $ reflect (Proxy :: Proxy ctxProxy)
+    return $ NMod $ fromInteger $
+      a `mod` fromIntegral n
 
   {-# INLINE (+) #-}
   (+) = lift2FlintPrim nmod_add 
@@ -37,7 +42,8 @@ instance Num RNMod where
   {-# INLINE signum #-}
   signum = error "RNMod.signum"
 
-instance Fractional RNMod where
+instance    ReifiesFlintContext NModCtx ctxProxy
+         => Fractional (NMod ctxProxy) where
   {-# INLINE (/) #-}
   (/) = lift2FlintPrim nmod_div
   {-# INLINE recip #-}

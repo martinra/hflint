@@ -43,6 +43,7 @@ library
     , dlist
     , monad-loops
     , mtl
+    , reflection
     , QuickCheck
     , vector
     , safe
