@@ -1,6 +1,4 @@
-{-# LINE 1 "FFI.pre.hsc" #-}
 {-# LANGUAGE
-{-# LINE 2 "FFI.pre.hsc" #-}
     CApiFFI
   , EmptyDataDecls
   , FlexibleInstances
@@ -13,8 +11,7 @@
 module HFlint.FMPZ.FFI
 where
 
-
-{-# LINE 15 "FFI.pre.hsc" #-}
+#include <flint/fmpz.h>
 
 import Foreign.C.String ( CString )
 import Foreign.C.Types ( CULong(..)
@@ -29,8 +26,7 @@ import Foreign.Storable ( Storable(..) )
 import HFlint.Internal.Flint
 
 
-
-{-# LINE 30 "FFI.pre.hsc" #-}
+#let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 
 
 newtype FMPZ = FMPZ (ForeignPtr CFMPZ)
@@ -71,11 +67,9 @@ withNewFMPZ_ = withNewFlint_
 
 instance Storable CFMPZ where
     {-# INLINE sizeOf #-}
-    sizeOf _ = (8)
-{-# LINE 71 "FFI.pre.hsc" #-}
+    sizeOf _ = #{size fmpz}
     {-# INLINE alignment #-}
-    alignment _ = 8
-{-# LINE 73 "FFI.pre.hsc" #-}
+    alignment _ = #{alignment fmpz}
     peek = error "CFMPZ.peek: Not defined"
     poke = error "CFMPZ.poke: Not defined"
 
@@ -118,10 +112,10 @@ foreign import ccall unsafe "fmpz_get_str"
 
 
 foreign import ccall unsafe "fmpz_equal"
-	fmpz_equal :: Ptr CFMPZ -> Ptr CFMPZ -> IO CInt
+        fmpz_equal :: Ptr CFMPZ -> Ptr CFMPZ -> IO CInt
 
 foreign import ccall unsafe "fmpz_cmp"
-	fmpz_cmp :: Ptr CFMPZ -> Ptr CFMPZ -> IO CInt
+        fmpz_cmp :: Ptr CFMPZ -> Ptr CFMPZ -> IO CInt
 
 
 foreign import ccall unsafe "fmpz_sgn"

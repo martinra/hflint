@@ -23,9 +23,7 @@ import Foreign.Storable ( Storable(..) )
 
 import HFlint.FMPZ.FFI
 import HFlint.FMPZPoly.FFI
-import HFlint.Internal.Context
 import HFlint.Internal.Flint
-import HFlint.Internal.FlintWithContext
 
 
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
