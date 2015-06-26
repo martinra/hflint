@@ -14,9 +14,9 @@
 fmpz* fmpq_numref_wrapper(fmpq_t x);
 fmpz* fmpq_denref_wrapper(fmpq_t x);
 
+fmpq* fmpq_mat_entry_wrapper(const fmpq_mat_t m, const slong i, const slong j);
 slong fmpq_mat_nrows_wrapper(const fmpq_mat_t m);
 slong fmpq_mat_ncols_wrapper(const fmpq_mat_t m);
-fmpq* fmpq_mat_entryref_wrapper(const slong i, const slong j, const fmpq_mat_t m);
 
 int fmpz_poly_is_zero_wrapper(const fmpz_poly_t p);
 

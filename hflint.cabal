@@ -54,6 +54,7 @@ library
 
   exposed-modules:
     HFlint.FMPQ
+    HFlint.FMPQMat
     HFlint.FMPQPoly
     HFlint.FMPZ
     HFlint.FMPZPoly
@@ -67,6 +68,9 @@ library
     HFlint.FMPQ.FFI
     HFlint.FMPQ.Tasty.QuickCheck
     HFlint.FMPQ.Tasty.SmallCheck
+
+    HFlint.FMPQMat.Base
+    HFlint.FMPQMat.FFI
 
     HFlint.FMPQPoly.Algebra
     HFlint.FMPQPoly.Base
@@ -112,6 +116,7 @@ library
     -prof -auto
   cpp-options:
     -fpic
+    -static
   build-tools:         hsc2hs
   hs-source-dirs:      src
 
@@ -124,8 +129,11 @@ library
     flint/fmpq_poly.h
     flint/fmpz.h
 
-    csrc/flint_define_additionals.h
-    csrc/flint_define_wrappers.h
+    flint_define_additionals.h
+    flint_define_wrappers.h
+  install-includes:
+    flint_define_additionals.h
+    flint_define_wrappers.h
   c-sources:
     csrc/flint_define_additionals.c
     csrc/flint_define_wrappers.c

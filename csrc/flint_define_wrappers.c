@@ -16,6 +16,16 @@ fmpq_denref_wrapper(
   return fmpq_denref(x);
 }
 
+fmpq*
+fmpq_mat_entry_wrapper(
+  const fmpq_mat_t m,
+  const slong i,
+  const slong j
+  )
+{
+  return fmpq_mat_entry(m, i,j);
+}
+
 slong
 fmpq_mat_nrows_wrapper(
   const fmpq_mat_t m
@@ -25,21 +35,11 @@ fmpq_mat_nrows_wrapper(
 }
 
 slong
-mpq_mat_ncols_wrapper(
+fmpq_mat_ncols_wrapper(
   const fmpq_mat_t m
   )
 {
   return fmpq_mat_ncols(m);
-}
-
-fmpq*
-fmpq_mat_entryref_wrapper(
-  const slong i,
-  const slong j,
-  const fmpq_mat_t m
-  )
-{
-  return fmpq_mat_entry(m, i,j);
 }
 
 fmpz*
