@@ -40,6 +40,7 @@ library
     , containers
     , deepseq
     , data-default
+    , deepseq
     , dlist
     , monad-loops
     , mtl

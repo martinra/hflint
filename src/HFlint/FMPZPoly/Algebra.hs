@@ -1,7 +1,3 @@
-{-# LANGUAGE
-    TemplateHaskell
-  #-}
-
 module HFlint.FMPZPoly.Algebra
 where
 
