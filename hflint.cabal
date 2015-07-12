@@ -96,6 +96,7 @@ library
     HFlint.NMod.Base
     HFlint.NMod.Context
     HFlint.NMod.FFI
+    HFlint.NMod.Reduction
 
     HFlint.Primes.Base
     HFlint.Primes.FFI

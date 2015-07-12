@@ -1,6 +1,11 @@
 module HFlint.NMod
   ( NMod
   , withNModContext
+
+  , ReifiesNModContext
+
+  , reduceFMPZ
+  , reduceFMPQMay
   )
 where
 
@@ -10,3 +15,4 @@ import HFlint.NMod.Algebra ()
 import HFlint.NMod.Arithmetic ()
 import HFlint.NMod.Base ()
 import HFlint.NMod.Context
+import HFlint.NMod.Reduction

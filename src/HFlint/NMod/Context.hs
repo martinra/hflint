@@ -1,5 +1,6 @@
 {-# LANGUAGE
-    FlexibleContexts
+    ConstraintKinds
+  , FlexibleContexts
   , RankNTypes
   #-}
 
@@ -13,6 +14,8 @@ import System.IO.Unsafe ( unsafePerformIO )
 import HFlint.Internal.Context
 import HFlint.NMod.FFI
 
+
+type ReifiesNModContext ctxProxy = ReifiesFlintContext NModCtx ctxProxy
 
 withNModContext
  :: Natural
