@@ -20,4 +20,3 @@ instance Ord (NMod ctxProxy) where
 
 instance NFData (NMod ctxProxy) where
   rnf (NMod a) = seq a ()
-

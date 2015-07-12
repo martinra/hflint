@@ -13,12 +13,18 @@ where
 import Data.Proxy
 import Data.Reflection
 import Data.Ratio ( numerator, denominator )
+import Data.Word ( Word64 )
 import System.IO.Unsafe ( unsafePerformIO )
 
 import HFlint.Internal.Context
 import HFlint.Internal.LiftPrim
+import HFlint.NMod.Context
 import HFlint.NMod.FFI
 
+
+{-# INLINE modulus #-}
+modulus :: forall ctx . ReifiesNModContext ctx => Proxy ctx -> Word64
+modulus proxy = fromIntegral $ unsafePerformIO $ nmod_n (reflect proxy)
 
 instance    ReifiesFlintContext NModCtx ctxProxy
          => Num (NMod ctxProxy) where
