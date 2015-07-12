@@ -111,3 +111,14 @@ instance RealFrac FMPQ where
 fromFMPZs :: FMPZ -> FMPZ -> FMPQ
 fromFMPZs = FMPZArith.throwBeforeDivideByZero2 $
             lift2Flint_ fmpq_set_fmpz_frac
+
+{-# INLINE toFMPZs #-}
+toFMPZs :: FMPQ -> (FMPZ,FMPZ)
+toFMPZs a = unsafePerformIO $
+  withNewFMPZ  $ \nptr ->
+  withNewFMPZ_ $ \dptr ->
+  withFMPQ_ a  $ \aptr -> do
+    numptr <- fmpq_numref aptr
+    denptr <- fmpq_denref aptr
+    fmpz_set nptr numptr
+    fmpz_set dptr denptr
