@@ -20,6 +20,7 @@ where
 import Control.Monad ( when )
 import Data.Proxy
 import Data.Reflection
+import Data.Word ( Word64 )
 
 import Foreign.C.Types ( CULong(..) )
 import Foreign.ForeignPtr ( ForeignPtr
@@ -27,7 +28,6 @@ import Foreign.ForeignPtr ( ForeignPtr
                           , withForeignPtr )
 import Foreign.Ptr ( Ptr )
 import Foreign.Storable ( Storable(..) )
-import Numeric.Natural
 import System.IO.Unsafe ( unsafePerformIO )
 
 import HFlint.Internal.Context
@@ -46,8 +46,7 @@ type CNModCtx = CFlintCtx NModCtx
 instance FlintContext NModCtx
   where
   data CFlintCtx NModCtx
-  -- this should actually be the intersection of Natural and Int
-  data FlintContextData NModCtx = NModCtxData Natural
+  data FlintContextData NModCtx = NModCtxData Word64
 
   {-# INLINE newFlintContext #-}
   newFlintContext (NModCtxData n) = do
