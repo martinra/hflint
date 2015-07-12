@@ -13,20 +13,15 @@ where
 import Data.Proxy
 import Data.Reflection
 import Data.Ratio ( numerator, denominator )
-import Data.Word ( Word64 )
 import System.IO.Unsafe ( unsafePerformIO )
 
-import HFlint.Internal.Context
+import HFlint.Internal.Context ()
 import HFlint.Internal.LiftPrim
 import HFlint.NMod.Context
 import HFlint.NMod.FFI
 
 
-{-# INLINE modulus #-}
-modulus :: forall ctx . ReifiesNModContext ctx => Proxy ctx -> Word64
-modulus proxy = fromIntegral $ unsafePerformIO $ nmod_n (reflect proxy)
-
-instance    ReifiesFlintContext NModCtx ctxProxy
+instance    ReifiesNModContext ctxProxy
          => Num (NMod ctxProxy) where
   {-# INLINE fromInteger #-}
   fromInteger a = unsafePerformIO $ do
@@ -48,7 +43,7 @@ instance    ReifiesFlintContext NModCtx ctxProxy
   {-# INLINE signum #-}
   signum = error "RNMod.signum"
 
-instance    ReifiesFlintContext NModCtx ctxProxy
+instance    ReifiesNModContext ctxProxy
          => Fractional (NMod ctxProxy) where
   {-# INLINE (/) #-}
   (/) = lift2FlintPrim nmod_div

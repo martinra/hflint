@@ -84,6 +84,10 @@ foreign import capi "flint/fmpz.h value fmpz_clear"
         p_fmpz_clear :: FunPtr (Ptr CFMPZ -> IO ())
 
 
+foreign import ccall "fmpz_size"
+  fmpz_size :: Ptr CFMPZ -> IO CInt
+
+
 foreign import capi unsafe "flint/fmpz.h fmpz_zero"
         fmpz_zero :: Ptr CFMPZ -> IO ()
 
@@ -170,3 +174,6 @@ foreign import ccall unsafe "fmpz_gcd"
 
 foreign import ccall unsafe "fmpz_xgcd"
         fmpz_xgcd :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
+
+foreign import ccall unsafe "fmpz_CRT_ui"
+  fmpz_CRT_ui :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> CULong -> CULong -> CInt -> IO ()

@@ -67,6 +67,7 @@ library
     HFlint.FMPQ.Arithmetic
     HFlint.FMPQ.Base
     HFlint.FMPQ.FFI
+    HFlint.FMPQ.Reduction
     HFlint.FMPQ.Tasty.QuickCheck
     HFlint.FMPQ.Tasty.SmallCheck
 
@@ -82,6 +83,7 @@ library
     HFlint.FMPZ.Base
     HFlint.FMPZ.FFI
     HFlint.FMPZ.Limbs
+    HFlint.FMPZ.Reduction
     HFlint.FMPZ.Tasty.QuickCheck
     HFlint.FMPZ.Tasty.SmallCheck
 

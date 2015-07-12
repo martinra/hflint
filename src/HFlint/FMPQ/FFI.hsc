@@ -143,3 +143,10 @@ foreign import ccall unsafe "fmpq_div"
 
 foreign import ccall unsafe "fmpq_inv"
         fmpq_inv :: Ptr CFMPQ -> Ptr CFMPQ -> IO ()
+
+
+foreign import ccall unsafe "fmpq_reconstruct_fmpz"
+  fmpq_reconstruct_fmpz :: Ptr CFMPQ -> Ptr CFMPZ -> Ptr CFMPZ -> IO CInt
+
+foreign import ccall unsafe "fmpq_reconstruct_fmpz_2"
+  fmpq_reconstruct_fmpz_2 :: Ptr CFMPQ -> Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO CInt
