@@ -5,14 +5,7 @@
 module FMPQPolyTests
 where
 
-import Control.Arrow ( (***) )
-import Data.Composition ( (.:) )
 import Data.Function ( on )
-import Data.List ( delete
-                 , intercalate
-                 , dropWhileEnd
-                 )
-import Data.List.Split ( splitOn )
 import qualified Data.Vector as V
 
 import Test.Tasty ( testGroup
@@ -24,7 +17,6 @@ import qualified Test.Tasty.QuickCheck as QC
 import qualified Test.Tasty.HUnit as HU
 import Test.Tasty.HUnit ( (@?=) )
 
-import HFlint.FMPQ
 import HFlint.FMPQPoly
 import HFlint.FMPZPoly
 

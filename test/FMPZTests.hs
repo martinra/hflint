@@ -12,11 +12,17 @@ import Test.Tasty ( testGroup, TestTree )
 import HFlint.FMPZ
 import FMPZTests.Integer
 
+import TestHFlint.Utils ( testProperty )
+
 
 fmpzTestGroup :: TestTree
-fmpzTestGroup = testGroup "FMPZ Tests"
-                [ referenceIngeger
-                , zeroOneUnitTests
-                , testGroup "Euclidean Domain" $
-                    isEuclideanDomain (Proxy :: Proxy FMPZ)
-                ]
+fmpzTestGroup =
+  testGroup "FMPZ Tests" $
+  [ referenceIngeger
+  , zeroOneUnitTests
+  ]
+  ++
+  ( (`runTestR` testProperty) $
+      concat <$> sequence
+      [ isEuclideanDomain (Proxy :: Proxy FMPZ) ]
+  )

@@ -9,6 +9,7 @@ import FMPQTests ( fmpqTestGroup )
 import FMPZTests ( fmpzTestGroup )
 import FMPQPolyTests ( fmpqPolyTestGroup )
 import FMPZPolyTests ( fmpzPolyTestGroup )
+import Primes ( primesTestGroup )
 
 
 main = defaultMain $ testGroup "HFlint Tests"
@@ -16,4 +17,5 @@ main = defaultMain $ testGroup "HFlint Tests"
        , fmpqTestGroup
        , fmpzPolyTestGroup
        , fmpqPolyTestGroup
+       , primesTestGroup
        ]
