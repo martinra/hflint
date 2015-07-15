@@ -24,6 +24,7 @@ import Foreign.Ptr ( Ptr, FunPtr )
 import Foreign.Storable ( Storable(..) )
 
 import HFlint.Internal.Flint
+import HFlint.NMod.FFI
 
 
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
@@ -177,3 +178,6 @@ foreign import ccall unsafe "fmpz_xgcd"
 
 foreign import ccall unsafe "fmpz_CRT_ui"
   fmpz_CRT_ui :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> CULong -> CULong -> CInt -> IO ()
+
+foreign import ccall unsafe "_fmpz_CRT_ui_precomp"
+  fmpz_CRT_ui_precomp :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> FlintLimb -> FlintLimb -> FlintLimb -> Ptr CFMPZ -> FlintLimb -> CInt -> IO ()
