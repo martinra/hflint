@@ -16,6 +16,7 @@ module HFlint.NMod.FFI
 where
 
 #include <flint/fmpz.h>
+#include <flint/ulong_extras.h>
 
 import Control.Monad ( when )
 import Data.Proxy
@@ -36,7 +37,9 @@ import HFlint.Internal.FlintPrim
 
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 
-newtype NMod ctxProxy = NMod {unNMod :: CULong}
+type FlintLimb = CULong
+
+newtype NMod ctxProxy = NMod {unNMod :: FlintLimb}
 --type CNMod ctx = CFlint (NMod ctx)
 
 newtype NModCtx = NModCtx (ForeignPtr CNModCtx)
@@ -71,7 +74,7 @@ instance Storable CNModCtx where
 
 instance FlintPrim NModCtx NMod
   where
-  type CFlintPrim NMod = CULong
+  type CFlintPrim NMod = FlintLimb
 
   {-# INLINE withFlintPrimCtx #-}
   withFlintPrimCtx
@@ -97,25 +100,29 @@ instance FlintPrim NModCtx NMod
 
 
 foreign import capi unsafe "flint/nmod_vec.h nmod_init"
-        nmod_init :: Ptr CNModCtx -> CULong -> IO ()
+        nmod_init :: Ptr CNModCtx -> FlintLimb -> IO ()
 
 foreign import ccall unsafe "nmod_n_additional"
-        nmod_n :: Ptr CNModCtx -> IO CULong
+        nmod_n :: Ptr CNModCtx -> IO FlintLimb
 
 foreign import ccall unsafe "nmod_add_wrapper"
-        nmod_add :: CULong -> CULong -> Ptr CNModCtx -> IO CULong
+        nmod_add :: FlintLimb -> FlintLimb -> Ptr CNModCtx -> IO FlintLimb
 
 foreign import ccall unsafe "nmod_sub_wrapper"
-        nmod_sub :: CULong -> CULong -> Ptr CNModCtx -> IO CULong
+        nmod_sub :: FlintLimb -> FlintLimb -> Ptr CNModCtx -> IO FlintLimb
 
 foreign import ccall unsafe "nmod_neg_wrapper"
-        nmod_neg :: CULong -> Ptr CNModCtx -> IO CULong
+        nmod_neg :: FlintLimb -> Ptr CNModCtx -> IO FlintLimb
 
 foreign import ccall unsafe "nmod_mul_wrapper"
-        nmod_mul :: CULong -> CULong -> Ptr CNModCtx -> IO CULong
+        nmod_mul :: FlintLimb -> FlintLimb -> Ptr CNModCtx -> IO FlintLimb
 
 foreign import ccall unsafe "nmod_inv_wrapper"
-        nmod_inv :: CULong -> Ptr CNModCtx -> IO CULong
+        nmod_inv :: FlintLimb -> Ptr CNModCtx -> IO FlintLimb
 
 foreign import ccall unsafe "nmod_div_wrapper"
-        nmod_div :: CULong -> CULong -> Ptr CNModCtx -> IO CULong
+        nmod_div :: FlintLimb -> FlintLimb -> Ptr CNModCtx -> IO FlintLimb
+
+
+foreign import capi unsafe "flint/ulong_extras.h n_preinvert_limb"
+  n_preinvert_limb :: FlintLimb -> IO FlintLimb

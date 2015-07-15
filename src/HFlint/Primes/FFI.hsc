@@ -9,6 +9,8 @@ where
 
 import Foreign.C.Types ( CULong(..), CInt(..) )
 
+import HFlint.NMod.FFI ( FlintLimb )
+
 
 foreign import ccall unsafe "n_nextprime"
-  n_nextprime :: CULong -> CInt -> IO CULong
+  n_nextprime :: FlintLimb -> CInt -> IO FlintLimb
