@@ -6,7 +6,6 @@ module HFlint.FMPZ
   , withNewFMPZ
   , withNewFMPZ_
 
-  , fromNMod
 
   , chineseRemainder
   )

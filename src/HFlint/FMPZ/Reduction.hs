@@ -1,7 +1,12 @@
 {-# LANGUAGE
-    FlexibleContexts
+    ConstraintKinds
+  , FlexibleContexts
+  , FlexibleInstances
   , InstanceSigs
+  , MultiParamTypeClasses
+  , RankNTypes
   , ScopedTypeVariables
+  , UndecidableInstances
   #-}
 
 module HFlint.FMPZ.Reduction
@@ -14,15 +19,14 @@ import Prelude hiding ( (+), (-), negate, subtract
                       )
 
 import Data.Proxy ( Proxy(..) )
-import Data.Reflection ( reflect )
+import Data.Reflection
 
 import System.IO.Unsafe ( unsafePerformIO )
 
 import HFlint.FMPZ.FFI
 
-import HFlint.NMod.Context
+import HFlint.NMod as NMod
 import HFlint.NMod.FFI
-import HFlint.NMod.Reduction ( HasLimbHeight(..), ToNMod(..) )
 
 
 instance HasLimbHeight FMPZ where
@@ -38,26 +42,22 @@ instance ToNMod FMPZ where
       p <- nmod_n $ reflect (Proxy :: Proxy ctx)
       NMod <$> fmpz_fdiv_ui aptr p
 
-{-# INLINE fromNMod #-}
-fromNMod
-  :: forall ctx .
-     ReifiesNModContext ctx
-  => NMod ctx -> FMPZ
-fromNMod (NMod a) = unsafePerformIO $
-  withNewFMPZ_ $ \aptr ->
-  fmpz_set_ui aptr a
 
+data FMPZMod = FMPZMod FMPZ (Modulus FMPZ)
 
-chineseRemainder
-  :: forall ctx .
+instance
      ReifiesNModContext ctx
-  => Modulus FMPZ -> FMPZ
-  -> NMod ctx
-  -> FMPZ
-chineseRemainder (Modulus m) a (NMod a') =
- let (Modulus m') = modulusIntegral (Proxy :: Proxy ctx)
- in unsafePerformIO $
-      withNewFMPZ_ $ \bptr ->
-      withFMPZ a   $ \aptr ->
-      withFMPZ m   $ \mptr ->
-      fmpz_CRT_ui bptr aptr mptr a' m' 0
+  => ChineseRemainder FMPZMod (NMod ctx) FMPZMod
+  where
+  chineseRemainder (FMPZMod a (Modulus m)) (NMod a')  = FMPZMod aa' (Modulus mm')
+    where
+      Modulus m' = NMod.modulus (Proxy :: Proxy ctx)
+      mm' = unsafePerformIO $
+        withNewFMPZ_ $ \mmptr ->
+        withFMPZ m   $ \mptr  ->
+        fmpz_mul_ui mmptr mptr m'
+      aa' = unsafePerformIO $
+        withNewFMPZ_ $ \bptr ->
+        withFMPZ a   $ \aptr ->
+        withFMPZ m   $ \mptr ->
+        fmpz_CRT_ui bptr aptr mptr a' m' 0

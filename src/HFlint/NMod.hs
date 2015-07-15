@@ -2,17 +2,20 @@ module HFlint.NMod
   ( NMod
   , withNModContext
 
+  , FlintLimb
+
   , ReifiesNModContext
+
+  , HasLimbHeight(..)
 
   , ToNMod(..)
   , ToNModMay(..)
+
   , Modulus(..)
   , modulus
   , modulusIntegral
 
-  , HasLimbHeight
-  , limbHeight
-
+  , ChineseRemainder(..)
   )
 where
 
