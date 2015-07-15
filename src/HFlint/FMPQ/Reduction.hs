@@ -17,7 +17,7 @@ import HFlint.FMPZ.FFI
 
 import HFlint.NMod.Context
 import HFlint.NMod.FFI
-import HFlint.NMod.Reduction ( HasLimbHeight(..), ToNMod(..) )
+import HFlint.NMod.Reduction
 
 
 instance HasLimbHeight FMPQ where
@@ -30,7 +30,7 @@ instance HasLimbHeight FMPQ where
       return $ 2 * max numht denht
 
 
-instance ToNMod FMPQ where
+instance ToNModMay FMPQ where
   {-# INLINE toNModMay #-}
   toNModMay :: forall ctx . ReifiesNModContext ctx => FMPQ -> Maybe (NMod ctx)
   toNModMay a = unsafePerformIO $

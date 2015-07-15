@@ -19,11 +19,12 @@ import HFlint.NMod.FFI
 class HasLimbHeight a where
   limbHeight :: a -> Word64
 
+
 class ToNMod a where
   toNMod :: ReifiesNModContext ctx => a -> NMod ctx
-  toNMod = fromJust . toNModMay
 
+class ToNModMay a where
   toNModMay :: ReifiesNModContext ctx => a -> Maybe (NMod ctx)
-  toNModMay = Just . toNMod
+
 
 deriving instance HasLimbHeight a => HasLimbHeight (Modulus a)

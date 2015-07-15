@@ -4,6 +4,8 @@ module HFlint.NMod
 
   , ReifiesNModContext
 
+  , ToNMod(..)
+  , ToNModMay(..)
   , Modulus(..)
   , modulus
   , modulusIntegral
@@ -11,9 +13,6 @@ module HFlint.NMod
   , HasLimbHeight
   , limbHeight
 
-  , ToNMod
-  , toNMod
-  , toNModMay
   )
 where
 
