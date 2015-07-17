@@ -6,6 +6,8 @@ module HFlint.FMPZ
   , withNewFMPZ
   , withNewFMPZ_
 
+  , fromNMod
+
   , FMPZMod
 
   , FMPZCRTNMod(..)
