@@ -54,7 +54,8 @@ instance
      ReifiesNModContext ctx
   => ChineseRemainder FMPZMod (NMod ctx) FMPZMod
   where
-  chineseRemainder (FMPZMod a (Modulus m)) (NMod a')  = FMPZMod aa' (Modulus mm')
+  chineseRemainder (FMPZMod a (Modulus m)) (NMod a') =
+    FMPZMod aa' (Modulus mm')
     where
       Modulus m' = NMod.modulus (Proxy :: Proxy ctx)
       mm' = unsafePerformIO $

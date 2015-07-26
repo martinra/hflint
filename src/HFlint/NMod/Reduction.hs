@@ -9,6 +9,7 @@
 module HFlint.NMod.Reduction
 where
 
+import Control.DeepSeq ( NFData )
 import Data.Proxy
 import Data.Reflection
 import Data.Word ( Word64 )
@@ -34,7 +35,7 @@ class ToNModMay a where
 
 
 newtype Modulus a = Modulus a
-  deriving ( Eq, Show )
+  deriving ( Eq, Show, NFData )
 
 deriving instance HasLimbHeight a => HasLimbHeight (Modulus a)
 
