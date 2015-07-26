@@ -1,5 +1,5 @@
 module HFlint.NMod
-  ( NMod
+  ( NMod(..)
   , withNModContext
 
   , FlintLimb
