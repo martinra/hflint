@@ -42,8 +42,11 @@ instance ToNMod FMPZ where
       p <- nmod_n $ reflect (Proxy :: Proxy ctx)
       NMod <$> fmpz_fdiv_ui aptr p
 
-fromNMod :: ReifiesNModContext ctx => NMod ctx -> FMPZ
-fromNMod (NMod a) = unsafePerformIO $
+fromNMod :: NMod ctx -> FMPZ
+fromNMod = fromFlintLimb . unNMod
+
+fromFlintLimb :: FlintLimb -> FMPZ
+fromFlintLimb a = unsafePerformIO $
   withNewFMPZ_ $ \bptr ->
   fmpz_set_ui bptr a
 

@@ -7,11 +7,12 @@ module HFlint.FMPZ
   , withNewFMPZ_
 
   , fromNMod
+  , fromFlintLimb
 
   , FMPZMod
 
-  , FMPZCRTNMod(..)
-  , withFMPZCRTNModContext
+  , FMPZCRTFlintLimb(..)
+  , withFMPZCRTFlintLimbContext
 
   , FMPZCRT(..)
   , withFMPZCRTContext
@@ -26,6 +27,6 @@ import HFlint.FMPZ.Arithmetic ()
 import HFlint.FMPZ.Base ()
 import HFlint.FMPZ.Reduction
 import HFlint.FMPZ.Reduction.FMPZCRT
-import HFlint.FMPZ.Reduction.FMPZCRTNMod
+import HFlint.FMPZ.Reduction.FMPZCRTFlintLimb
 import HFlint.FMPZ.Tasty.QuickCheck ()
 import HFlint.FMPZ.Tasty.SmallCheck ()

@@ -21,7 +21,6 @@ where
 import Control.Monad ( when )
 import Data.Proxy
 import Data.Reflection
-import Data.Word ( Word64 )
 
 import Foreign.C.Types ( CULong(..) )
 import Foreign.ForeignPtr ( ForeignPtr
@@ -49,7 +48,7 @@ type CNModCtx = CFlintCtx NModCtx
 instance FlintContext NModCtx
   where
   data CFlintCtx NModCtx
-  data FlintContextData NModCtx = NModCtxData Word64
+  data FlintContextData NModCtx = NModCtxData FlintLimb
 
   {-# INLINE newFlintContext #-}
   newFlintContext (NModCtxData n) = do

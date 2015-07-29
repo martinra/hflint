@@ -85,7 +85,7 @@ library
     HFlint.FMPZ.Limbs
     HFlint.FMPZ.Reduction
     HFlint.FMPZ.Reduction.FMPZCRT
-    HFlint.FMPZ.Reduction.FMPZCRTNMod
+    HFlint.FMPZ.Reduction.FMPZCRTFlintLimb
     HFlint.FMPZ.Tasty.QuickCheck
     HFlint.FMPZ.Tasty.SmallCheck
 
