@@ -50,6 +50,7 @@ data RationalReconstructionType =
     Balanced
   | Bounded FMPZ FMPZ
 
+{-# INLINE rationalReconstruct #-}
 rationalReconstruct
   :: RationalReconstructionType
   -> Modulus FMPZ -> FMPZ -> Maybe FMPQ
