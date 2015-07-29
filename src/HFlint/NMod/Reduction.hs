@@ -37,6 +37,9 @@ class ToNModMay a where
 newtype Modulus a = Modulus a
   deriving ( Eq, Show, NFData )
 
+instance Functor Modulus where
+  fmap f (Modulus a) = Modulus $ f a
+
 deriving instance HasLimbHeight a => HasLimbHeight (Modulus a)
 
 deriving instance MultiplicativeMagma a => MultiplicativeMagma (Modulus a)
@@ -54,8 +57,8 @@ modulusIntegral
   :: forall ctx a .
      ( ReifiesNModContext ctx, Integral a )
   => Proxy ctx -> Modulus a
-modulusIntegral proxy = Modulus $ fromIntegral $ unsafePerformIO $ nmod_n (reflect proxy)
-
+modulusIntegral proxy = Modulus $ fromIntegral $ unsafePerformIO $
+   nmod_n (reflect proxy)
 
 class ChineseRemainder a b c where
   chineseRemainder :: a -> b -> c
