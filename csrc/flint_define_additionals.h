@@ -13,6 +13,6 @@ void fmpz_poly_factor_get_content_additional(fmpz_t c, const fmpz_poly_factor_t 
 slong fmpz_poly_factor_number_factors_additional(const fmpz_poly_factor_t fac);
 slong fmpz_poly_factor_get_factor_additional(fmpz_poly_t p, const fmpz_poly_factor_t fac, slong i);
 
-ulong nmod_n_additional(nmod_t * mod);
+mp_limb_t nmod_n_additional(nmod_t * mod);
 
 #endif
