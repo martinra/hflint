@@ -101,6 +101,8 @@ library
     HFlint.NMod.Context
     HFlint.NMod.FFI
     HFlint.NMod.Reduction
+    HFlint.NMod.Tasty.QuickCheck
+    HFlint.NMod.Tasty.SmallCheck
 
     HFlint.Primes.Base
     HFlint.Primes.FFI
