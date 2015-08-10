@@ -28,6 +28,10 @@ class FlintContext ctx where
     :: FlintContextData ctx
     -> IO ctx
 
+  freeFlintContext
+    :: ctx
+    -> IO ()
+
   withFlintContext
     :: ctx
     -> (    forall ctxProxy .

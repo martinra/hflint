@@ -23,12 +23,9 @@ import Data.Proxy
 import Data.Reflection
 
 import Foreign.C.Types ( CULong(..) )
-import Foreign.ForeignPtr ( ForeignPtr
-                          , mallocForeignPtr
-                          , withForeignPtr )
+import Foreign.Marshal.Alloc ( malloc, free )
 import Foreign.Ptr ( Ptr )
 import Foreign.Storable ( Storable(..) )
-import System.IO.Unsafe ( unsafePerformIO )
 
 import HFlint.Internal.Context
 import HFlint.Internal.FlintPrim
@@ -41,7 +38,7 @@ type FlintLimb = CULong
 newtype NMod ctxProxy = NMod {unNMod :: FlintLimb}
 --type CNMod ctx = CFlint (NMod ctx)
 
-newtype NModCtx = NModCtx (ForeignPtr CNModCtx)
+newtype NModCtx = NModCtx (Ptr CNModCtx)
 type CNModCtx = CFlintCtx NModCtx
 
 
@@ -54,13 +51,15 @@ instance FlintContext NModCtx
   newFlintContext (NModCtxData n) = do
     when (n<=1) $
       error "NModCtx.newFlintContext: Modulus must be at least 2"
-    ctx <- mallocForeignPtr
-    withForeignPtr ctx $ \ctxptr -> nmod_init ctxptr (fromIntegral n)
+    ctx <- malloc
+    nmod_init ctx (fromIntegral n)
     return $ NModCtx ctx
-  
+
+  {-# INLINE freeFlintContext #-}
+  freeFlintContext (NModCtx ctx) = free ctx
+
   {-# INLINE withFlintContext #-}
-  withFlintContext (NModCtx fptr) f = unsafePerformIO $
-    withForeignPtr fptr $ \ptr -> return $ reify ptr f
+  withFlintContext (NModCtx ctx) f = reify ctx f
 
 instance Storable CNModCtx where
     {-# INLINE sizeOf #-}

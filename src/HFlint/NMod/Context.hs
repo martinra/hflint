@@ -27,4 +27,6 @@ withNModContext
  -> b
 withNModContext n f = unsafePerformIO $ do
   ctx <- newFlintContext $ NModCtxData n
-  return $ force $ withFlintContext ctx f
+  let h = force $ withFlintContext ctx f
+  seq h $ freeFlintContext ctx
+  return h
