@@ -1,11 +1,9 @@
 {-# LANGUAGE
     FlexibleContexts
   , FlexibleInstances
-  -- , GeneralizedNewtypeDeriving
+  , GeneralizedNewtypeDeriving
   , MultiParamTypeClasses
-  -- , StandaloneDeriving
-  -- , TemplateHaskell
-  -- , TypeSynonymInstances
+  , StandaloneDeriving
   , UndecidableInstances
   #-}
 
@@ -77,6 +75,16 @@ instance    ReifiesFlintContext NModCtx ctxProxy
          => DecidableOne (NMod ctxProxy)
   where
   isOne = (==1) . unNMod
+
+
+deriving instance ReifiesFlintContext NModCtx ctxProxy
+  => MultiplicativeMagma (NonZero (NMod ctxProxy))
+
+instance    ReifiesFlintContext NModCtx ctxProxy
+         => Commutative (NonZero (NMod ctxProxy))
+
+instance    ReifiesFlintContext NModCtx ctxProxy
+         => MultiplicativeSemigroup (NonZero (NMod ctxProxy))
 
 instance    ReifiesFlintContext NModCtx ctxProxy
          => MultiplicativeMonoid (NonZero (NMod ctxProxy))

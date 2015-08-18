@@ -1,3 +1,9 @@
+{-# LANGUAGE
+    FlexibleInstances
+  , GeneralizedNewtypeDeriving
+  , StandaloneDeriving
+  #-}
+
 module HFlint.FMPZPoly.Algebra
 where
 
@@ -51,6 +57,15 @@ instance MultiplicativeMonoid FMPZPoly where
 
 instance DecidableOne FMPZPoly where
   isOne = (/=0) . (liftFlint0 fmpz_poly_is_one)
+
+
+deriving instance MultiplicativeMagma (NonZero FMPZPoly)
+
+instance Commutative (NonZero FMPZPoly)
+
+instance MultiplicativeSemigroup (NonZero FMPZPoly)
+
+deriving instance MultiplicativeMonoid (NonZero FMPZPoly)
 
 
 instance Distributive FMPZPoly

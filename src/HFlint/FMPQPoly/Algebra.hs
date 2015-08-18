@@ -1,5 +1,7 @@
 {-# LANGUAGE
-    TemplateHaskell
+    FlexibleInstances
+  , GeneralizedNewtypeDeriving
+  , StandaloneDeriving
   #-}
 
 module HFlint.FMPQPoly.Algebra
@@ -53,6 +55,17 @@ instance MultiplicativeMonoid FMPQPoly where
 
 instance DecidableOne FMPQPoly where
   isOne = (/=0) . (liftFlint0 fmpq_poly_is_one)
+
+
+deriving instance MultiplicativeMagma (NonZero FMPQPoly)
+
+instance Commutative (NonZero FMPQPoly)
+
+instance MultiplicativeSemigroup (NonZero FMPQPoly)
+
+deriving instance MultiplicativeMonoid (NonZero FMPQPoly)
+
+deriving instance DecidableOne (NonZero FMPQPoly)
 
 
 instance Distributive FMPQPoly
