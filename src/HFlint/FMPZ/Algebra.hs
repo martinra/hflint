@@ -22,9 +22,13 @@ import Math.Structure.Instances.TH.Ring
 
 import HFlint.FMPZ.Arithmetic ()
 import HFlint.FMPZ.FFI
+import HFlint.Internal.Lift
 
 
 mkAbelianGroupInstanceFromNum (return []) [t|FMPZ|]
 mkCommutativeMonoidInstanceFromNum (return []) [t|FMPZ|]
 mkCommutativeMonoidInstanceFromNonZeroNum (return []) [t|FMPZ|]
-mkEuclideanDomainInstanceFromIntegral (return []) [t|FMPZ|]
+mkEuclideanDomainInstanceFromIntegralWithCustomGCD (return []) [t|FMPZ|]
+  [| lift2Flint_ fmpz_gcd |]
+  [| lift2Flint3_ fmpz_xgcd |]
+  [| lift2Flint_ fmpz_lcm |]

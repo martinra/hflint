@@ -90,6 +90,7 @@ instance FactorialRing FMPQPoly where
 instance PIDomain FMPQPoly where
   gcd = lift2Flint_ fmpq_poly_gcd
   xgcd = lift2Flint3_ fmpq_poly_xgcd
+  lcm = lift2Flint_ fmpq_poly_lcm
 
 instance EuclideanDomain FMPQPoly where
   quotRem = lift2Flint2_ fmpq_poly_divrem

@@ -97,6 +97,7 @@ instance FactorialRing FMPZPoly where
 instance PIDomain FMPZPoly where
   gcd = lift2Flint_ fmpz_poly_gcd
   xgcd = lift2Flint3_ fmpz_poly_xgcd
+  lcm = lift2Flint_ fmpz_poly_lcm
 
 instance EuclideanDomain FMPZPoly where
   quotRem = lift2Flint2_ fmpz_poly_divrem
