@@ -126,7 +126,7 @@ library
   GHC-prof-options:
     -prof -auto
   cpp-options:
-    -fpic
+    -fPIC
     -static
   build-tools:         hsc2hs
   hs-source-dirs:      src
