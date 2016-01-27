@@ -65,3 +65,6 @@ instance Integral FMPZ where
   {-# INLINE toInteger #-}
   toInteger = L.toInteger . L.fromFMPZ
 
+divexactFMPZ :: FMPZ -> FMPZ -> FMPZ
+divexactFMPZ = throwBeforeDivideByZero2 $
+               lift2Flint_ fmpz_divexact

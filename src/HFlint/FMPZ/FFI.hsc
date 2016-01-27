@@ -169,6 +169,9 @@ foreign import ccall unsafe "fmpz_fdiv_ui"
 foreign import ccall unsafe "fmpz_fdiv_q_ui"
         fmpz_fdiv_q_ui :: Ptr CFMPZ -> Ptr CFMPZ -> CULong -> IO ()
 
+foreign import ccall unsafe "fmpz_divexact"
+        fmpz_divexact :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
+
 
 foreign import ccall unsafe "fmpz_gcd"
         fmpz_gcd :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()

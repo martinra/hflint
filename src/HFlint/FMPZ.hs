@@ -16,6 +16,8 @@ module HFlint.FMPZ
 
   , FMPZCRT(..)
   , withFMPZCRTContext
+
+  , divexactFMPZ
   )
 where
 
@@ -23,7 +25,7 @@ where
 import HFlint.FMPZ.FFI
 
 import HFlint.FMPZ.Algebra ()
-import HFlint.FMPZ.Arithmetic ()
+import HFlint.FMPZ.Arithmetic ( divexactFMPZ )
 import HFlint.FMPZ.Base ()
 import HFlint.FMPZ.Reduction
 import HFlint.FMPZ.Reduction.FMPZCRT
