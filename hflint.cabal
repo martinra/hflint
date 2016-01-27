@@ -63,6 +63,7 @@ library
     HFlint.Primes
 
     HFlint.FMPZ.FFI
+    HFlint.FMPQ.FFI
 
     HFlint.Internal
 
@@ -70,7 +71,6 @@ library
     HFlint.FMPQ.Algebra
     HFlint.FMPQ.Arithmetic
     HFlint.FMPQ.Base
-    HFlint.FMPQ.FFI
     HFlint.FMPQ.Reduction
     HFlint.FMPQ.Tasty.QuickCheck
     HFlint.FMPQ.Tasty.SmallCheck
