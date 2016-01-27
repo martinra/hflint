@@ -7,6 +7,7 @@ module HFlint.FMPQ
   , withNewFMPQ_
 
   , fromFMPZs
+  , toFMPZs
 
   , RationalReconstructionType(..)
   , rationalReconstruct

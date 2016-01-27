@@ -6,6 +6,7 @@ import Control.Exception ( ArithException( RatioZeroDenominator ) )
 import Data.Ratio ( numerator
                   , denominator
                   )
+import Math.Structure ( NonZero(..) )
 import System.IO.Unsafe ( unsafePerformIO )
 
 import HFlint.FMPZ
@@ -113,10 +114,10 @@ fromFMPZs = FMPZArith.throwBeforeDivideByZero2 $
             lift2Flint_ fmpq_set_fmpz_frac
 
 {-# INLINE toFMPZs #-}
-toFMPZs :: FMPQ -> (FMPZ,FMPZ)
+toFMPZs :: FMPQ -> (FMPZ,NonZero FMPZ)
 toFMPZs a = unsafePerformIO $
   withNewFMPZ  $ \nptr ->
-  withNewFMPZ_ $ \dptr ->
+  fmap NonZero $ withNewFMPZ_ $ \dptr ->
   withFMPQ_ a  $ \aptr -> do
     numptr <- fmpq_numref aptr
     denptr <- fmpq_denref aptr
