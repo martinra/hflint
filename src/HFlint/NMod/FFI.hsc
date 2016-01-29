@@ -39,12 +39,12 @@ newtype NMod ctxProxy = NMod {unNMod :: FlintLimb}
 --type CNMod ctx = CFlint (NMod ctx)
 
 newtype NModCtx = NModCtx (Ptr CNModCtx)
-type CNModCtx = CFlintCtx NModCtx
+type CNModCtx = CFlintContext NModCtx
 
 
 instance FlintContext NModCtx
   where
-  data CFlintCtx NModCtx
+  data CFlintContext NModCtx
   data FlintContextData NModCtx = NModCtxData FlintLimb
 
   {-# INLINE newFlintContext #-}
@@ -79,7 +79,7 @@ instance FlintPrim NModCtx NMod
     :: forall ctxProxy b .
        ReifiesFlintContext NModCtx ctxProxy
     => NMod ctxProxy
-    -> (CFlintPrim NMod -> Ptr (CFlintCtx NModCtx) -> IO b)
+    -> (CFlintPrim NMod -> Ptr (CFlintContext NModCtx) -> IO b)
     -> IO b
   withFlintPrimCtx (NMod a) f = 
     f a $ reflect (Proxy :: Proxy ctxProxy)
@@ -88,7 +88,7 @@ instance FlintPrim NModCtx NMod
   withNewFlintPrimCtx
     :: forall ctxProxy .
        ReifiesFlintContext NModCtx ctxProxy
-    => (Ptr (CFlintCtx NModCtx) -> IO (CFlintPrim NMod))
+    => (Ptr (CFlintContext NModCtx) -> IO (CFlintPrim NMod))
     -> IO (NMod ctxProxy)
   withNewFlintPrimCtx f =
     NMod <$> f (reflect (Proxy :: Proxy ctxProxy))

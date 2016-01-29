@@ -18,10 +18,10 @@ import Data.Reflection
 import Foreign.Ptr ( Ptr )
 
 type ReifiesFlintContext ctx ctxProxy =
-  ( FlintContext ctx, Reifies ctxProxy (Ptr (CFlintCtx ctx)) )
+  ( FlintContext ctx, Reifies ctxProxy (Ptr (CFlintContext ctx)) )
 
 class FlintContext ctx where
-  data CFlintCtx ctx :: *
+  data CFlintContext ctx :: *
   data FlintContextData ctx :: *
 
   newFlintContext

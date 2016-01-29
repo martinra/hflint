@@ -25,12 +25,12 @@ class    FlintContext ctx
   withFlintPrimCtx
     :: ReifiesFlintContext ctx ctxProxy
     => a ctxProxy
-    -> (CFlintPrim a -> Ptr (CFlintCtx ctx) -> IO b)
+    -> (CFlintPrim a -> Ptr (CFlintContext ctx) -> IO b)
     -> IO b
 
   withNewFlintPrimCtx
     :: ReifiesFlintContext ctx ctxProxy
-    => (Ptr (CFlintCtx ctx) -> IO (CFlintPrim a))
+    => (Ptr (CFlintContext ctx) -> IO (CFlintPrim a))
     -> IO (a ctxProxy)
 
   withFlintPrim

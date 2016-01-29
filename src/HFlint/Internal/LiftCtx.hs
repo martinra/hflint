@@ -7,8 +7,8 @@
   #-}
 
 module HFlint.Internal.LiftCtx
-  ( liftFlint0Ctx
-  , lift2Flint0Ctx
+  ( liftFlintCtx0
+  , lift2FlintCtx0
 
   , lift0FlintCtx
   , lift0FlintCtx_
@@ -20,13 +20,13 @@ module HFlint.Internal.LiftCtx
   , lift2FlintCtx_
   , lift2FlintCtx'
 
-  , lift2Flint2Ctx
-  , lift2Flint2Ctx_
-  , lift2Flint2Ctx'
+  , lift2FlintCtx2
+  , lift2FlintCtx2_
+  , lift2FlintCtx2'
 
-  , lift2Flint3Ctx
-  , lift2Flint3Ctx_
-  , lift2Flint3Ctx'
+  , lift2FlintCtx3
+  , lift2FlintCtx3_
+  , lift2FlintCtx3'
   )
 where
 
@@ -35,7 +35,6 @@ import Foreign.Ptr ( Ptr )
 import System.IO.Unsafe ( unsafePerformIO )
 
 import HFlint.Internal.Context
-import HFlint.Internal.Flint
 import HFlint.Internal.FlintWithContext
 
 
@@ -43,24 +42,26 @@ import HFlint.Internal.FlintWithContext
 -- FMPZ -> ()
 --------------------------------------------------
 
-{-# INLINE liftFlint0Ctx #-}
-liftFlint0Ctx
-  :: ( FlintWithContext ctx a )
-  => ( Ptr (CFlint a) -> Ptr (CFlintCtx ctx) -> IO r )
-  -> a
+{-# INLINE liftFlintCtx0 #-}
+liftFlintCtx0
+  :: ( FlintWithContext ctx a
+     , ReifiesFlintContext ctx ctxProxy )
+  => ( Ptr (CFlintCtx a) -> Ptr (CFlintContext ctx) -> IO r )
+  -> a ctxProxy
   -> r
-liftFlint0Ctx f (!a) = unsafePerformIO $ snd <$> withFlintCtx a f
+liftFlintCtx0 f (!a) = unsafePerformIO $ snd <$> withFlintCtx a f
 
-{-# INLINE lift2Flint0Ctx #-}
-lift2Flint0Ctx
-  :: ( FlintWithContext ctx a, FlintWithContext ctx b )
-  => (    Ptr (CFlint a) -> Ptr (CFlint b)
-       -> Ptr (CFlintCtx ctx)
+{-# INLINE lift2FlintCtx0 #-}
+lift2FlintCtx0
+  :: ( FlintWithContext ctx a, FlintWithContext ctx b
+     , ReifiesFlintContext ctx ctxProxy )
+  => (    Ptr (CFlintCtx a) -> Ptr (CFlintCtx b)
+       -> Ptr (CFlintContext ctx)
        -> IO r )
-  -> a -> b
+  -> a ctxProxy -> b ctxProxy
   -> r
-lift2Flint0Ctx f (!a) (!b) = unsafePerformIO $
-  fmap snd $ withFlint a    $ \aptr     ->
+lift2FlintCtx0 f (!a) (!b) = unsafePerformIO $
+  fmap snd $ withFlintCtx a $ \aptr _   ->
   fmap snd $ withFlintCtx b $ \bptr ctx ->
   f aptr bptr ctx
 
@@ -70,16 +71,18 @@ lift2Flint0Ctx f (!a) (!b) = unsafePerformIO $
 
 {-# INLINE lift0FlintCtx #-}
 lift0FlintCtx
-  :: ( FlintWithContext ctx c )
-  => ( Ptr (CFlint c) -> Ptr (CFlintCtx ctx) -> IO r )
-  -> (c, r)
+  :: ( FlintWithContext ctx c
+     , ReifiesFlintContext ctx ctxProxy )
+  => ( Ptr (CFlintCtx c) -> Ptr (CFlintContext ctx) -> IO r )
+  -> (c ctxProxy, r)
 lift0FlintCtx f = unsafePerformIO $ withNewFlintCtx f
 
 {-# INLINE lift0FlintCtx_ #-}
 lift0FlintCtx_
-  :: ( FlintWithContext ctx c )
-  => ( Ptr (CFlint c) -> Ptr (CFlintCtx ctx) -> IO r )
-  -> c
+  :: ( FlintWithContext ctx c
+     , ReifiesFlintContext ctx ctxProxy )
+  => ( Ptr (CFlintCtx c) -> Ptr (CFlintContext ctx) -> IO r )
+  -> c ctxProxy
 lift0FlintCtx_ = fst . lift0FlintCtx
 
 --------------------------------------------------
@@ -88,25 +91,27 @@ lift0FlintCtx_ = fst . lift0FlintCtx
 
 {-# INLINE liftFlintCtx #-}
 liftFlintCtx
-  :: ( FlintWithContext ctx c, FlintWithContext ctx a )
-  => (    Ptr (CFlint c) -> Ptr (CFlint a)
-       -> Ptr (CFlintCtx ctx)
+  :: ( FlintWithContext ctx c, FlintWithContext ctx a
+     , ReifiesFlintContext ctx ctxProxy )
+  => (    Ptr (CFlintCtx c) -> Ptr (CFlintCtx a)
+       -> Ptr (CFlintContext ctx)
        -> IO r )
-  -> a
-  -> (c, r)
+  -> a ctxProxy
+  -> (c ctxProxy, r)
 liftFlintCtx f (!a) = unsafePerformIO $
-  fmap snd $ withFlint a     $ \aptr     ->
+  fmap snd $ withFlintCtx a  $ \aptr _    ->
              withNewFlintCtx $ \cptr ctx ->
   f cptr aptr ctx
 
 {-# INLINE liftFlintCtx_ #-}
 liftFlintCtx_
-  :: ( FlintWithContext ctx c, FlintWithContext ctx a )
-  => (    Ptr (CFlint c) -> Ptr (CFlint a)
-       -> Ptr (CFlintCtx ctx)
+  :: ( FlintWithContext ctx c, FlintWithContext ctx a
+     , ReifiesFlintContext ctx ctxProxy )
+  => (    Ptr (CFlintCtx c) -> Ptr (CFlintCtx a)
+       -> Ptr (CFlintContext ctx)
        -> IO r )
-  -> a
-  -> c
+  -> a ctxProxy
+  -> c ctxProxy
 liftFlintCtx_ = fst .: liftFlintCtx
 
 --------------------------------------------------
@@ -116,144 +121,153 @@ liftFlintCtx_ = fst .: liftFlintCtx
 {-# INLINE lift2FlintCtx #-}
 lift2FlintCtx
   :: ( FlintWithContext ctx c
-     , FlintWithContext ctx a, FlintWithContext ctx b )
-  => (    Ptr (CFlint c)
-       -> Ptr (CFlint a) -> Ptr (CFlint b)
-       -> Ptr (CFlintCtx ctx)
+     , FlintWithContext ctx a, FlintWithContext ctx b
+     , ReifiesFlintContext ctx ctxProxy )
+  => (    Ptr (CFlintCtx c)
+       -> Ptr (CFlintCtx a) -> Ptr (CFlintCtx b)
+       -> Ptr (CFlintContext ctx)
        -> IO r )
-  -> a -> b
-  -> (c, r)
+  -> a ctxProxy -> b ctxProxy
+  -> (c ctxProxy, r)
 lift2FlintCtx f (!a) (!b) = unsafePerformIO $
-    fmap snd $ withFlint a     $ \aptr     ->
-    fmap snd $ withFlint b     $ \bptr     ->
+    fmap snd $ withFlintCtx a  $ \aptr _   ->
+    fmap snd $ withFlintCtx b  $ \bptr _   ->
                withNewFlintCtx $ \cptr ctx ->
     f cptr aptr bptr ctx
 
 {-# INLINE lift2FlintCtx_ #-}
 lift2FlintCtx_
   :: ( FlintWithContext ctx c
-     , FlintWithContext ctx a, FlintWithContext ctx b )
-  => (    Ptr (CFlint c)
-       -> Ptr (CFlint a) -> Ptr (CFlint b)
-       -> Ptr (CFlintCtx ctx)
+     , FlintWithContext ctx a, FlintWithContext ctx b
+     , ReifiesFlintContext ctx ctxProxy )
+  => (    Ptr (CFlintCtx c)
+       -> Ptr (CFlintCtx a) -> Ptr (CFlintCtx b)
+       -> Ptr (CFlintContext ctx)
        -> IO r )
-  -> a -> b
-  -> c
+  -> a ctxProxy -> b ctxProxy
+  -> c ctxProxy
 lift2FlintCtx_ = fst .:. lift2FlintCtx
 
 {-# INLINE lift2FlintCtx' #-}
 lift2FlintCtx'
-  :: forall ctx a b r .
-     ( FlintWithContext ctx a, FlintWithContext ctx b )
-  => (    Ptr (CFlint a)
-       -> Ptr (CFlint a) -> Ptr (CFlint b)
-       -> Ptr (CFlintCtx ctx)
+  :: forall ctx ctxProxy a b r .
+     ( FlintWithContext ctx a, FlintWithContext ctx b
+     , ReifiesFlintContext ctx ctxProxy )
+  => (    Ptr (CFlintCtx a)
+       -> Ptr (CFlintCtx a) -> Ptr (CFlintCtx b)
+       -> Ptr (CFlintContext ctx)
        -> IO r)
-  -> a -> b
+  -> a ctxProxy -> b ctxProxy
   -> r
 lift2FlintCtx' f a b = snd cr
   where
   cr = lift2FlintCtx f a b
-  _ = fst cr :: a
+  _ = fst cr :: a ctxProxy
 
 --------------------------------------------------
 --- FMPZ -> FMPZ -> (FMPZ, FMPZ)
 --------------------------------------------------
 
-{-# INLINE lift2Flint2Ctx #-}
-lift2Flint2Ctx
+{-# INLINE lift2FlintCtx2 #-}
+lift2FlintCtx2
   :: ( FlintWithContext ctx c, FlintWithContext ctx d
-     , FlintWithContext ctx a, FlintWithContext ctx b )
-  => (    Ptr (CFlint c) -> Ptr (CFlint d)
-       -> Ptr (CFlint a) -> Ptr (CFlint b)
-       -> Ptr (CFlintCtx ctx)
+     , FlintWithContext ctx a, FlintWithContext ctx b
+     , ReifiesFlintContext ctx ctxProxy )
+  => (    Ptr (CFlintCtx c) -> Ptr (CFlintCtx d)
+       -> Ptr (CFlintCtx a) -> Ptr (CFlintCtx b)
+       -> Ptr (CFlintContext ctx)
        -> IO r )
-  -> a -> b
-  -> ((c,d), r)
-lift2Flint2Ctx f (!a) (!b) = unsafePerformIO $
-  fmap snd $ withFlint a     $ \aptr     ->
-  fmap snd $ withFlint b     $ \bptr     ->
-  fmap cmb $ withNewFlint    $ \cptr     -> 
+  -> a ctxProxy -> b ctxProxy
+  -> ((c ctxProxy,d ctxProxy), r)
+lift2FlintCtx2 f (!a) (!b) = unsafePerformIO $
+  fmap snd $ withFlintCtx a  $ \aptr _   ->
+  fmap snd $ withFlintCtx b  $ \bptr _   ->
+  fmap cmb $ withNewFlintCtx $ \cptr _   -> 
              withNewFlintCtx $ \dptr ctx -> 
   f cptr dptr aptr bptr ctx
   where
    cmb (c, (d,r)) = ((c,d), r)
 
-{-# INLINE lift2Flint2Ctx_ #-}
-lift2Flint2Ctx_
+{-# INLINE lift2FlintCtx2_ #-}
+lift2FlintCtx2_
   :: ( FlintWithContext ctx c, FlintWithContext ctx d
-     , FlintWithContext ctx a, FlintWithContext ctx b )
-  => (    Ptr (CFlint c) -> Ptr (CFlint d)
-       -> Ptr (CFlint a) -> Ptr (CFlint b)
-       -> Ptr (CFlintCtx ctx)
+     , FlintWithContext ctx a, FlintWithContext ctx b
+     , ReifiesFlintContext ctx ctxProxy )
+  => (    Ptr (CFlintCtx c) -> Ptr (CFlintCtx d)
+       -> Ptr (CFlintCtx a) -> Ptr (CFlintCtx b)
+       -> Ptr (CFlintContext ctx)
        -> IO r )
-  -> a -> b
-  -> (c,d)
-lift2Flint2Ctx_ = fst .:. lift2Flint2Ctx
+  -> a ctxProxy -> b ctxProxy
+  -> (c ctxProxy,d ctxProxy)
+lift2FlintCtx2_ = fst .:. lift2FlintCtx2
 
-{-# INLINE lift2Flint2Ctx' #-}
-lift2Flint2Ctx'
-  :: forall ctx a b r .
-     ( FlintWithContext ctx a, FlintWithContext ctx b )
-  => (    Ptr (CFlint a) -> Ptr (CFlint a)
-       -> Ptr (CFlint a) -> Ptr (CFlint b)
-       -> Ptr (CFlintCtx ctx)
+{-# INLINE lift2FlintCtx2' #-}
+lift2FlintCtx2'
+  :: forall ctx ctxProxy a b r .
+     ( FlintWithContext ctx a, FlintWithContext ctx b
+     , ReifiesFlintContext ctx ctxProxy )
+  => (    Ptr (CFlintCtx a) -> Ptr (CFlintCtx a)
+       -> Ptr (CFlintCtx a) -> Ptr (CFlintCtx b)
+       -> Ptr (CFlintContext ctx)
        -> IO r )
-  -> a -> b
+  -> a ctxProxy -> b ctxProxy
   -> r
-lift2Flint2Ctx' f a b = snd cdr
+lift2FlintCtx2' f a b = snd cdr
   where
-  cdr = lift2Flint2Ctx f a b
-  _ = fst cdr :: (a,a)
+  cdr = lift2FlintCtx2 f a b
+  _ = fst cdr :: (a ctxProxy,a ctxProxy)
 
 --------------------------------------------------
 --- FMPZ -> FMPZ -> (FMPZ, FMPZ, FMPZ)
 --------------------------------------------------
 
-{-# INLINE lift2Flint3Ctx #-}
-lift2Flint3Ctx
+{-# INLINE lift2FlintCtx3 #-}
+lift2FlintCtx3
   :: ( FlintWithContext ctx c, FlintWithContext ctx d
      , FlintWithContext ctx e
-     , FlintWithContext ctx a, FlintWithContext ctx b )
-  => (    Ptr (CFlint c) -> Ptr (CFlint d) -> Ptr (CFlint e)
-       -> Ptr (CFlint a) -> Ptr (CFlint b)
-       -> Ptr (CFlintCtx ctx)
+     , FlintWithContext ctx a, FlintWithContext ctx b
+     , ReifiesFlintContext ctx ctxProxy )
+  => (    Ptr (CFlintCtx c) -> Ptr (CFlintCtx d) -> Ptr (CFlintCtx e)
+       -> Ptr (CFlintCtx a) -> Ptr (CFlintCtx b)
+       -> Ptr (CFlintContext ctx)
        -> IO r )
-  -> a -> b
-  -> ((c,d,e), r)
-lift2Flint3Ctx f (!a) (!b) = unsafePerformIO $
-    fmap snd $ withFlint a     $ \aptr     ->
-    fmap snd $ withFlint b     $ \bptr     ->
-    fmap cmb $ withNewFlint    $ \cptr     ->
-               withNewFlint    $ \dptr     ->
+  -> a ctxProxy -> b ctxProxy
+  -> ((c ctxProxy,d ctxProxy,e ctxProxy), r)
+lift2FlintCtx3 f (!a) (!b) = unsafePerformIO $
+    fmap snd $ withFlintCtx a  $ \aptr _   ->
+    fmap snd $ withFlintCtx b  $ \bptr _   ->
+    fmap cmb $ withNewFlintCtx $ \cptr _   ->
+               withNewFlintCtx $ \dptr _   ->
                withNewFlintCtx $ \eptr ctx ->
     f cptr dptr eptr aptr bptr ctx
   where
     cmb (c,(d,(e,r))) = ((c,d,e),r)
 
-{-# INLINE lift2Flint3Ctx_ #-}
-lift2Flint3Ctx_
+{-# INLINE lift2FlintCtx3_ #-}
+lift2FlintCtx3_
   :: ( FlintWithContext ctx c, FlintWithContext ctx d
      , FlintWithContext ctx e
-     , FlintWithContext ctx a, FlintWithContext ctx b)
-  => (    Ptr (CFlint c) -> Ptr (CFlint d) -> Ptr (CFlint e)
-       -> Ptr (CFlint a) -> Ptr (CFlint b)
-       -> Ptr (CFlintCtx ctx)
+     , FlintWithContext ctx a, FlintWithContext ctx b
+     , ReifiesFlintContext ctx ctxProxy )
+  => (    Ptr (CFlintCtx c) -> Ptr (CFlintCtx d) -> Ptr (CFlintCtx e)
+       -> Ptr (CFlintCtx a) -> Ptr (CFlintCtx b)
+       -> Ptr (CFlintContext ctx)
        -> IO r )
-  -> a -> b
-  -> (c,d,e)
-lift2Flint3Ctx_ = fst .:. lift2Flint3Ctx
+  -> a ctxProxy -> b ctxProxy
+  -> (c ctxProxy,d ctxProxy,e ctxProxy)
+lift2FlintCtx3_ = fst .:. lift2FlintCtx3
 
-{-# INLINE lift2Flint3Ctx' #-}
-lift2Flint3Ctx'
-  :: forall ctx a b r .
-     ( FlintWithContext ctx a, FlintWithContext ctx b)
-  => (    Ptr (CFlint a) -> Ptr (CFlint a) -> Ptr (CFlint a)
-       -> Ptr (CFlint a) -> Ptr (CFlint b)
-       -> Ptr (CFlintCtx ctx)
+{-# INLINE lift2FlintCtx3' #-}
+lift2FlintCtx3'
+  :: forall ctx ctxProxy a b r .
+     ( FlintWithContext ctx a, FlintWithContext ctx b
+     , ReifiesFlintContext ctx ctxProxy )
+  => (    Ptr (CFlintCtx a) -> Ptr (CFlintCtx a) -> Ptr (CFlintCtx a)
+       -> Ptr (CFlintCtx a) -> Ptr (CFlintCtx b)
+       -> Ptr (CFlintContext ctx)
        -> IO r)
-  -> a -> b
+  -> a ctxProxy -> b ctxProxy
   -> r
-lift2Flint3Ctx' f a b = snd cder where
-  cder = lift2Flint3Ctx f a b
-  _ = fst cder :: (a,a,a)
+lift2FlintCtx3' f a b = snd cder where
+  cder = lift2FlintCtx3 f a b
+  _ = fst cder :: (a ctxProxy,a ctxProxy,a ctxProxy)

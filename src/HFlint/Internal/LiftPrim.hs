@@ -24,7 +24,7 @@ liftFlintPrim
      , ReifiesFlintContext ctx ctxProxy
      )
   => (    CFlintPrim a
-       -> Ptr (CFlintCtx ctx)
+       -> Ptr (CFlintContext ctx)
        -> IO (CFlintPrim b) )
   -> a ctxProxy
   -> b ctxProxy
@@ -40,7 +40,7 @@ lift2FlintPrim
      , ReifiesFlintContext ctx ctxProxy
      )
   => (    CFlintPrim a -> CFlintPrim b
-       -> Ptr (CFlintCtx ctx)
+       -> Ptr (CFlintContext ctx)
        -> IO (CFlintPrim c) )
   -> a ctxProxy -> b ctxProxy
   -> c ctxProxy
