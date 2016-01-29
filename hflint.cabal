@@ -59,6 +59,7 @@ library
     HFlint.FMPZ
     HFlint.FMPZPoly
     HFlint.FMPZPolyFactor
+    HFlint.NF
     HFlint.NMod
     HFlint.Primes
 
