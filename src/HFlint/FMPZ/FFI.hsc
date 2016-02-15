@@ -30,7 +30,7 @@ import HFlint.NMod.FFI
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 
 
-newtype FMPZ = FMPZ (ForeignPtr CFMPZ)
+data FMPZ = FMPZ {-# UNPACK #-} !(ForeignPtr CFMPZ)
 type CFMPZ = CFlint FMPZ
 
 instance Flint FMPZ where

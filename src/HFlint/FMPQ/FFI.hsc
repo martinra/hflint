@@ -29,7 +29,7 @@ import HFlint.Internal.Flint
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 
 
-newtype FMPQ = FMPQ (ForeignPtr CFMPQ)
+data FMPQ = FMPQ {-# UNPACK #-} !(ForeignPtr CFMPQ)
 type CFMPQ = CFlint FMPQ
 
 instance Flint FMPQ where
