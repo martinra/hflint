@@ -29,7 +29,7 @@ import HFlint.Internal.Flint
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 
 
-newtype FMPZPolyFactor = FMPZPolyFactor (ForeignPtr CFMPZPolyFactor)
+data FMPZPolyFactor = FMPZPolyFactor {-# UNPACK #-} !(ForeignPtr CFMPZPolyFactor)
 type CFMPZPolyFactor = CFlint FMPZPolyFactor
 
 instance Flint FMPZPolyFactor where

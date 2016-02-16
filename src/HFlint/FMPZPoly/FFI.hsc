@@ -31,7 +31,7 @@ import HFlint.Internal.Flint
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 
 
-newtype FMPZPoly = FMPZPoly (ForeignPtr CFMPZPoly)
+data FMPZPoly = FMPZPoly {-# UNPACK #-} !(ForeignPtr CFMPZPoly)
 type CFMPZPoly = CFlint FMPZPoly
 
 instance Flint FMPZPoly where

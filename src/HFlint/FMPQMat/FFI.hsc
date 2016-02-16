@@ -29,7 +29,7 @@ import HFlint.Internal.Flint
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 
 
-newtype FMPQMat = FMPQMat (ForeignPtr CFMPQMat)
+data FMPQMat = FMPQMat {-# UNPACK #-} !(ForeignPtr CFMPQMat)
 type CFMPQMat = CFlint FMPQMat
 
 {-# INLINE newFMPQMat #-}

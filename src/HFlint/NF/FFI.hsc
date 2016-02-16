@@ -44,7 +44,7 @@ import HFlint.FMPZ.FFI
 newtype NFCtx = NFCtx (Ptr CNFCtx)
 type CNFCtx = CFlintContext NFCtx
 
-newtype NF ctxProxy = NF (ForeignPtr CNF)
+data NF ctxProxy = NF {-# UNPACK #-} !(ForeignPtr CNF)
 type CNF = CFlintCtx NF
 
 

@@ -35,7 +35,7 @@ import HFlint.Internal.FlintPrim
 
 type FlintLimb = CULong
 
-newtype NMod ctxProxy = NMod {unNMod :: FlintLimb}
+data NMod ctxProxy = NMod {unNMod :: {-# UNPACK #-} !FlintLimb}
 --type CNMod ctx = CFlint (NMod ctx)
 
 newtype NModCtx = NModCtx (Ptr CNModCtx)
