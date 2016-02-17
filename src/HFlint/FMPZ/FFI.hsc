@@ -75,10 +75,10 @@ instance Storable CFMPZ where
     poke = error "CFMPZ.poke: Not defined"
 
 
-foreign import capi unsafe "flint/fmpz.h fmpz_init"
+foreign import capi  "flint/fmpz.h fmpz_init"
         fmpz_init :: Ptr CFMPZ -> IO ()
 
-foreign import capi unsafe "flint/fmpz.h fmpz_clear"
+foreign import capi  "flint/fmpz.h fmpz_clear"
         fmpz_clear :: Ptr CFMPZ -> IO ()
 
 foreign import capi "flint/fmpz.h value fmpz_clear"
@@ -89,104 +89,104 @@ foreign import ccall "fmpz_size"
   fmpz_size :: Ptr CFMPZ -> IO CInt
 
 
-foreign import capi unsafe "flint/fmpz.h fmpz_zero"
+foreign import capi  "flint/fmpz.h fmpz_zero"
         fmpz_zero :: Ptr CFMPZ -> IO ()
 
-foreign import capi unsafe "flint/fmpz.h fmpz_one"
+foreign import capi  "flint/fmpz.h fmpz_one"
         fmpz_one :: Ptr CFMPZ -> IO ()
 
-foreign import capi unsafe "flint/fmpz.h fmpz_is_zero"
+foreign import capi  "flint/fmpz.h fmpz_is_zero"
         fmpz_is_zero :: Ptr CFMPZ -> IO CInt
 
-foreign import capi unsafe "flint/fmpz.h fmpz_is_one"
+foreign import capi  "flint/fmpz.h fmpz_is_one"
         fmpz_is_one :: Ptr CFMPZ -> IO CInt
 
-foreign import capi unsafe "flint/fmpz.h fmpz_is_pm1"
+foreign import capi  "flint/fmpz.h fmpz_is_pm1"
         fmpz_is_pm1 :: Ptr CFMPZ -> IO CInt
 
 
-foreign import ccall unsafe "fmpz_set"
+foreign import ccall  "fmpz_set"
         fmpz_set :: Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-foreign import capi unsafe "flint/fmpz.h fmpz_set_ui"
+foreign import capi  "flint/fmpz.h fmpz_set_ui"
         fmpz_set_ui :: Ptr CFMPZ -> CULong -> IO ()
 
 
-foreign import ccall unsafe "fmpz_get_str"
+foreign import ccall  "fmpz_get_str"
         fmpz_get_str :: CString -> CInt -> Ptr CFMPZ -> IO CString
 
 
-foreign import ccall unsafe "fmpz_equal"
+foreign import ccall  "fmpz_equal"
         fmpz_equal :: Ptr CFMPZ -> Ptr CFMPZ -> IO CInt
 
-foreign import ccall unsafe "fmpz_cmp"
+foreign import ccall  "fmpz_cmp"
         fmpz_cmp :: Ptr CFMPZ -> Ptr CFMPZ -> IO CInt
 
 
-foreign import ccall unsafe "fmpz_sgn"
+foreign import ccall  "fmpz_sgn"
         fmpz_sgn :: Ptr CFMPZ -> IO CInt
 
-foreign import capi unsafe "flint/fmpz.h fmpz_neg"
+foreign import capi  "flint/fmpz.h fmpz_neg"
         fmpz_neg :: Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-foreign import ccall unsafe "fmpz_abs"
+foreign import ccall  "fmpz_abs"
         fmpz_abs :: Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
 
-foreign import ccall unsafe "fmpz_add"
+foreign import ccall  "fmpz_add"
         fmpz_add :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-foreign import ccall unsafe "fmpz_add_ui"
+foreign import ccall  "fmpz_add_ui"
         fmpz_add_ui :: Ptr CFMPZ -> Ptr CFMPZ -> CULong -> IO ()
 
-foreign import ccall unsafe "fmpz_sub"
+foreign import ccall  "fmpz_sub"
         fmpz_sub :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-foreign import ccall unsafe "fmpz_mul"
+foreign import ccall  "fmpz_mul"
         fmpz_mul :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-foreign import ccall unsafe "fmpz_mul_ui"
+foreign import ccall  "fmpz_mul_ui"
         fmpz_mul_ui :: Ptr CFMPZ -> Ptr CFMPZ -> CULong -> IO ()
 
-foreign import ccall unsafe "fmpz_submul"
+foreign import ccall  "fmpz_submul"
         fmpz_submul :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-foreign import ccall unsafe "fmpz_fdiv_q"
+foreign import ccall  "fmpz_fdiv_q"
         fmpz_fdiv_q :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-foreign import ccall unsafe "fmpz_fdiv_r"
+foreign import ccall  "fmpz_fdiv_r"
         fmpz_fdiv_r :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-foreign import ccall unsafe "fmpz_fdiv_qr"
+foreign import ccall  "fmpz_fdiv_qr"
         fmpz_fdiv_qr :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-foreign import ccall unsafe "fmpz_tdiv_q"
+foreign import ccall  "fmpz_tdiv_q"
         fmpz_tdiv_q :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-foreign import ccall unsafe "fmpz_tdiv_qr"
+foreign import ccall  "fmpz_tdiv_qr"
         fmpz_tdiv_qr :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-foreign import ccall unsafe "fmpz_fdiv_ui"
+foreign import ccall  "fmpz_fdiv_ui"
         fmpz_fdiv_ui :: Ptr CFMPZ -> CULong -> IO CULong
 
-foreign import ccall unsafe "fmpz_fdiv_q_ui"
+foreign import ccall  "fmpz_fdiv_q_ui"
         fmpz_fdiv_q_ui :: Ptr CFMPZ -> Ptr CFMPZ -> CULong -> IO ()
 
-foreign import ccall unsafe "fmpz_divexact"
+foreign import ccall  "fmpz_divexact"
         fmpz_divexact :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
 
-foreign import ccall unsafe "fmpz_gcd"
+foreign import ccall  "fmpz_gcd"
         fmpz_gcd :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-foreign import ccall unsafe "fmpz_xgcd"
+foreign import ccall  "fmpz_xgcd"
         fmpz_xgcd :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-foreign import ccall unsafe "fmpz_lcm"
+foreign import ccall  "fmpz_lcm"
         fmpz_lcm :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> IO ()
 
-foreign import ccall unsafe "fmpz_CRT_ui"
+foreign import ccall  "fmpz_CRT_ui"
   fmpz_CRT_ui :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> CULong -> CULong -> CInt -> IO ()
 
-foreign import ccall unsafe "_fmpz_CRT_ui_precomp"
+foreign import ccall  "_fmpz_CRT_ui_precomp"
   fmpz_CRT_ui_precomp :: Ptr CFMPZ -> Ptr CFMPZ -> Ptr CFMPZ -> FlintLimb -> FlintLimb -> FlintLimb -> Ptr CFMPZ -> FlintLimb -> CInt -> IO ()
