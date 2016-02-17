@@ -131,13 +131,12 @@ library
   GHC-options:
     -Wall
     -fno-warn-orphans
-    -static
     -fsimpl-tick-factor=500
+    -threaded
   GHC-prof-options:
     -prof -auto
   cpp-options:
     -fPIC
-    -static
   build-tools:         hsc2hs
   hs-source-dirs:      src
 
