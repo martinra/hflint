@@ -35,7 +35,7 @@ library
   default-language: Haskell2010
   build-depends:
       base > 3 && < 5
-    , algebra-structures
+    , algebraic-structures
     , composition
     , containers
     , deepseq
@@ -170,7 +170,7 @@ library
 test-suite test-hflint
   build-depends:
     base,
-    algebra-structures,
+    algebraic-structures,
     hflint == 0.0.1,
     composition,
     split,
