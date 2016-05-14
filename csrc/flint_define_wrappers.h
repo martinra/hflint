@@ -8,8 +8,6 @@
 #include <flint/fmpq_mat.h>
 #include <flint/fmpz_poly.h>
 #include <flint/fmpq_poly.h>
-#include <flint/nf.h>
-#include <flint/nf_elem.h>
 
 // todo: when GHCi supports capi for #define statements, then remove these wrappers
 
@@ -30,7 +28,5 @@ ulong nmod_neg_wrapper(ulong a, nmod_t* mod);
 ulong nmod_mul_wrapper(ulong a, ulong b, nmod_t* mod);
 ulong nmod_inv_wrapper(ulong a, nmod_t* mod);
 ulong nmod_div_wrapper(ulong a, ulong b, nmod_t* mod);
-
-void nf_elem_clear_wrapper(const nf_t nf, nf_elem_t a);
 
 #endif

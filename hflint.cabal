@@ -59,13 +59,11 @@ library
     HFlint.FMPZ
     HFlint.FMPZPoly
     HFlint.FMPZPolyFactor
-    HFlint.NF
     HFlint.NMod
     HFlint.Primes
 
     HFlint.FMPZ.FFI
     HFlint.FMPQ.FFI
-    HFlint.NF.FFI
 
     HFlint.Internal
 
@@ -99,11 +97,6 @@ library
     HFlint.FMPZPoly.FFI
 
     HFlint.FMPZPolyFactor.FFI
-
-    HFlint.NF.Algebra
-    HFlint.NF.Arithmetic
-    HFlint.NF.Base
-    HFlint.NF.Context
 
     HFlint.NMod.Algebra
     HFlint.NMod.Arithmetic
@@ -141,7 +134,6 @@ library
   hs-source-dirs:      src
 
   include-dirs:
-    flint2_install/include
     csrc
   includes:
     flint/flint.h

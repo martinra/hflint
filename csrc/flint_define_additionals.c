@@ -1,5 +1,4 @@
 #include "flint_define_additionals.h"
-#include "flint/fmpq_poly.h"
 
 void
 fmpz_poly_factor_get_content_additional(
@@ -35,12 +34,4 @@ nmod_n_additional(
   )
 {
   return mod->n;
-}
-
-slong
-nf_degree_additional(
-  const nf_t a
-  )
-{
-  return fmpq_poly_degree(a->pol);
 }

@@ -115,12 +115,3 @@ nmod_div_wrapper(
 {
   return nmod_div(a,b,*mod);
 }
-
-void
-nf_elem_clear_wrapper(
-  const nf_t nf,
-  nf_elem_t a
-  )
-{
-  nf_elem_clear(a, nf);
-}
