@@ -132,9 +132,6 @@ library
     -Wall
     -fno-warn-orphans
     -fsimpl-tick-factor=500
-    -threaded
-  GHC-prof-options:
-    -prof -auto
   cpp-options:
     -fPIC
   build-tools:         hsc2hs
