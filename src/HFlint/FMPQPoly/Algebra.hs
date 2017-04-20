@@ -81,11 +81,11 @@ instance Ring FMPQPoly
 instance IntegralDomain FMPQPoly
 
 instance FactorialRing FMPQPoly where
-  factor a = Factored (fromList [fromFMPZs one d] * fromFMPZPoly u)
+  factor a = Factored (Unit $ fromList [fromFMPZs one d] * fromFMPZPoly u)
                       (V.map (first fromFMPZPoly) f)
     where
     (d, a') = toFMPZPoly a
-    Factored u f = factor a' 
+    Factored (Unit u) f = factor a' 
 
 instance PIDomain FMPQPoly where
   gcd = lift2Flint_ fmpq_poly_gcd

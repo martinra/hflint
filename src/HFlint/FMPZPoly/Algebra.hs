@@ -92,7 +92,7 @@ instance FactorialRing FMPZPoly where
                     else V.generateM n $ \i -> fmap (second fromIntegral) $
                          withNewFMPZPoly $ \fptr ->
                          fmpz_poly_factor_get_factor fptr pfptr (fromIntegral i)
-               return $ Factored (fromList [u]) f
+               return $ Factored (Unit $ fromList [u]) f
 
 instance PIDomain FMPZPoly where
   gcd = lift2Flint_ fmpz_poly_gcd
