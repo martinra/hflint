@@ -2,7 +2,7 @@ name:                hflint
 version:             0.0.1
 synopsis:            Haskell binding to the FLINT library
 description:         Haskell binding to the FLINT library.  This
- 		     version is compatible with FLINT 2.4.
+ 		     version is compatible with FLINT 2.5.
 		     .
                      Since FLINT uses GMP, this library features
                      infrequent but serious errors with a ghc that
@@ -13,23 +13,13 @@ category:            Data, Math
 license:             GPL-3
 license-file:        LICENSE
 stability:           experimental
-tested-with:         GHC==7.8.4
-author:              Martin Westerholt-Raum <martin@raum-brothers.eu>
-maintainer:          Martin Westerholt-Raum <martin@raum-brothers.eu>
-homepage:            http://github.com/???
+tested-with:         GHC==8.0.2
+author:              Martin Raum <martin@raum-brothers.eu>
+maintainer:          Martin Raum <martin@raum-brothers.eu>
 build-type:          Simple
 cabal-version:       >= 1.16
 
-data-files:          README
-
-source-repository head
-  type:     git
-  location: https://github???
-
-source-repository this
-  type:     git
-  location: https://github
-  tag:      hflint-0.0.1
+data-files:          README.md
 
 library
   default-language: Haskell2010
@@ -138,7 +128,6 @@ library
   hs-source-dirs:      src
 
   include-dirs:
-    flint2_install/include
     csrc
   includes:
     flint/flint.h
@@ -165,6 +154,8 @@ library
     ntl
 
 test-suite test-hflint
+  main-is:    TestHFlint.hs
+
   build-depends:
     base,
     algebraic-structures,
@@ -180,11 +171,8 @@ test-suite test-hflint
   GHC-options:
     -Wall
     -fno-warn-orphans
-    -static
     -fsimpl-tick-factor=500
 
-  main-is:    TestHFlint.hs
-  hs-source-dirs: test
-
+  hs-source-dirs: test, src
   type:       exitcode-stdio-1.0
   default-language: Haskell2010
