@@ -73,6 +73,12 @@ instance    ReifiesNFContext ctxProxy
   one = lift0FlintCtx_ nf_elem_one
 
 instance    ReifiesNFContext ctxProxy
+         => DecidableUnit (NF ctxProxy)
+  where
+  isUnit = not . isZero
+  toUnit = Unit
+
+instance    ReifiesNFContext ctxProxy
          => DecidableOne (NF ctxProxy)
   where
   isOne = (/=0) . liftFlintCtx0 nf_elem_is_one
@@ -95,13 +101,23 @@ instance    ReifiesNFContext ctxProxy
 instance    ReifiesNFContext ctxProxy
          => DecidableOne (NonZero (NF ctxProxy))
   where
-  isOne (NonZero a) = isOne a
+  isOne = isOne . fromNonZero
 
 instance    ReifiesNFContext ctxProxy
          => MultiplicativeGroup (NonZero (NF ctxProxy))
   where
   recip (NonZero a) = NonZero ( P.recip a )
   (NonZero a) / (NonZero b) = NonZero (a P./ b)
+
+
+instance    ReifiesNFContext ctxProxy
+  => DecidableOne (Unit (NF ctxProxy))
+  where
+  isOne = isOne . fromUnit
+
+instance    ReifiesNFContext ctxProxy
+  => MultiplicativeGroup (Unit (NF ctxProxy)) where
+  recip = Unit . fromNonZero . recip . NonZero . fromUnit
 
 
 instance    ReifiesNFContext ctxProxy
