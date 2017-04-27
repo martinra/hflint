@@ -1,4 +1,4 @@
-module Primes.UnitTests
+module HFlint.Test.Primes.UnitTests
 where
 
 
@@ -9,8 +9,8 @@ import Test.Tasty.HUnit as HU ( (@?=) )
 import HFlint.Primes
 
 
-primesUnitTests :: TestTree
-primesUnitTests = testGroup "comparing to Sage result"
+unitTests :: TestTree
+unitTests = testGroup "comparing to Sage result"
   [ HU.testCase "take 50 $ primesAfter 2^16" $ 
       ( take 50 $ primesAfter 0XFFFF )
       @?=

@@ -1,8 +1,8 @@
-module FMPQTests.Utils
+module HFlint.Test.Utility.FMPQ
 where
 
 import HFlint.FMPQ
-import qualified TestHFlint.Utils as U
+import qualified HFlint.Test.Utility.Intertwine as U
 
 
 -- We need to specify the type, so that a is not specialized when infering the

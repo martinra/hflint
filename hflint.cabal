@@ -22,7 +22,82 @@ cabal-version:       >= 1.16
 data-files:          README.md
 
 library
-  default-language: Haskell2010
+  exposed-modules:
+    HFlint.FMPQ
+    HFlint.FMPQMat
+    HFlint.FMPQPoly
+    HFlint.FMPZ
+    HFlint.FMPZPoly
+    HFlint.FMPZPolyFactor
+    HFlint.NF
+    HFlint.NMod
+    HFlint.Primes
+
+    HFlint.FMPQ.FFI
+    HFlint.FMPQMat.FFI
+    HFlint.FMPQPoly.FFI
+    HFlint.FMPZ.FFI
+    HFlint.FMPZPoly.FFI
+    HFlint.FMPZPolyFactor.FFI
+    HFlint.NF.FFI
+    HFlint.NMod.FFI
+    HFlint.Primes.FFI
+
+    HFlint.Internal
+
+  other-modules:
+    HFlint.FMPQ.Algebra
+    HFlint.FMPQ.Arithmetic
+    HFlint.FMPQ.Base
+    HFlint.FMPQ.Reduction
+    HFlint.FMPQ.Tasty.QuickCheck
+    HFlint.FMPQ.Tasty.SmallCheck
+
+    HFlint.FMPQMat.Base
+
+    HFlint.FMPQPoly.Algebra
+    HFlint.FMPQPoly.Base
+
+    HFlint.FMPZ.Algebra
+    HFlint.FMPZ.Arithmetic
+    HFlint.FMPZ.Base
+    HFlint.FMPZ.Limbs
+    HFlint.FMPZ.Reduction
+    HFlint.FMPZ.Reduction.FMPZCRT
+    HFlint.FMPZ.Reduction.FMPZCRTFlintLimb
+    HFlint.FMPZ.Tasty.QuickCheck
+    HFlint.FMPZ.Tasty.SmallCheck
+
+    HFlint.FMPZPoly.Algebra
+    HFlint.FMPZPoly.Base
+
+
+    HFlint.NF.Algebra
+    HFlint.NF.Arithmetic
+    HFlint.NF.Base
+    HFlint.NF.Context
+
+    HFlint.NMod.Algebra
+    HFlint.NMod.Arithmetic
+    HFlint.NMod.Base
+    HFlint.NMod.Context
+    HFlint.NMod.Reduction
+    HFlint.NMod.Tasty.QuickCheck
+    HFlint.NMod.Tasty.SmallCheck
+
+    HFlint.Primes.Base
+
+    HFlint.Internal.Context
+    HFlint.Internal.Flint
+    HFlint.Internal.FlintPrim
+    HFlint.Internal.FlintWithContext
+    HFlint.Internal.Lift
+    HFlint.Internal.LiftCtx
+    HFlint.Internal.LiftPrim
+    HFlint.Internal.Lift.Utils
+    HFlint.Internal.Utils
+    HFlint.Internal.TH
+
   build-depends:
       base > 3 && < 5
     , algebraic-structures
@@ -42,90 +117,12 @@ library
     , template-haskell
     , transformers
 
-  exposed-modules:
-    HFlint.FMPQ
-    HFlint.FMPQMat
-    HFlint.FMPQPoly
-    HFlint.FMPZ
-    HFlint.FMPZPoly
-    HFlint.FMPZPolyFactor
-    HFlint.NF
-    HFlint.NMod
-    HFlint.Primes
-
-    HFlint.FMPZ.FFI
-    HFlint.FMPQ.FFI
-    HFlint.NF.FFI
-
-    HFlint.Internal
-
-  other-modules:
-    HFlint.FMPQ.Algebra
-    HFlint.FMPQ.Arithmetic
-    HFlint.FMPQ.Base
-    HFlint.FMPQ.Reduction
-    HFlint.FMPQ.Tasty.QuickCheck
-    HFlint.FMPQ.Tasty.SmallCheck
-
-    HFlint.FMPQMat.Base
-    HFlint.FMPQMat.FFI
-
-    HFlint.FMPQPoly.Algebra
-    HFlint.FMPQPoly.Base
-    HFlint.FMPQPoly.FFI
-
-    HFlint.FMPZ.Algebra
-    HFlint.FMPZ.Arithmetic
-    HFlint.FMPZ.Base
-    HFlint.FMPZ.Limbs
-    HFlint.FMPZ.Reduction
-    HFlint.FMPZ.Reduction.FMPZCRT
-    HFlint.FMPZ.Reduction.FMPZCRTFlintLimb
-    HFlint.FMPZ.Tasty.QuickCheck
-    HFlint.FMPZ.Tasty.SmallCheck
-
-    HFlint.FMPZPoly.Algebra
-    HFlint.FMPZPoly.Base
-    HFlint.FMPZPoly.FFI
-
-    HFlint.FMPZPolyFactor.FFI
-
-    HFlint.NF.Algebra
-    HFlint.NF.Arithmetic
-    HFlint.NF.Base
-    HFlint.NF.Context
-
-    HFlint.NMod.Algebra
-    HFlint.NMod.Arithmetic
-    HFlint.NMod.Base
-    HFlint.NMod.Context
-    HFlint.NMod.FFI
-    HFlint.NMod.Reduction
-    HFlint.NMod.Tasty.QuickCheck
-    HFlint.NMod.Tasty.SmallCheck
-
-    HFlint.Primes.Base
-    HFlint.Primes.FFI
-
-    HFlint.Internal.Context
-    HFlint.Internal.Flint
-    HFlint.Internal.FlintPrim
-    HFlint.Internal.FlintWithContext
-    HFlint.Internal.Lift
-    HFlint.Internal.LiftCtx
-    HFlint.Internal.LiftPrim
-    HFlint.Internal.Lift.Utils
-    HFlint.Internal.Utils
-    HFlint.Internal.TH
-
-  GHC-options:
-    -Wall
-    -fno-warn-orphans
-    -fsimpl-tick-factor=500
-  cpp-options:
-    -fPIC
-  build-tools:         hsc2hs
-  hs-source-dirs:      src
+  extra-libraries:
+    flint,
+    gf2x,
+    gmp,
+    mpfr,
+    ntl
 
   include-dirs:
     csrc
@@ -144,29 +141,161 @@ library
     csrc/flint_define_additionals.c
     csrc/flint_define_wrappers.c
 
+  build-tools:         hsc2hs
+
+  GHC-options:
+    -Wall
+    -fno-warn-orphans
+    -fsimpl-tick-factor=500
+  cpp-options:
+    -fPIC
+
+  hs-source-dirs:      src
+  default-language: Haskell2010
+
+test-suite test-hflint
+  main-is:    HFlint/Test.hs
+
+  other-modules:
+    HFlint.Test.FMPQ
+    HFlint.Test.FMPQ.Rational
+    HFlint.Test.FMPQPoly
+    HFlint.Test.FMPZ
+    HFlint.Test.FMPZ.Integer
+    HFlint.Test.FMPZPoly
+    HFlint.Test.Primes
+    HFlint.Test.Primes.UnitTests
+
+    HFlint.Test.Utility.FMPQ
+    HFlint.Test.Utility.FMPQPoly
+    HFlint.Test.Utility.FMPZ
+    HFlint.Test.Utility.FMPZPoly
+    HFlint.Test.Utility.Intertwine
+
+
+    HFlint.FMPQ
+    HFlint.FMPQMat
+    HFlint.FMPQPoly
+    HFlint.FMPZ
+    HFlint.FMPZPoly
+    HFlint.FMPZPolyFactor
+    HFlint.NF
+    HFlint.NMod
+    HFlint.Primes
+
+    HFlint.FMPQ.FFI
+    HFlint.FMPQMat.FFI
+    HFlint.FMPQPoly.FFI
+    HFlint.FMPZ.FFI
+    HFlint.FMPZPoly.FFI
+    HFlint.FMPZPolyFactor.FFI
+    HFlint.NF.FFI
+    HFlint.NMod.FFI
+    HFlint.Primes.FFI
+
+    HFlint.Internal
+
+    HFlint.FMPQ.Algebra
+    HFlint.FMPQ.Arithmetic
+    HFlint.FMPQ.Base
+    HFlint.FMPQ.Reduction
+    HFlint.FMPQ.Tasty.QuickCheck
+    HFlint.FMPQ.Tasty.SmallCheck
+
+    HFlint.FMPQMat.Base
+
+    HFlint.FMPQPoly.Algebra
+    HFlint.FMPQPoly.Base
+
+    HFlint.FMPZ.Algebra
+    HFlint.FMPZ.Arithmetic
+    HFlint.FMPZ.Base
+    HFlint.FMPZ.Limbs
+    HFlint.FMPZ.Reduction
+    HFlint.FMPZ.Reduction.FMPZCRT
+    HFlint.FMPZ.Reduction.FMPZCRTFlintLimb
+    HFlint.FMPZ.Tasty.QuickCheck
+    HFlint.FMPZ.Tasty.SmallCheck
+
+    HFlint.FMPZPoly.Algebra
+    HFlint.FMPZPoly.Base
+
+
+    HFlint.NF.Algebra
+    HFlint.NF.Arithmetic
+    HFlint.NF.Base
+    HFlint.NF.Context
+
+    HFlint.NMod.Algebra
+    HFlint.NMod.Arithmetic
+    HFlint.NMod.Base
+    HFlint.NMod.Context
+    HFlint.NMod.Reduction
+    HFlint.NMod.Tasty.QuickCheck
+    HFlint.NMod.Tasty.SmallCheck
+
+    HFlint.Primes.Base
+
+    HFlint.Internal.Context
+    HFlint.Internal.Flint
+    HFlint.Internal.FlintPrim
+    HFlint.Internal.FlintWithContext
+    HFlint.Internal.Lift
+    HFlint.Internal.LiftCtx
+    HFlint.Internal.LiftPrim
+    HFlint.Internal.Lift.Utils
+    HFlint.Internal.Utils
+    HFlint.Internal.TH
+
+  build-depends:
+      base
+    , QuickCheck
+    , algebraic-structures
+    , base
+    , composition
+    , containers
+    , data-default
+    , deepseq
+    , dlist
+    , monad-loops
+    , mtl
+    , reflection
+    , safe
+    , smallcheck
+    , split
+    , tasty
+    , tasty-hunit
+    , tasty-quickcheck
+    , tasty-smallcheck
+    , template-haskell
+    , transformers
+    , vector
+
   extra-libraries:
-    c,
-    stdc++,
     flint,
     gf2x,
     gmp,
     mpfr,
     ntl
 
-test-suite test-hflint
-  main-is:    TestHFlint.hs
+  include-dirs:
+    csrc
+  includes:
+    flint/flint.h
+    flint/fmpq.h
+    flint/fmpq_poly.h
+    flint/fmpz.h
 
-  build-depends:
-    base,
-    algebraic-structures,
-    hflint == 0.0.1,
-    composition,
-    split,
-    tasty,
-    tasty-smallcheck,
-    tasty-quickcheck,
-    tasty-hunit,
-    vector
+    flint_define_additionals.h
+    flint_define_wrappers.h
+  install-includes:
+    flint_define_additionals.h
+    flint_define_wrappers.h
+  c-sources:
+    csrc/flint_define_additionals.c
+    csrc/flint_define_wrappers.c
+
+  build-tools:         hsc2hs
 
   GHC-options:
     -Wall
