@@ -29,6 +29,9 @@ mkAbelianGroupInstanceFromNum (return []) [t|FMPQ|]
 mkCommutativeGroupInstanceFromNonZeroFractional (return []) [t|FMPQ|]
 mkFieldInstance (return []) [t|FMPQ|]
 
+instance DecidableUnit FMPQ where
+  isUnit = not . isZero
+
 instance DecidableOne (Unit FMPQ) where
   isOne = isOne . fromUnit
 
