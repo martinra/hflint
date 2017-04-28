@@ -1,5 +1,6 @@
 {-# LANGUAGE
-    FlexibleInstances
+    FlexibleContexts
+  , FlexibleInstances
   , GeneralizedNewtypeDeriving
   , StandaloneDeriving
   , TemplateHaskell
@@ -16,6 +17,7 @@ import Prelude hiding ( (+), (-), negate, subtract
 -- import qualified Prelude as P
 
 import Math.Structure.Additive
+import Math.Structure.Multiplicative
 import Math.Structure.Instances.TH.Additive
 import Math.Structure.Instances.TH.Multiplicative
 import Math.Structure.Instances.TH.Ring
@@ -26,3 +28,13 @@ import HFlint.FMPQ.FFI
 mkAbelianGroupInstanceFromNum (return []) [t|FMPQ|]
 mkCommutativeGroupInstanceFromNonZeroFractional (return []) [t|FMPQ|]
 mkFieldInstance (return []) [t|FMPQ|]
+
+instance DecidableUnit FMPQ where
+  isUnit = not . isZero
+  toUnit = Unit
+
+instance DecidableOne (Unit FMPQ) where
+  isOne = isOne . fromUnit
+
+instance MultiplicativeGroup (Unit FMPQ) where
+  recip = Unit . fromNonZero . recip . NonZero . fromUnit

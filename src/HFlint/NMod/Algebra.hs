@@ -76,7 +76,6 @@ instance    ReifiesFlintContext NModCtx ctxProxy
   where
   isOne = (==1) . unNMod
 
-
 deriving instance ReifiesFlintContext NModCtx ctxProxy
   => MultiplicativeMagma (NonZero (NMod ctxProxy))
 
@@ -101,6 +100,25 @@ instance    ReifiesFlintContext NModCtx ctxProxy
   where
   recip (NonZero a)= NonZero ( P.recip a )
   (NonZero a) / (NonZero b) = NonZero (a P./ b)
+
+
+instance    ReifiesFlintContext NModCtx ctxProxy
+         => DecidableUnit (NMod ctxProxy)
+  where
+  isUnit = not . isZero
+  toUnit = Unit
+
+instance
+     ReifiesFlintContext NModCtx ctxProxy
+  => DecidableOne (Unit (NMod ctxProxy))
+  where
+  isOne = isOne . fromUnit
+
+instance
+     ReifiesFlintContext NModCtx ctxProxy
+  => MultiplicativeGroup (Unit (NMod ctxProxy))
+  where
+  recip = Unit . fromNonZero . recip . NonZero . fromUnit
 
 
 instance    ReifiesFlintContext NModCtx ctxProxy

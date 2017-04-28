@@ -2,50 +2,37 @@
     FlexibleContexts
   #-}
 
-module FMPQPolyTests
+module HFlint.Test.FMPQPoly
 where
 
 import Data.Function ( on )
+import Math.Structure.Tasty
 import qualified Data.Vector as V
 
 import Test.Tasty ( testGroup
                   , TestTree
                   )
 
-import qualified Test.Tasty.SmallCheck as SC
-import qualified Test.Tasty.QuickCheck as QC
 import qualified Test.Tasty.HUnit as HU
 import Test.Tasty.HUnit ( (@?=) )
 
 import HFlint.FMPQPoly
 import HFlint.FMPZPoly
 
-import qualified TestHFlint.Utils as U
+import HFlint.Test.Utility.FMPQPoly
+import qualified HFlint.Test.Utility.Intertwine as I
 
 
-fmpqPolyTestGroup :: TestTree
-fmpqPolyTestGroup = testGroup "FMPQPoly Tests" [ properties, unitTests ]
-
--- We need to specify the type, so that a is not specialized when infering the
--- type on first occurence of equal and equal2
-equal :: Eq a => ([Rational] -> a) -> (FMPQPoly -> a) -> [Rational] -> Bool
-equal2 :: Eq a => ([Rational] -> [Rational] -> a) -> (FMPQPoly -> FMPQPoly -> a) -> [Rational] -> [Rational] -> Bool
-equal         = U.equal (fromRationals :: [Rational] -> FMPQPoly) toRationals
-equal2        = U.equal2 (fromRationals :: [Rational] -> FMPQPoly) toRationals
-intertwining  = U.intertwining (fromRationals :: [Rational] -> FMPQPoly) toRationals
-intertwining2 = U.intertwining2 (fromRationals :: [Rational] -> FMPQPoly) toRationals
-
-
-testProperty s p = testGroup ("(QuickCheck & SmallCheck)")
-  [ QC.testProperty s p
-  , SC.testProperty s p
+tests :: TestTree
+tests = testGroup "FMPQPoly tests"
+  [ unitTests
+  , properties
   ]
 
 properties :: TestTree
 properties = testGroup "Properties"
   [ -- Eq instance
-    -- we use only QuickCheck, because SmallCheck is yields too slow tests
-    QC.testProperty "Eq" $ equal2
+    testPropertyQSnC 2 "Eq" $ equal2
     ( let
       dropTrailingZeros = V.toList . V.reverse . V.dropWhile (0==) .
                           V.reverse . V.fromList
@@ -53,17 +40,18 @@ properties = testGroup "Properties"
     (==)
 
     -- conversion from and to FMPZPoly
-  , testProperty "fromFMPZPoly" $ U.equal
+  , testPropertyQSC "fromFMPZPoly" $ I.equal
       (id :: [Integer] -> [Integer]) undefined
       (fromRationals . map fromInteger)
       (fromFMPZPoly . fromIntegers)
---  , testProperty "toFMPZPoly" $ U.equal
+
+--  , runTestsQSC "toFMPZPoly" $ I.equal
 --      fromRationals undefined
 --      id
 --      (uncurry (.*) . ((flip fromFMPZs 1)***fromFMPZPoly) . toFMPZPoly)
 
     -- factorization
---  , testProperty "factor" $ U.equal
+--  , runTestsQSC "factor" $ I.equal
 --      fromRationals undefined
 --      id
 --      (unfactor . factor)

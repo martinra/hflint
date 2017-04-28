@@ -15,7 +15,7 @@ import Prelude hiding ( (+), (-), negate, subtract
                       )
 
 import Math.Structure.Additive
-import Math.Structure.Multiplicative ()
+import Math.Structure.Multiplicative
 import Math.Structure.Instances.TH.Additive
 import Math.Structure.Instances.TH.Multiplicative
 import Math.Structure.Instances.TH.Ring
@@ -32,3 +32,13 @@ mkEuclideanDomainInstanceFromIntegralWithCustomGCD (return []) [t|FMPZ|]
   [| lift2Flint_ fmpz_gcd |]
   [| lift2Flint3_ fmpz_xgcd |]
   [| lift2Flint_ fmpz_lcm |]
+
+instance DecidableUnit FMPZ where
+  isUnit a = isOne a || isOne (negate a)
+  toUnit = Unit
+
+instance DecidableOne (Unit FMPZ) where
+  isOne = isOne . fromUnit
+
+instance MultiplicativeGroup (Unit FMPZ) where
+  recip = id

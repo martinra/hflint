@@ -1,8 +1,8 @@
-module FMPZTests.Utils
+module HFlint.Test.Utility.FMPZ
 where
 
 import HFlint.FMPZ
-import qualified TestHFlint.Utils as U
+import qualified HFlint.Test.Utility.Intertwine as U
 
 
 -- We need to specify the type, so that a is not specialized when infering the
@@ -13,5 +13,3 @@ equal         = U.equal (fromInteger :: Integer -> FMPZ) toInteger
 equal2        = U.equal2 (fromInteger :: Integer -> FMPZ) toInteger
 intertwining  = U.intertwining (fromInteger :: Integer -> FMPZ) toInteger
 intertwining2 = U.intertwining2 (fromInteger :: Integer -> FMPZ) toInteger
-
-
