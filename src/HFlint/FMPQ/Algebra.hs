@@ -31,6 +31,7 @@ mkFieldInstance (return []) [t|FMPQ|]
 
 instance DecidableUnit FMPQ where
   isUnit = not . isZero
+  toUnit = Unit
 
 instance DecidableOne (Unit FMPQ) where
   isOne = isOne . fromUnit

@@ -5,7 +5,8 @@
 module HFlint.FMPQ.Tasty.QuickCheck
 where
 
-import Math.Structure ( Unit(..), isUnit )
+import Data.Maybe ( mapMaybe )
+import Math.Structure ( Unit(..), DecidableUnit(..) )
 import Test.QuickCheck.Arbitrary
 import Test.QuickCheck.Gen
 
@@ -20,4 +21,4 @@ instance Arbitrary FMPQ where
 
 instance Arbitrary (Unit FMPQ) where
   arbitrary = Unit <$> arbitrary `suchThat` isUnit
-  shrink = map Unit . filter isUnit . shrink . fromUnit
+  shrink = mapMaybe toUnitSafe . shrink . fromUnit

@@ -35,6 +35,7 @@ mkEuclideanDomainInstanceFromIntegralWithCustomGCD (return []) [t|FMPZ|]
 
 instance DecidableUnit FMPZ where
   isUnit a = isOne a || isOne (negate a)
+  toUnit = Unit
 
 instance DecidableOne (Unit FMPZ) where
   isOne = isOne . fromUnit

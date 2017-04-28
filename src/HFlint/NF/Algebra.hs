@@ -109,7 +109,6 @@ instance    ReifiesNFContext ctxProxy
   recip (NonZero a) = NonZero ( P.recip a )
   (NonZero a) / (NonZero b) = NonZero (a P./ b)
 
-
 instance    ReifiesNFContext ctxProxy
   => DecidableOne (Unit (NF ctxProxy))
   where
