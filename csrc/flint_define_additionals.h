@@ -4,6 +4,7 @@
 #include <flint/flint.h>
 #include <flint/fmpz.h>
 #include <flint/fmpz_poly.h>
+#include <flint/nf.h>
 #include <flint/nmod_vec.h>
 #include <gmp.h>
 
@@ -14,5 +15,7 @@ slong fmpz_poly_factor_number_factors_additional(const fmpz_poly_factor_t fac);
 slong fmpz_poly_factor_get_factor_additional(fmpz_poly_t p, const fmpz_poly_factor_t fac, slong i);
 
 mp_limb_t nmod_n_additional(nmod_t * mod);
+
+slong nf_degree_additional(const nf_t a);
 
 #endif
