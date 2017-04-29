@@ -167,9 +167,6 @@ test-suite test-hflint
     HFlint.Test.Primes.UnitTests
 
     HFlint.Test.Utility.DivisionByZero
-    HFlint.Test.Utility.FMPQPoly
-    HFlint.Test.Utility.FMPZPoly
-    HFlint.Test.Utility.Intertwine
 
 
     HFlint.FMPQ
