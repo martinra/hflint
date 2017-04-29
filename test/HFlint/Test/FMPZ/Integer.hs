@@ -3,69 +3,88 @@ where
 
 import Control.Arrow ( (***) )
 import Data.Composition ( (.:) )
-import qualified Math.Structure as M
-import qualified Math.Structure.Tasty as MT
-
+import Math.Structure.Tasty
 import Test.Tasty ( testGroup, TestTree )
-import qualified Test.Tasty.HUnit as HU
-import Test.Tasty.HUnit ( (@?=), (@=?) )
+import Test.Tasty.HUnit ( testCase, (@?=), (@=?) )
+import qualified Math.Structure as M
 
 import HFlint.FMPZ
-import HFlint.Test.Utility.FMPZ
-import qualified HFlint.Test.Utility.Intertwine as I
+import HFlint.Test.Utility.DivisionByZero
 
 
 -- Integer is a reference implementation for FMPZ
 referenceIngeger :: TestTree
 referenceIngeger = testGroup "Compare with Integer"
   [ -- Show instance
-    MT.testPropertyQSC "Show" $ equal show show 
+    testPropertyQSC "Show" $
+      intertwiningMorphisms (fromInteger :: Integer -> FMPZ)
+      show show 
 
     -- Eq instance
-  , MT.testPropertyQSC "Eq" $ equal2 (==) (==)
+  , testPropertyQSC "Eq" $
+      intertwiningInnerPairing (fromInteger :: Integer -> FMPZ)
+      (==) (==)
 
     -- Ord instance
-  , MT.testPropertyQSC "Ord" $ equal2 compare compare
+  , testPropertyQSC "Ord" $
+      intertwiningInnerPairing (fromInteger :: Integer -> FMPZ)
+      compare compare
 
     -- Enum instance
-  , MT.testPropertyQSC "toEnum" $
-      I.equal (toEnum :: Int -> FMPZ) undefined
-              (fromIntegral :: Int -> Integer) toInteger
-  , MT.testPropertyQSC "fromEnum" $
-      I.equal (fromInteger :: Integer -> FMPZ) undefined fromEnum fromEnum
+  , testPropertyQSC "toEnum" $
+      intertwiningMorphisms (toEnum :: Int -> FMPZ)
+      (fromIntegral :: Int -> Integer) toInteger
+
+  , testPropertyQSC "fromEnum" $
+      intertwiningMorphisms (fromInteger :: Integer -> FMPZ)
+      fromEnum fromEnum
 
     -- Num instance
-  , MT.testPropertyQSC "toInteger . fromInteger" $ intertwining id id
-  , MT.testPropertyQSC "add" $ intertwining2 (+) (+)
-  , MT.testPropertyQSC "sub" $ intertwining2 (-) (-)
-  , MT.testPropertyQSC "mul" $ intertwining2 (*) (*)
-  , MT.testPropertyQSC "negate" $ intertwining negate negate
-  , MT.testPropertyQSC "abs" $ intertwining abs abs 
-  , MT.testPropertyQSC "signum" $ intertwining signum signum
+  , testPropertyQSC "toInteger . fromInteger" $
+      intertwiningMorphisms (fromInteger :: Integer -> FMPZ)
+      id toInteger
+  , testPropertyQSC "add" $ 
+      intertwiningBinaryOperators (fromInteger :: Integer -> FMPZ)
+      (+) (+)
+  , testPropertyQSC "sub" $
+      intertwiningBinaryOperators (fromInteger :: Integer -> FMPZ)
+      (-) (-)
+  , testPropertyQSC "mul" $
+      intertwiningBinaryOperators (fromInteger :: Integer -> FMPZ)
+      (*) (*)
+  , testPropertyQSC "negate" $
+      intertwiningEndomorphisms (fromInteger :: Integer -> FMPZ)
+      negate negate
+  , testPropertyQSC "abs" $
+      intertwiningEndomorphisms (fromInteger :: Integer -> FMPZ)
+      abs abs
+  , testPropertyQSC "signum" $
+      intertwiningEndomorphisms (fromInteger :: Integer -> FMPZ)
+      signum signum
 
-    -- Real instace
+    -- Real instance
 
     -- Integral instance
-  , MT.testPropertyQSC "quot" $ I.intertwining2
-      (fmap fromInteger :: Maybe Integer -> Maybe FMPZ) (fmap toInteger)
-      (I.wrapDivideByZero2 quot) (I.wrapDivideByZero2 quot)
-  , MT.testPropertyQSC "quotRem" $ I.equal2
-      (fmap fromInteger :: Maybe Integer -> Maybe FMPZ) undefined
-      (I.wrapDivideByZero2 quotRem)
-      (fmap (toInteger *** toInteger) .: I.wrapDivideByZero2 quotRem)
-  , MT.testPropertyQSC "div" $ I.intertwining2
-      (fmap fromInteger :: Maybe Integer -> Maybe FMPZ) (fmap toInteger)
-      (I.wrapDivideByZero2 div) (I.wrapDivideByZero2 div)
-  , MT.testPropertyQSC "divMod" $ I.equal2
-      (fmap fromInteger :: Maybe Integer -> Maybe FMPZ) undefined
-      (I.wrapDivideByZero2 divMod)
-      (fmap (toInteger *** toInteger) .: I.wrapDivideByZero2 divMod)
+  , testPropertyQSC "quot" $
+      intertwiningBinaryOperators (fmap fromInteger :: Maybe Integer -> Maybe FMPZ)
+      (wrapDivideByZero2 quot) (wrapDivideByZero2 quot)
+  , testPropertyQSC "quotRem" $
+      intertwiningInnerPairing (fmap fromInteger :: Maybe Integer -> Maybe FMPZ)
+      (fmap (fromInteger *** fromInteger) .: wrapDivideByZero2 quotRem)
+      (wrapDivideByZero2 quotRem)
+  , testPropertyQSC "div" $
+      intertwiningBinaryOperators (fmap fromInteger :: Maybe Integer -> Maybe FMPZ)
+      (wrapDivideByZero2 div) (wrapDivideByZero2 div)
+  , testPropertyQSC "divMod" $
+      intertwiningInnerPairing (fmap fromInteger :: Maybe Integer -> Maybe FMPZ)
+      (fmap (fromInteger *** fromInteger) .: wrapDivideByZero2 divMod)
+      (wrapDivideByZero2 divMod)
   ]
 
 zeroOneUnitTests :: TestTree
 zeroOneUnitTests = testGroup "Zero & One Unit Tests"
-  [ HU.testCase "zero" $ 
+  [ testCase "zero" $ 
       fromInteger (M.zero :: Integer) @=? (M.zero :: FMPZ)
-  , HU.testCase "one" $ 
+  , testCase "one" $ 
       fromInteger (M.one :: Integer) @=? (M.one :: FMPZ)
   ]

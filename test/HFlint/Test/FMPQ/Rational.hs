@@ -8,9 +8,8 @@ import Data.List.Split ( splitOn )
 import Data.Ratio ( (%) )
 import Math.Structure.Tasty
 import Test.Tasty ( testGroup , TestTree )
-import Test.Tasty.HUnit as HU ( (@?=), (@=?) )
+import Test.Tasty.HUnit ( testCase, (@?=), (@=?) )
 import qualified Math.Structure as M
-import qualified Test.Tasty.HUnit as HU
 
 import HFlint.FMPQ
 import HFlint.Test.Utility.DivisionByZero
@@ -92,8 +91,8 @@ referenceRational = testGroup "Properties"
 
 zeroOneUnitTests :: TestTree
 zeroOneUnitTests = testGroup "Zero & One Unit Tests"
-  [ HU.testCase "zero" $ 
+  [ testCase "zero" $ 
       fromInteger (M.zero :: Integer) @=? (M.zero :: FMPQ)
-  , HU.testCase "one" $ 
+  , testCase "one" $ 
       fromInteger (M.one :: Integer) @=? (M.one :: FMPQ)
   ]
