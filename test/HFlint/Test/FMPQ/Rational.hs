@@ -6,69 +6,88 @@ import Data.Composition ( (.:) )
 import Data.List ( delete, intercalate )
 import Data.List.Split ( splitOn )
 import Data.Ratio ( (%) )
-import qualified Math.Structure as M
-import qualified Math.Structure.Tasty as MT
-
+import Math.Structure.Tasty
 import Test.Tasty ( testGroup , TestTree )
-import qualified Test.Tasty.HUnit as HU
 import Test.Tasty.HUnit as HU ( (@?=), (@=?) )
+import qualified Math.Structure as M
+import qualified Test.Tasty.HUnit as HU
 
 import HFlint.FMPQ
-import HFlint.Test.Utility.FMPQ
-import qualified HFlint.Test.Utility.Intertwine as I
+import HFlint.Test.Utility.DivisionByZero
 
 
 referenceRational :: TestTree
 referenceRational = testGroup "Properties"
   [ -- Show instance
-    MT.testPropertyQSC "Show" $ equal
+    testPropertyQSC "Show" $
+      intertwiningMorphisms (fromRational :: Rational -> FMPQ)
       (delete '(' . delete ')' . intercalate "/" . splitOn " % " . show)
       show
 
     -- Eq instance
-  , MT.testPropertyQSC "Eq" $ equal2 (==) (==)
+  , testPropertyQSC "Eq" $
+      intertwiningInnerPairing (fromRational :: Rational -> FMPQ)
+      (==) (==)
 
     -- Ord instance
-  , MT.testPropertyQSC "Ord" $ equal2 compare compare
+  , testPropertyQSC "Ord" $
+      intertwiningInnerPairing (fromRational :: Rational -> FMPQ)
+      compare compare
 
     -- Enum instance
-  , MT.testPropertyQSC "toEnum" $ I.equal 
-      (toEnum :: Int -> FMPQ) undefined
+  , testPropertyQSC "toEnum" $
+      intertwiningMorphisms (toEnum :: Int -> FMPQ)
       (fromIntegral :: Int -> Integer) truncate
-  , MT.testPropertyQSC "fromEnum" $ I.equal
-      (fromInteger :: Integer -> FMPQ) undefined
-       fromEnum fromEnum
+
+  , testPropertyQSC "fromEnum" $
+      intertwiningMorphisms (fromInteger :: Integer -> FMPQ)
+      fromEnum fromEnum
     
     -- Num instance
-  , MT.testPropertyQSC "fromInteger" $ I.equal
-      (fromInteger :: Integer -> FMPQ) undefined
+  , testPropertyQSC "fromInteger" $
+      intertwiningMorphisms (fromInteger :: Integer -> FMPQ)
       toRational toRational
-  , MT.testPropertyQSC "add" $ intertwining2 (+) (+)
-  , MT.testPropertyQSC "sub" $ intertwining2 (-) (-)
-  , MT.testPropertyQSC "mul" $ intertwining2 (*) (*)
-  , MT.testPropertyQSC "negate" $ intertwining negate negate
-  , MT.testPropertyQSC "abs" $ intertwining abs abs
-  , MT.testPropertyQSC "signum" $ intertwining signum signum
+  , testPropertyQSC "add" $
+      intertwiningBinaryOperators (fromRational :: Rational -> FMPQ)
+      (+) (+)
+  , testPropertyQSC "sub" $
+      intertwiningBinaryOperators (fromRational :: Rational -> FMPQ)
+      (-) (-)
+  , testPropertyQSC "mul" $
+      intertwiningBinaryOperators (fromRational :: Rational -> FMPQ)
+      (*) (*)
+  , testPropertyQSC "negate" $
+      intertwiningEndomorphisms (fromRational :: Rational -> FMPQ)
+      negate negate
+  , testPropertyQSC "abs" $
+      intertwiningEndomorphisms (fromRational :: Rational -> FMPQ)
+      abs abs
+  , testPropertyQSC "signum" $
+      intertwiningEndomorphisms (fromRational :: Rational -> FMPQ)
+      signum signum
 
     -- Fractional instance
-  , MT.testPropertyQSC "toRational . fromRational" $ intertwining id id
-  , MT.testPropertyQSC "division (/)" $ I.intertwining2
-      (fmap fromRational :: Maybe Rational -> Maybe FMPQ) (fmap toRational)
-      (I.wrapDivideByZero2 (/)) (I.wrapDivideByZero2 (/))
-  , MT.testPropertyQSC "recip" $ I.intertwining
-      (fmap fromRational :: Maybe Rational -> Maybe FMPQ) (fmap toRational)
-      (I.wrapDivideByZero recip) (I.wrapDivideByZero recip)
+  , testPropertyQSC "toRational . fromRational" $
+      intertwiningMorphisms (fromRational :: Rational -> FMPQ)
+      id toRational
+  , testPropertyQSC "division (/)" $
+      intertwiningBinaryOperators (fmap fromRational :: Maybe Rational -> Maybe FMPQ)
+      (wrapDivideByZero2 (/)) (wrapDivideByZero2 (/))
+  , testPropertyQSC "recip" $
+      intertwiningEndomorphisms (fmap fromRational :: Maybe Rational -> Maybe FMPQ)
+      (wrapDivideByZero recip) (wrapDivideByZero recip)
 
     -- RealFrac instance
-  , MT.testPropertyQSC "properFraction" $ equal
+  , testPropertyQSC "properFraction" $
+      intertwiningMorphisms (fromRational :: Rational -> FMPQ)
       properFraction (second toRational . properFraction)
 
     -- various functions
-  , MT.testPropertyQSC "fromFMPZs" $ I.equal2
-      (id :: Maybe Integer -> Maybe Integer) undefined
-      (I.wrapDivideByZero2 $
-       curry $ uncurry fromFMPZs . (fromInteger***fromInteger))
-      (I.wrapDivideByZero2 $ fromRational .: (%))
+  , testPropertyQSC "fromFMPZs" $
+      intertwiningInnerPairing (id :: Maybe Integer -> Maybe Integer)
+      (wrapDivideByZero2 $
+         curry $ uncurry fromFMPZs . (fromInteger***fromInteger))
+      (wrapDivideByZero2 $ fromRational .: (%))
   ] 
 
 zeroOneUnitTests :: TestTree

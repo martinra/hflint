@@ -17,6 +17,8 @@ import Control.Monad ( liftM
 import System.IO.Unsafe ( unsafePerformIO )
 
 
+-- todo: replace this module by Math.Structure.Tasty (see FMPQ)
+
 equal :: Eq a
       => (b -> c) -> (c -> b)
       -> (b -> a)
