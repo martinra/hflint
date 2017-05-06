@@ -6,6 +6,7 @@ module HFlint.FMPQ
   , withNewFMPQ
   , withNewFMPQ_
 
+  , fromFMPZ
   , fromFMPZs
   , toFMPZs
 

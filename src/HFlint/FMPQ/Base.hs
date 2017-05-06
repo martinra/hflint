@@ -4,13 +4,12 @@ where
 import Control.DeepSeq ( NFData(..) )
 import Data.Composition ( (.:) )
 import Foreign.C.String ( peekCString )
-import Foreign.Ptr ( nullPtr )
 import Foreign.Marshal ( free )
+import Foreign.Ptr ( nullPtr )
 import System.IO.Unsafe ( unsafePerformIO )
 
-import HFlint.Internal.Lift
-
 import HFlint.FMPQ.FFI
+import HFlint.Internal.Lift
 
 
 instance Show FMPQ where

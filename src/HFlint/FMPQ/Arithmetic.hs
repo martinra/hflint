@@ -2,25 +2,18 @@ module HFlint.FMPQ.Arithmetic
 where
 
 import Control.Exception ( ArithException( RatioZeroDenominator ) )
-
-import Data.Ratio ( numerator
-                  , denominator
-                  )
-import Math.Structure ( NonZero(..) )
+import Data.Ratio ( numerator , denominator )
+import Math.Structure ( NonZero(..), one )
 import System.IO.Unsafe ( unsafePerformIO )
 
-import HFlint.FMPZ
-import qualified HFlint.FMPZ.Arithmetic as FMPZArith
-import HFlint.FMPZ.FFI
-import qualified HFlint.FMPZ.Limbs as L
-
-import HFlint.FMPQ.FFI
 import HFlint.FMPQ.Base ()
-
+import HFlint.FMPQ.FFI
+import HFlint.FMPZ
+import HFlint.FMPZ.FFI
 import HFlint.Internal.Lift
-import HFlint.Internal.Utils ( throwBeforeIf
-                             , throwBeforeIf2
-                             )
+import HFlint.Internal.Utils ( throwBeforeIf, throwBeforeIf2 )
+import qualified HFlint.FMPZ.Arithmetic as FMPZArith
+import qualified HFlint.FMPZ.Limbs as L
 
 
 {-# INLINE throwBeforeDivideByZero #-}
@@ -107,6 +100,10 @@ instance RealFrac FMPQ where
         denptr <- fmpq_denref aptr
         fmpz_tdiv_qr qptr rptr numptr denptr
         fmpq_set_fmpz_frac bptr rptr denptr
+
+{-# INLINE fromFMPZ #-}
+fromFMPZ :: FMPZ -> FMPQ
+fromFMPZ a = fromFMPZs a one
 
 {-# INLINE fromFMPZs #-}
 fromFMPZs :: FMPZ -> FMPZ -> FMPQ
