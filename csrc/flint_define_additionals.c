@@ -36,11 +36,3 @@ nmod_n_additional(
 {
   return mod->n;
 }
-
-slong
-nf_degree_additional(
-  const nf_t a
-  )
-{
-  return fmpq_poly_degree(a->pol);
-}

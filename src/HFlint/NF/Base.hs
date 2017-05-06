@@ -74,7 +74,7 @@ toVector
   => NF ctxProxy -> Vector FMPQ
 toVector a = unsafePerformIO $ fmap snd $
   withNF a $ \aptr ctxptr -> do
-    deg <- fromIntegral <$> nf_degree_additional ctxptr
+    deg <- fromIntegral <$> nf_degree ctxptr
     V.generateM (deg+1) $ \ix ->
       withNewFMPQ_ $ \bptr ->
       nf_elem_get_coeff_fmpq bptr aptr (fromIntegral ix) ctxptr
