@@ -21,6 +21,10 @@ import HFlint.FMPZPoly ()
 import HFlint.FMPZPoly.FFI
 
 
+--------------------------------------------------------------------------------
+-- Show, Eq, NFData
+--------------------------------------------------------------------------------
+
 instance Show FMPQPoly where
     show a = unsafePerformIO $
       withCString "T" $ \cvar -> do
@@ -36,6 +40,9 @@ instance Eq FMPQPoly where
 instance NFData FMPQPoly where
   rnf _ = ()
 
+--------------------------------------------------------------------------------
+-- conversion
+--------------------------------------------------------------------------------
 
 fromVector :: Vector FMPQ -> FMPQPoly
 fromVector as = unsafePerformIO $
@@ -78,3 +85,10 @@ toFMPZPoly a = (den a, num a)
   den :: FMPQPoly -> FMPZ
   den = liftFlint_ $ \denptr aptr ->
         fmpz_set denptr =<< fmpq_poly_denref aptr
+
+--------------------------------------------------------------------------------
+-- composition
+--------------------------------------------------------------------------------
+
+compose :: FMPQPoly -> FMPQPoly -> FMPQPoly
+compose = lift2Flint_ fmpq_poly_compose

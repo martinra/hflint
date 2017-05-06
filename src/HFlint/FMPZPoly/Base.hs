@@ -18,6 +18,10 @@ import HFlint.FMPZ.FFI
 import HFlint.FMPZPoly.FFI
 
 
+--------------------------------------------------------------------------------
+-- Show, Eq, NFData
+--------------------------------------------------------------------------------
+
 instance Show FMPZPoly where
   show a = unsafePerformIO $ 
     withCString "T" $ \cvar -> do
@@ -33,6 +37,9 @@ instance Eq FMPZPoly where
 instance NFData FMPZPoly where
   rnf _ = ()
 
+--------------------------------------------------------------------------------
+-- conversion
+--------------------------------------------------------------------------------
 
 fromVector :: Vector FMPZ -> FMPZPoly
 fromVector as = unsafePerformIO $
@@ -62,3 +69,10 @@ fromIntegers = fromVector . V.map fromInteger . V.fromList
 
 toIntegers :: FMPZPoly -> [Integer]
 toIntegers = V.toList . V.map toInteger . toVector
+
+--------------------------------------------------------------------------------
+-- composition
+--------------------------------------------------------------------------------
+
+compose :: FMPZPoly -> FMPZPoly -> FMPZPoly
+compose = lift2Flint_ fmpz_poly_compose

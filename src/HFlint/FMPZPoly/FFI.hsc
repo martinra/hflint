@@ -195,5 +195,10 @@ foreign import capi unsafe "flint/fmpz_poly.h fmpz_poly_inv_series"
 foreign import ccall unsafe "fmpz_poly_div_series"
         fmpz_poly_div_series :: Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZPoly -> CLong -> IO ()
 
+
+foreign import capi unsafe "flint/fmpz_poly.h fmpz_poly_compose"
+        fmpz_poly_compose :: Ptr CFMPZPoly -> Ptr CFMPZPoly -> Ptr CFMPZPoly -> IO ()
+
+
 foreign import ccall unsafe "fmpz_poly_cyclotomic"
         fmpz_poly_cyclotomic :: Ptr CFMPZPoly -> CULong -> IO ()

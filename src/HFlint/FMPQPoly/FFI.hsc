@@ -185,7 +185,6 @@ foreign import capi unsafe "flint/fmpq_poly.h fmpq_poly_inv_series"
 foreign import ccall unsafe "fmpq_poly_div_series"
         fmpq_poly_div_series :: Ptr CFMPQPoly -> Ptr CFMPQPoly -> Ptr CFMPQPoly -> CLong -> IO ()
 
-
 foreign import ccall unsafe "fmpq_poly_gcd"
         fmpq_poly_gcd :: Ptr CFMPQPoly -> Ptr CFMPQPoly -> Ptr CFMPQPoly -> IO ()
 
@@ -194,6 +193,10 @@ foreign import ccall unsafe "fmpq_poly_xgcd"
 
 foreign import ccall unsafe "fmpq_poly_lcm"
         fmpq_poly_lcm :: Ptr CFMPQPoly -> Ptr CFMPQPoly -> Ptr CFMPQPoly -> IO ()
+
+
+foreign import capi unsafe "flint/fmpq_poly.h fmpq_poly_compose"
+        fmpq_poly_compose :: Ptr CFMPQPoly -> Ptr CFMPQPoly -> Ptr CFMPQPoly -> IO ()
 
 
 foreign import ccall unsafe "fmpq_poly_make_monic"
