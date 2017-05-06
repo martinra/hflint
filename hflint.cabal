@@ -100,8 +100,13 @@ library
 
     HFlint.Utility.Prelude
 
-  extensions:
-      TypeFamilies
+  default-extensions:
+      FlexibleContexts
+    , FlexibleInstances
+    , GeneralizedNewtypeDeriving
+    , MultiParamTypeClasses
+    , StandaloneDeriving
+    , TypeFamilies
 
   build-depends:
       base > 3 && < 5
