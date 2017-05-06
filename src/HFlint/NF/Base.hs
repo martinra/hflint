@@ -14,13 +14,12 @@ import Foreign.C.String ( peekCString
 import Foreign.Marshal ( free )
 
 import HFlint.FMPQ
-import HFlint.FMPQPoly
-  ( FMPQPoly
-  , withFMPQPoly, withNewFMPQPoly_ )
-import qualified HFlint.FMPQPoly as FMPQPoly
+import HFlint.FMPQPoly ( FMPQPoly, withFMPQPoly, withNewFMPQPoly_ )
+import HFlint.FMPZ
 import HFlint.Internal.LiftCtx
 import HFlint.NF.Context
 import HFlint.NF.FFI
+import qualified HFlint.FMPQPoly as FMPQPoly
 
 
 --------------------------------------------------------------------------------
@@ -46,6 +45,14 @@ instance ReifiesNFContext ctxProxy => NFData (NF ctxProxy) where
 --------------------------------------------------------------------------------
 -- conversion
 --------------------------------------------------------------------------------
+
+fromFMPZ
+  :: ReifiesNFContext ctxProxy
+  => FMPZ -> NF ctxProxy
+fromFMPZ a = unsafePerformIO $
+  withNewNF_                 $ \bptr ctxptr ->
+  withFMPZ_ a                $ \aptr        ->
+    nf_elem_set_fmpz bptr aptr ctxptr
 
 fromFMPQ
   :: ReifiesNFContext ctxProxy
