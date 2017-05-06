@@ -3,6 +3,11 @@ module HFlint.NF
   , withNFContext
   , ReifiesNFContext
 
+  , withNF
+  , withNF_
+  , withNewNF
+  , withNewNF_
+
   , fromFMPQPoly
   , toFMPQPoly
 
