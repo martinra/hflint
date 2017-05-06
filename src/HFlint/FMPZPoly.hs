@@ -14,6 +14,8 @@ module HFlint.FMPZPoly
   , toIntegers
 
   , compose
+
+  , cyclotomicPolynomial
   )
 where
 
@@ -21,3 +23,4 @@ import HFlint.FMPZPoly.FFI
 
 import HFlint.FMPZPoly.Algebra ()
 import HFlint.FMPZPoly.Base
+import HFlint.FMPZPoly.Special

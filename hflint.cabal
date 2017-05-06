@@ -70,7 +70,7 @@ library
 
     HFlint.FMPZPoly.Algebra
     HFlint.FMPZPoly.Base
-
+    HFlint.FMPZPoly.Special
 
     HFlint.NF.Algebra
     HFlint.NF.Arithmetic
@@ -217,7 +217,7 @@ test-suite test-hflint
 
     HFlint.FMPZPoly.Algebra
     HFlint.FMPZPoly.Base
-
+    HFlint.FMPZPoly.Special
 
     HFlint.NF.Algebra
     HFlint.NF.Arithmetic
