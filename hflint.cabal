@@ -98,6 +98,8 @@ library
     HFlint.Internal.Utils
     HFlint.Internal.TH
 
+    HFlint.Utility.Prelude
+
   build-depends:
       base > 3 && < 5
     , algebraic-structures
