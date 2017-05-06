@@ -1,15 +1,14 @@
 module HFlint.FMPQPoly.Base
 where
 
-import Control.DeepSeq ( NFData(..) )
-import Data.Composition ( (.:) )
+import Prelude ()
+import HFlint.Utility.Prelude
+
 import qualified Data.Vector as V
-import Data.Vector ( Vector )
 import Foreign.C.String ( peekCString
                         , withCString
                         )
 import Foreign.Marshal ( free )
-import System.IO.Unsafe ( unsafePerformIO )
 
 import HFlint.Internal.Lift
 
@@ -39,6 +38,22 @@ instance Eq FMPQPoly where
 
 instance NFData FMPQPoly where
   rnf _ = ()
+
+--------------------------------------------------------------------------------
+-- container
+--------------------------------------------------------------------------------
+
+type instance Element FMPQPoly = FMPQ 
+
+instance MonoFunctor FMPQPoly where
+  omap f a = unsafePerformIO $
+    withNewFMPQPoly_ $ \bptr ->
+    withFMPQPoly_ a $ \aptr -> do
+    n <- fmpq_poly_length aptr
+    fmpq_poly_realloc bptr n
+    V.forM_ (V.enumFromN 0 (fromIntegral n)) $ \dx -> do
+      c <- withNewFMPQ_ $ \cptr -> fmpq_poly_get_coeff_fmpq cptr aptr (fromIntegral dx)
+      withFMPQ_ (f c) $ fmpq_poly_set_coeff_fmpq bptr (fromIntegral dx)
 
 --------------------------------------------------------------------------------
 -- conversion

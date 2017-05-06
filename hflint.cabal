@@ -100,6 +100,9 @@ library
 
     HFlint.Utility.Prelude
 
+  extensions:
+      TypeFamilies
+
   build-depends:
       base > 3 && < 5
     , algebraic-structures
@@ -110,6 +113,7 @@ library
     , deepseq
     , dlist
     , monad-loops
+    , mono-traversable
     , mtl
     , reflection
     , QuickCheck

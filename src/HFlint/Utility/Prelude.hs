@@ -23,6 +23,7 @@ import Data.Foldable       as Import
 import Data.Functor        as Import
 import Data.Maybe          as Import
 import Data.Monoid         as Import
+import Data.MonoTraversable  as Import
 import Data.Proxy          as Import
 import Data.Traversable    as Import
 import Data.Vector as Import
@@ -31,3 +32,5 @@ import GHC.Exts            as Import
   ( IsList )
 import Math.Structure      as Import
 import Numeric.Natural     as Import
+import System.IO.Unsafe    as Import
+  ( unsafePerformIO )
