@@ -22,6 +22,7 @@ module HFlint.NF
   , fromRationals
   , toRationals
 
+  , degree
   , gen
   )
 where

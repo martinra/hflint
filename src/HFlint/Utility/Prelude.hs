@@ -25,6 +25,7 @@ import Data.Maybe          as Import
 import Data.Monoid         as Import
 import Data.MonoTraversable  as Import
 import Data.Proxy          as Import
+import Data.Reflection     as Import
 import Data.Traversable    as Import
 import Data.Vector as Import
   ( Vector )

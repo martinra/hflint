@@ -4,15 +4,14 @@
 module HFlint.NF.Base
 where
 
-import Control.DeepSeq ( NFData(..) )
-import Data.Composition ( (.:) )
+import Prelude ()
+import HFlint.Utility.Prelude
+
 import qualified Data.Vector as V
-import Data.Vector ( Vector )
 import Foreign.C.String ( peekCString
                         , withCString
                         )
 import Foreign.Marshal ( free )
-import System.IO.Unsafe ( unsafePerformIO )
 
 import HFlint.FMPQ
 import HFlint.FMPQPoly
@@ -106,6 +105,13 @@ toRationals
   :: ReifiesNFContext ctxProxy
   => NF ctxProxy -> [Rational]
 toRationals = V.toList . V.map toRational . toVector
+
+--------------------------------------------------------------------------------
+-- attributes
+--------------------------------------------------------------------------------
+
+degree :: ReifiesNFContext ctx => Proxy ctx -> Natural
+degree proxy = unsafePerformIO $ fmap fromIntegral $ nf_degree $ reflect proxy
 
 --------------------------------------------------------------------------------
 -- creation
