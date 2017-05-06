@@ -24,6 +24,10 @@ import HFlint.NF.Context
 import HFlint.NF.FFI
 
 
+--------------------------------------------------------------------------------
+-- Show, Eq, NFData
+--------------------------------------------------------------------------------
+
 instance ReifiesNFContext ctxProxy => Show (NF ctxProxy) where
   show a = unsafePerformIO $ 
     withCString "T" $ \cvar -> do
@@ -40,6 +44,9 @@ instance ReifiesNFContext ctxProxy => Eq (NF ctxProxy) where
 instance ReifiesNFContext ctxProxy => NFData (NF ctxProxy) where
   rnf _ = ()
 
+--------------------------------------------------------------------------------
+-- conversion
+--------------------------------------------------------------------------------
 
 fromFMPQPoly
   :: ReifiesNFContext ctxProxy
@@ -91,3 +98,10 @@ toRationals
   :: ReifiesNFContext ctxProxy
   => NF ctxProxy -> [Rational]
 toRationals = V.toList . V.map toRational . toVector
+
+--------------------------------------------------------------------------------
+-- creation
+--------------------------------------------------------------------------------
+
+gen :: ReifiesNFContext ctx => NF ctx
+gen = lift0FlintCtx_ nf_elem_gen
