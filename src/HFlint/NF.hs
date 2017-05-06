@@ -14,6 +14,8 @@ module HFlint.NF
 
   , fromRationals
   , toRationals
+
+  , gen
   )
 where
 

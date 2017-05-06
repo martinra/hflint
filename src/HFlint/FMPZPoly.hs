@@ -12,6 +12,8 @@ module HFlint.FMPZPoly
   , toList
   , fromIntegers
   , toIntegers
+
+  , compose
   )
 where
 

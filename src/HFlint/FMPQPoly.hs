@@ -15,6 +15,8 @@ module HFlint.FMPQPoly
 
   , fromFMPZPoly
   , toFMPZPoly
+
+  , compose
   )
 where
 
