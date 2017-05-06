@@ -48,6 +48,14 @@ instance ReifiesNFContext ctxProxy => NFData (NF ctxProxy) where
 -- conversion
 --------------------------------------------------------------------------------
 
+fromFMPQ
+  :: ReifiesNFContext ctxProxy
+  => FMPQ -> NF ctxProxy
+fromFMPQ a = unsafePerformIO $
+  withNewNF_                 $ \bptr ctxptr ->
+  withFMPQ_ a                $ \aptr        ->
+    nf_elem_set_fmpq bptr aptr ctxptr
+
 fromFMPQPoly
   :: ReifiesNFContext ctxProxy
   => FMPQPoly -> NF ctxProxy

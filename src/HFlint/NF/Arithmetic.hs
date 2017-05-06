@@ -15,6 +15,7 @@ import System.IO.Unsafe ( unsafePerformIO )
 import HFlint.Internal.LiftCtx
 import HFlint.FMPQ
 import HFlint.FMPZ
+import HFlint.NF.Base
 import HFlint.NF.Context
 import HFlint.NF.FFI
 
@@ -48,7 +49,4 @@ instance    ReifiesNFContext ctxProxy
   {-# INLINE recip #-}
   recip = liftFlintCtx_ nf_elem_inv
 
-  fromRational a = unsafePerformIO $
-    withNewNF_                 $ \bptr ctxptr ->
-    withFMPQ_ (fromRational a) $ \aptr        ->
-      nf_elem_set_fmpq bptr aptr ctxptr
+  fromRational = fromFMPQ . fromRational

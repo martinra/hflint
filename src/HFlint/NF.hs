@@ -8,6 +8,8 @@ module HFlint.NF
   , withNewNF
   , withNewNF_
 
+  , fromFMPQ
+
   , fromFMPQPoly
   , toFMPQPoly
 
