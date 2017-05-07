@@ -99,3 +99,24 @@ instance EuclideanDomain FMPQPoly where
   euclNorm a | isZero a = Nothing
              | otherwise = Just $ fromIntegral $
                            (liftFlint0 fmpq_poly_degree) a
+
+
+instance MultiplicativeSemigroupLeftAction FMPQ FMPQPoly where
+  (*.) = flip (.*)
+
+instance MultiplicativeLeftAction FMPQ FMPQPoly
+instance LinearSemiringLeftAction FMPQ FMPQPoly
+instance LeftModule FMPQ FMPQPoly
+
+instance MultiplicativeSemigroupRightAction FMPQ FMPQPoly where
+  (.*) = lift2Flint_ fmpq_poly_scalar_mul_fmpq
+
+instance MultiplicativeRightAction FMPQ FMPQPoly
+instance LinearSemiringRightAction FMPQ FMPQPoly
+instance RightModule FMPQ FMPQPoly
+
+instance Module FMPQ FMPQPoly
+
+instance LeftAlgebra FMPQ FMPQPoly
+instance RightAlgebra FMPQ FMPQPoly
+instance Algebra FMPQ FMPQPoly

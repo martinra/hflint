@@ -106,3 +106,24 @@ instance EuclideanDomain FMPZPoly where
   euclNorm a | isZero a = Nothing
              | otherwise = Just $ fromIntegral $
                            liftFlint0 fmpz_poly_degree a
+
+
+instance MultiplicativeSemigroupLeftAction FMPZ FMPZPoly where
+  (*.) = flip (.*)
+
+instance MultiplicativeLeftAction FMPZ FMPZPoly
+instance LinearSemiringLeftAction FMPZ FMPZPoly
+instance LeftModule FMPZ FMPZPoly
+
+instance MultiplicativeSemigroupRightAction FMPZ FMPZPoly where
+  (.*) = lift2Flint_ fmpz_poly_scalar_mul_fmpz
+
+instance MultiplicativeRightAction FMPZ FMPZPoly
+instance LinearSemiringRightAction FMPZ FMPZPoly
+instance RightModule FMPZ FMPZPoly
+
+instance Module FMPZ FMPZPoly
+
+instance LeftAlgebra FMPZ FMPZPoly
+instance RightAlgebra FMPZ FMPZPoly
+instance Algebra FMPZ FMPZPoly
