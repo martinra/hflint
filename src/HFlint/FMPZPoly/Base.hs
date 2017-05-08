@@ -41,6 +41,12 @@ instance NFData FMPZPoly where
 -- conversion
 --------------------------------------------------------------------------------
 
+fromFMPZ :: FMPZ -> FMPZPoly
+fromFMPZ a = unsafePerformIO $
+  withNewFMPZPoly_ $ \bptr ->
+  withFMPZ_ a      $ \aptr ->
+  fmpz_poly_set_fmpz bptr aptr
+
 fromVector :: Vector FMPZ -> FMPZPoly
 fromVector as = unsafePerformIO $
   withNewFMPZPoly_ $ \bptr -> do

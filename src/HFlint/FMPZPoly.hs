@@ -6,6 +6,7 @@ module HFlint.FMPZPoly
   , withNewFMPZPoly
   , withNewFMPZPoly_
 
+  , fromFMPZ
   , fromVector
   , toVector
   , fromList

@@ -99,6 +99,9 @@ foreign import capi unsafe "flint/fmpq_poly.h fmpq_poly_degree"
 foreign import capi unsafe "flint/fmpq_poly.h fmpq_poly_length"
         fmpq_poly_length :: Ptr CFMPQPoly -> IO CLong
 
+foreign import ccall unsafe "fmpq_poly_set_fmpz"
+        fmpq_poly_set_fmpz :: Ptr CFMPQPoly -> Ptr CFMPZ -> IO ()
+
 foreign import ccall unsafe "fmpq_poly_set_fmpq"
         fmpq_poly_set_fmpq :: Ptr CFMPQPoly -> Ptr CFMPQ -> IO ()
 

@@ -59,6 +59,18 @@ instance MonoFunctor FMPQPoly where
 -- conversion
 --------------------------------------------------------------------------------
 
+fromFMPZ :: FMPZ -> FMPQPoly
+fromFMPZ a = unsafePerformIO $
+  withNewFMPQPoly_ $ \bptr ->
+  withFMPZ_ a      $ \aptr ->
+  fmpq_poly_set_fmpz bptr aptr
+
+fromFMPQ :: FMPQ -> FMPQPoly
+fromFMPQ a = unsafePerformIO $
+  withNewFMPQPoly_ $ \bptr ->
+  withFMPQ_ a      $ \aptr ->
+  fmpq_poly_set_fmpq bptr aptr
+
 fromVector :: Vector FMPQ -> FMPQPoly
 fromVector as = unsafePerformIO $
   withNewFMPQPoly_ $ \bptr -> do

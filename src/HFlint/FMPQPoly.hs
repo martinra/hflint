@@ -6,6 +6,8 @@ module HFlint.FMPQPoly
   , withNewFMPQPoly
   , withNewFMPQPoly_
 
+  , fromFMPZ
+  , fromFMPQ
   , fromVector
   , toVector
   , fromList
