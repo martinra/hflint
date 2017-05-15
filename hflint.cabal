@@ -84,6 +84,7 @@ library
     HFlint.NMod.Reduction
     HFlint.NMod.Tasty.QuickCheck
     HFlint.NMod.Tasty.SmallCheck
+    HFlint.NMod.Vector
 
     HFlint.Primes.Base
 
@@ -105,6 +106,7 @@ library
     , FlexibleInstances
     , GeneralizedNewtypeDeriving
     , MultiParamTypeClasses
+    , RankNTypes
     , StandaloneDeriving
     , TypeFamilies
 
@@ -123,6 +125,7 @@ library
     , reflection
     , QuickCheck
     , vector
+    , vector-th-unbox
     , safe
     , smallcheck
     , template-haskell
