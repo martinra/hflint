@@ -35,16 +35,29 @@ instance MultiplicativeGroup (Unit FMPQ) where
 
 instance MultiplicativeSemigroupLeftAction FMPZ FMPQ where
   (*.) = flip (.*)
-
 instance MultiplicativeLeftAction FMPZ FMPQ
 instance LinearSemiringLeftAction FMPZ FMPQ
+instance NonUnitalLeftModule FMPZ FMPQ
 instance LeftModule FMPZ FMPQ
 
 instance MultiplicativeSemigroupRightAction FMPZ FMPQ where
   (.*) = lift2Flint_ fmpq_mul_fmpz
-
 instance MultiplicativeRightAction FMPZ FMPQ
 instance LinearSemiringRightAction FMPZ FMPQ
+instance NonUnitalRightModule FMPZ FMPQ
 instance RightModule FMPZ FMPQ
 
+instance NonUnitalModule FMPZ FMPQ
 instance Module FMPZ FMPQ
+
+instance SemiLeftAlgebra FMPZ FMPQ
+instance NonUnitalLeftAlgebra FMPZ FMPQ
+instance LeftAlgebra FMPZ FMPQ
+
+instance SemiRightAlgebra FMPZ FMPQ
+instance NonUnitalRightAlgebra FMPZ FMPQ
+instance RightAlgebra FMPZ FMPQ
+
+instance SemiAlgebra FMPZ FMPQ
+instance NonUnitalAlgebra FMPZ FMPQ
+instance Algebra FMPZ FMPQ

@@ -103,20 +103,29 @@ instance EuclideanDomain FMPQPoly where
 
 instance MultiplicativeSemigroupLeftAction FMPQ FMPQPoly where
   (*.) = flip (.*)
-
 instance MultiplicativeLeftAction FMPQ FMPQPoly
 instance LinearSemiringLeftAction FMPQ FMPQPoly
+instance NonUnitalLeftModule FMPQ FMPQPoly
 instance LeftModule FMPQ FMPQPoly
 
 instance MultiplicativeSemigroupRightAction FMPQ FMPQPoly where
   (.*) = lift2Flint_ fmpq_poly_scalar_mul_fmpq
-
 instance MultiplicativeRightAction FMPQ FMPQPoly
 instance LinearSemiringRightAction FMPQ FMPQPoly
+instance NonUnitalRightModule FMPQ FMPQPoly
 instance RightModule FMPQ FMPQPoly
 
+instance NonUnitalModule FMPQ FMPQPoly
 instance Module FMPQ FMPQPoly
 
+instance SemiLeftAlgebra FMPQ FMPQPoly
+instance NonUnitalLeftAlgebra FMPQ FMPQPoly
 instance LeftAlgebra FMPQ FMPQPoly
+
+instance SemiRightAlgebra FMPQ FMPQPoly
+instance NonUnitalRightAlgebra FMPQ FMPQPoly
 instance RightAlgebra FMPQ FMPQPoly
+
+instance SemiAlgebra FMPQ FMPQPoly
+instance NonUnitalAlgebra FMPQ FMPQPoly
 instance Algebra FMPQ FMPQPoly

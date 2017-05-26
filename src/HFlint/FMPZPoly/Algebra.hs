@@ -110,20 +110,29 @@ instance EuclideanDomain FMPZPoly where
 
 instance MultiplicativeSemigroupLeftAction FMPZ FMPZPoly where
   (*.) = flip (.*)
-
 instance MultiplicativeLeftAction FMPZ FMPZPoly
 instance LinearSemiringLeftAction FMPZ FMPZPoly
+instance NonUnitalLeftModule FMPZ FMPZPoly
 instance LeftModule FMPZ FMPZPoly
 
 instance MultiplicativeSemigroupRightAction FMPZ FMPZPoly where
   (.*) = lift2Flint_ fmpz_poly_scalar_mul_fmpz
-
 instance MultiplicativeRightAction FMPZ FMPZPoly
 instance LinearSemiringRightAction FMPZ FMPZPoly
+instance NonUnitalRightModule FMPZ FMPZPoly
 instance RightModule FMPZ FMPZPoly
 
+instance NonUnitalModule FMPZ FMPZPoly
 instance Module FMPZ FMPZPoly
 
+instance SemiLeftAlgebra FMPZ FMPZPoly
+instance NonUnitalLeftAlgebra FMPZ FMPZPoly
 instance LeftAlgebra FMPZ FMPZPoly
+
+instance SemiRightAlgebra FMPZ FMPZPoly
+instance NonUnitalRightAlgebra FMPZ FMPZPoly
 instance RightAlgebra FMPZ FMPZPoly
+
+instance SemiAlgebra FMPZ FMPZPoly
+instance NonUnitalAlgebra FMPZ FMPZPoly
 instance Algebra FMPZ FMPZPoly
