@@ -191,6 +191,11 @@ foreign import ccall unsafe "flint/nf_elem.h nf_elem_get_fmpq_poly"
 foreign import ccall unsafe "flint/nf_elem.h nf_elem_get_coeff_fmpq"
         nf_elem_get_coeff_fmpq :: Ptr CFMPQ -> Ptr CNF -> CLong -> Ptr CNFCtx -> IO ()
 
+foreign import ccall unsafe "flint/nf_elem.h nf_elem_get_coeff_fmpz"
+        nf_elem_get_coeff_fmpz :: Ptr CFMPZ -> Ptr CNF -> CLong -> Ptr CNFCtx -> IO ()
+
+foreign import ccall unsafe "flint/nf_elem.h nf_elem_get_den"
+        nf_elem_get_den :: Ptr CFMPZ -> Ptr CNF -> Ptr CNFCtx -> IO ()
 
 foreign import ccall unsafe "flint/nf_elem.h nf_elem_set"
         nf_elem_set :: Ptr CNF -> Ptr CNF -> Ptr CNFCtx -> IO ()
