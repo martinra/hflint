@@ -111,25 +111,24 @@ library
     , TypeFamilies
 
   build-depends:
-      base > 3 && < 5
+      base
     , algebraic-structures
     , composition
     , containers
-    , deepseq
     , data-default
     , deepseq
     , dlist
     , monad-loops
     , mono-traversable
     , mtl
-    , reflection
     , QuickCheck
-    , vector
-    , vector-th-unbox
+    , reflection
     , safe
     , smallcheck
     , template-haskell
     , transformers
+    , vector
+    , vector-th-unbox
 
   extra-libraries:
     flint,
@@ -155,7 +154,6 @@ library
     csrc/flint_define_additionals.c
     csrc/flint_define_wrappers.c
 
-  build-tools:         hsc2hs
 
   GHC-options:
     -Wall
@@ -164,8 +162,10 @@ library
   cpp-options:
     -fPIC
 
-  hs-source-dirs:      src
-  default-language: Haskell2010
+  hs-source-dirs:     src
+  default-language:   Haskell2010
+  build-tools:        hsc2hs
+
 
 test-suite test-hflint
   main-is:    HFlint/Test.hs
@@ -257,9 +257,17 @@ test-suite test-hflint
     HFlint.Internal.Utils
     HFlint.Internal.TH
 
+  default-extensions:
+      FlexibleContexts
+    , FlexibleInstances
+    , GeneralizedNewtypeDeriving
+    , MultiParamTypeClasses
+    , RankNTypes
+    , StandaloneDeriving
+    , TypeFamilies
+
   build-depends:
       base
-    , QuickCheck
     , algebraic-structures
     , base
     , composition
@@ -268,7 +276,9 @@ test-suite test-hflint
     , deepseq
     , dlist
     , monad-loops
+    , mono-traversable
     , mtl
+    , QuickCheck
     , reflection
     , safe
     , smallcheck
@@ -280,6 +290,7 @@ test-suite test-hflint
     , template-haskell
     , transformers
     , vector
+    , vector-th-unbox
 
   extra-libraries:
     flint,
@@ -305,13 +316,15 @@ test-suite test-hflint
     csrc/flint_define_additionals.c
     csrc/flint_define_wrappers.c
 
-  build-tools:         hsc2hs
 
   GHC-options:
     -Wall
     -fno-warn-orphans
     -fsimpl-tick-factor=500
+  cpp-options:
+    -fPIC
 
   hs-source-dirs: test, src
-  type:       exitcode-stdio-1.0
   default-language: Haskell2010
+  build-tools: hsc2hs
+  type: exitcode-stdio-1.0
