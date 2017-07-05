@@ -138,7 +138,7 @@ foreign import ccall unsafe "flint/nf.h nf_init"
 foreign import ccall unsafe "flint/nf.h nf_clear"
         nf_clear :: Ptr CNFCtx -> IO ()
 
-foreign import capi unsafe "flint/nf.h nf_degree"
+foreign import ccall unsafe "flint_define_additionals.h nf_degree_additional"
         nf_degree :: Ptr CNFCtx -> IO CLong
 
 

@@ -16,4 +16,6 @@ slong fmpz_poly_factor_get_factor_additional(fmpz_poly_t p, const fmpz_poly_fact
 
 mp_limb_t nmod_n_additional(nmod_t * mod);
 
+slong nf_degree_additional(nf_t ctx);
+
 #endif
