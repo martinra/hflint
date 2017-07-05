@@ -68,6 +68,10 @@ instance MultiplicativeSemigroup (NonZero FMPZPoly)
 deriving instance MultiplicativeMonoid (NonZero FMPZPoly)
 
 
+instance MultiplicativeGroup (Unit FMPZPoly) where
+  recip (Unit p) = Unit p
+
+
 instance Distributive FMPZPoly
 
 instance Semiring FMPZPoly

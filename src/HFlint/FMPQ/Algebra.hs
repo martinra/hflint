@@ -19,7 +19,9 @@ import HFlint.Internal.Lift
 
 
 mkAbelianGroupInstanceFromNum (return []) [t|FMPQ|]
+mkCommutativeMonoidInstanceFromNum (return []) [t|FMPQ|]
 mkCommutativeGroupInstanceFromNonZeroFractional (return []) [t|FMPQ|]
+mkCommutativeGroupInstanceFromUnitFractional (return []) [t|FMPQ|]
 mkFieldInstance (return []) [t|FMPQ|]
 
 instance DecidableUnit FMPQ where
@@ -28,9 +30,6 @@ instance DecidableUnit FMPQ where
 
 instance DecidableOne (Unit FMPQ) where
   isOne = isOne . fromUnit
-
-instance MultiplicativeGroup (Unit FMPQ) where
-  recip = Unit . fromNonZero . recip . NonZero . fromUnit
 
 
 instance MultiplicativeSemigroupLeftAction FMPZ FMPQ where

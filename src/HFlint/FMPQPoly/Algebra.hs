@@ -67,6 +67,9 @@ deriving instance MultiplicativeMonoid (NonZero FMPQPoly)
 
 deriving instance DecidableOne (NonZero FMPQPoly)
 
+instance MultiplicativeGroup (Unit FMPQPoly) where
+  recip (Unit p) =
+    Unit $ fromFMPQ $ fromUnit $ recip $ Unit $ p ! 0
 
 instance Distributive FMPQPoly
 
