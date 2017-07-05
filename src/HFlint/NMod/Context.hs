@@ -1,15 +1,10 @@
-{-# LANGUAGE
-    ConstraintKinds
-  , FlexibleContexts
-  , RankNTypes
-  #-}
-
 module HFlint.NMod.Context
 where
 
-import Control.DeepSeq ( NFData, force )
-import Data.Proxy
-import System.IO.Unsafe ( unsafePerformIO )
+import HFlint.Utility.Prelude
+
+import Control.Exception.Safe ( MonadMask )
+import Control.Monad.IO.Class ( MonadIO )
 
 import HFlint.Internal.Context
 import HFlint.NMod.FFI
@@ -17,16 +12,20 @@ import HFlint.NMod.FFI
 
 type ReifiesNModContext ctxProxy = ReifiesFlintContext NModCtx ctxProxy
 
-{-# NOINLINE withNModContext #-}
 withNModContext
  :: NFData b
  => FlintLimb
  -> (    forall ctxProxy .
-         ReifiesFlintContext NModCtx ctxProxy
+         ReifiesNModContext ctxProxy
       => Proxy ctxProxy -> b)
  -> b
-withNModContext n f = unsafePerformIO $ do
-  ctx <- newFlintContext $ NModCtxData n
-  let h = force $ withFlintContext ctx f
-  seq h $ freeFlintContext ctx
-  return h
+withNModContext = withFlintContextFromData NModCtxData
+
+withNModContextM
+ :: ( MonadIO m, MonadMask m )
+ => FlintLimb
+ -> (    forall ctxProxy .
+         ReifiesNModContext ctxProxy
+      => Proxy ctxProxy -> m b)
+ -> m b
+withNModContextM = withFlintContextFromDataM NModCtxData

@@ -15,6 +15,11 @@ import Control.Arrow       as Import
 import Control.Applicative as Import
 import Control.DeepSeq     as Import
 import Control.Monad       as Import
+import Control.Monad.Reader as Import
+  ( Reader, ReaderT
+  , ask
+  , runReader, runReaderT
+  )
 import Control.Monad.Zip   as Import
 import Data.Composition    as Import
   ( (.:), (.:.) )
@@ -29,6 +34,8 @@ import Data.Reflection     as Import
 import Data.Traversable    as Import
 import Data.Vector as Import
   ( Vector )
+import Foreign.Ptr         as Import
+  ( Ptr )
 import GHC.Exts            as Import
   ( IsList )
 import Math.Structure      as Import

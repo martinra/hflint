@@ -1,10 +1,11 @@
 module HFlint.NMod
   ( NMod(..)
-  , withNModContext
-
-  , FlintLimb
 
   , ReifiesNModContext
+  , withNModContext
+  , withNModContextM
+
+  , FlintLimb
 
   , HasLimbHeight(..)
 

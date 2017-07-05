@@ -102,7 +102,8 @@ library
     HFlint.Utility.Prelude
 
   default-extensions:
-      FlexibleContexts
+      ConstraintKinds
+    , FlexibleContexts
     , FlexibleInstances
     , GeneralizedNewtypeDeriving
     , MultiParamTypeClasses
@@ -118,6 +119,7 @@ library
     , data-default
     , deepseq
     , dlist
+    , safe-exceptions
     , monad-loops
     , mono-traversable
     , mtl
@@ -170,95 +172,9 @@ library
 test-suite test-hflint
   main-is:    HFlint/Test.hs
 
-  other-modules:
-    HFlint.Test.FMPQ
-    HFlint.Test.FMPQ.Rational
-    HFlint.Test.FMPQPoly
-    HFlint.Test.FMPZ
-    HFlint.Test.FMPZ.Integer
-    HFlint.Test.FMPZPoly
-    HFlint.Test.Primes
-    HFlint.Test.Primes.UnitTests
-
-    HFlint.Test.Utility.DivisionByZero
-
-
-    HFlint.FMPQ
-    HFlint.FMPQMat
-    HFlint.FMPQPoly
-    HFlint.FMPZ
-    HFlint.FMPZPoly
-    HFlint.FMPZPolyFactor
-    HFlint.NF
-    HFlint.NMod
-    HFlint.Primes
-
-    HFlint.FMPQ.FFI
-    HFlint.FMPQMat.FFI
-    HFlint.FMPQPoly.FFI
-    HFlint.FMPZ.FFI
-    HFlint.FMPZPoly.FFI
-    HFlint.FMPZPolyFactor.FFI
-    HFlint.NF.FFI
-    HFlint.NMod.FFI
-    HFlint.Primes.FFI
-
-    HFlint.Internal
-
-    HFlint.FMPQ.Algebra
-    HFlint.FMPQ.Arithmetic
-    HFlint.FMPQ.Base
-    HFlint.FMPQ.Reduction
-    HFlint.FMPQ.Tasty.QuickCheck
-    HFlint.FMPQ.Tasty.SmallCheck
-
-    HFlint.FMPQMat.Base
-
-    HFlint.FMPQPoly.Algebra
-    HFlint.FMPQPoly.Base
-
-    HFlint.FMPZ.Algebra
-    HFlint.FMPZ.Arithmetic
-    HFlint.FMPZ.Base
-    HFlint.FMPZ.Limbs
-    HFlint.FMPZ.Reduction
-    HFlint.FMPZ.Reduction.FMPZCRT
-    HFlint.FMPZ.Reduction.FMPZCRTFlintLimb
-    HFlint.FMPZ.Tasty.QuickCheck
-    HFlint.FMPZ.Tasty.SmallCheck
-
-    HFlint.FMPZPoly.Algebra
-    HFlint.FMPZPoly.Base
-    HFlint.FMPZPoly.Special
-
-    HFlint.NF.Algebra
-    HFlint.NF.Arithmetic
-    HFlint.NF.Base
-    HFlint.NF.Context
-
-    HFlint.NMod.Algebra
-    HFlint.NMod.Arithmetic
-    HFlint.NMod.Base
-    HFlint.NMod.Context
-    HFlint.NMod.Reduction
-    HFlint.NMod.Tasty.QuickCheck
-    HFlint.NMod.Tasty.SmallCheck
-
-    HFlint.Primes.Base
-
-    HFlint.Internal.Context
-    HFlint.Internal.Flint
-    HFlint.Internal.FlintPrim
-    HFlint.Internal.FlintWithContext
-    HFlint.Internal.Lift
-    HFlint.Internal.LiftCtx
-    HFlint.Internal.LiftPrim
-    HFlint.Internal.Lift.Utils
-    HFlint.Internal.Utils
-    HFlint.Internal.TH
-
   default-extensions:
-      FlexibleContexts
+      ConstraintKinds
+    , FlexibleContexts
     , FlexibleInstances
     , GeneralizedNewtypeDeriving
     , MultiParamTypeClasses
@@ -275,6 +191,7 @@ test-suite test-hflint
     , data-default
     , deepseq
     , dlist
+    , safe-exceptions
     , monad-loops
     , mono-traversable
     , mtl

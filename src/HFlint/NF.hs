@@ -1,7 +1,9 @@
 module HFlint.NF
   ( NF
-  , withNFContext
+
   , ReifiesNFContext
+  , withNFContext
+  , withNFContextM
 
   , withNF
   , withNF_

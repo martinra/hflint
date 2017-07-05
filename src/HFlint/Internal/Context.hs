@@ -10,12 +10,16 @@
 module HFlint.Internal.Context
   ( FlintContext(..)
   , ReifiesFlintContext
+  , withFlintContextFromData
+  , withFlintContextFromDataM
   )
 where
 
-import Data.Proxy
-import Data.Reflection
-import Foreign.Ptr ( Ptr )
+import HFlint.Utility.Prelude
+
+import Control.Exception.Safe ( MonadMask, bracket )
+import Control.Monad.IO.Class ( MonadIO, liftIO )
+
 
 type ReifiesFlintContext ctx ctxProxy =
   ( FlintContext ctx, Reifies ctxProxy (Ptr (CFlintContext ctx)) )
@@ -38,3 +42,28 @@ class FlintContext ctx where
             ReifiesFlintContext ctx ctxProxy
          => Proxy ctxProxy -> b)
     -> b
+
+
+withFlintContextFromData
+ :: ( FlintContext ctx, NFData b )
+ => ( a -> FlintContextData ctx )
+ -> a
+ -> (    forall ctxProxy .
+         ReifiesFlintContext ctx ctxProxy
+      => Proxy ctxProxy -> b)
+ -> b
+withFlintContextFromData init a f = unsafePerformIO $
+  bracket (newFlintContext $ init a) freeFlintContext $ \ctx ->
+    pure $ force $ withFlintContext ctx f
+
+withFlintContextFromDataM
+ :: ( FlintContext ctx, MonadIO m, MonadMask m )
+ => ( a -> FlintContextData ctx )
+ -> a
+ -> (    forall ctxProxy .
+         ReifiesFlintContext ctx ctxProxy
+      => Proxy ctxProxy -> m b)
+ -> m b
+withFlintContextFromDataM init a f =
+  bracket (liftIO $ newFlintContext $ init a) (liftIO . freeFlintContext) $ \ctx ->
+    withFlintContext ctx f
