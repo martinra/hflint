@@ -7,7 +7,7 @@
 module HFlint.FMPZ.Tasty.SmallCheck
 where
 
-import Control.Monad ( guard, (=<<) )
+import Control.Monad ( guard )
 import Math.Structure ( Unit(..), isUnit )
 import Test.SmallCheck.Series
 

@@ -9,7 +9,7 @@
 module HFlint.NMod.Tasty.SmallCheck
 where
 
-import Control.Monad ( guard, (=<<) )
+import Control.Monad ( guard )
 import Math.Structure ( Unit(..), DecidableUnit(..) )
 import Test.SmallCheck.Series
 
