@@ -40,6 +40,16 @@ instance NFData FMPQPoly where
   rnf _ = ()
 
 --------------------------------------------------------------------------------
+-- coefficient access
+--------------------------------------------------------------------------------
+
+(!) :: FMPQPoly -> Int -> FMPQ
+(!) a n = unsafePerformIO $
+  withNewFMPQ_ $ \bptr ->
+  withFMPQPoly a $ \aptr ->
+    fmpq_poly_get_coeff_fmpq bptr aptr (fromIntegral n)
+
+--------------------------------------------------------------------------------
 -- container
 --------------------------------------------------------------------------------
 
@@ -52,8 +62,8 @@ instance MonoFunctor FMPQPoly where
     n <- fmpq_poly_length aptr
     fmpq_poly_realloc bptr n
     V.forM_ (V.enumFromN 0 (fromIntegral n)) $ \dx -> do
-      c <- withNewFMPQ_ $ \cptr -> fmpq_poly_get_coeff_fmpq cptr aptr (fromIntegral dx)
-      withFMPQ_ (f c) $ fmpq_poly_set_coeff_fmpq bptr (fromIntegral dx)
+      c <- withNewFMPQ_ $ \cptr -> fmpq_poly_get_coeff_fmpq cptr aptr dx
+      withFMPQ_ (f c) $ fmpq_poly_set_coeff_fmpq bptr dx
 
 --------------------------------------------------------------------------------
 -- conversion
