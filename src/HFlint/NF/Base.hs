@@ -117,7 +117,7 @@ toRationals = V.toList . V.map toRational . toVector
 -- attributes
 --------------------------------------------------------------------------------
 
-degree :: ReifiesNFContext ctx => Proxy ctx -> Natural
+degree :: ReifiesNFContext ctx => Proxy ctx -> Int
 degree proxy = unsafePerformIO $ fmap fromIntegral $ nf_degree $ reflect proxy
 
 --------------------------------------------------------------------------------

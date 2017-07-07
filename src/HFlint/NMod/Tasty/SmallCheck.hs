@@ -25,5 +25,5 @@ instance ( ReifiesNModContext ctx, Monad m ) => Serial m (NMod ctx) where
 instance ( ReifiesNModContext ctx, Monad m ) => Serial m (Unit (NMod ctx)) where
   series = do
     a <- series
-    guard $ not $ isUnit a
+    guard $ isUnit a
     return $ Unit a

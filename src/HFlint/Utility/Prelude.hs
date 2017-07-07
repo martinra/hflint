@@ -39,6 +39,5 @@ import Foreign.Ptr         as Import
 import GHC.Exts            as Import
   ( IsList )
 import Math.Structure      as Import
-import Numeric.Natural     as Import
 import System.IO.Unsafe    as Import
   ( unsafePerformIO )
