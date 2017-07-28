@@ -184,6 +184,7 @@ test-suite test-hflint
 
   build-depends:
       base
+    , hflint
     , algebraic-structures
     , base
     , composition
@@ -209,39 +210,6 @@ test-suite test-hflint
     , vector
     , vector-th-unbox
 
-  extra-libraries:
-    flint,
-    gf2x,
-    gmp,
-    mpfr,
-    ntl
-
-  include-dirs:
-    csrc
-  includes:
-    flint/flint.h
-    flint/fmpq.h
-    flint/fmpq_poly.h
-    flint/fmpz.h
-
-    flint_define_additionals.h
-    flint_define_wrappers.h
-  install-includes:
-    flint_define_additionals.h
-    flint_define_wrappers.h
-  c-sources:
-    csrc/flint_define_additionals.c
-    csrc/flint_define_wrappers.c
-
-
-  GHC-options:
-    -Wall
-    -fno-warn-orphans
-    -fsimpl-tick-factor=500
-  cpp-options:
-    -fPIC
-
-  hs-source-dirs: test, src
+  hs-source-dirs: test
   default-language: Haskell2010
-  build-tools: hsc2hs
   type: exitcode-stdio-1.0
