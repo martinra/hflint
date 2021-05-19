@@ -4,7 +4,7 @@
 #include <flint/flint.h>
 #include <flint/fmpz.h>
 #include <flint/fmpz_poly.h>
-#include <flint/nf.h>
+#include <nf.h>
 #include <flint/nmod_vec.h>
 #include <gmp.h>
 

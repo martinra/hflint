@@ -8,8 +8,8 @@
 #include <flint/fmpq_mat.h>
 #include <flint/fmpz_poly.h>
 #include <flint/fmpq_poly.h>
-#include <flint/nf.h>
-#include <flint/nf_elem.h>
+#include <nf.h>
+#include <nf_elem.h>
 
 // todo: when GHCi supports capi for #define statements, then remove these wrappers
 

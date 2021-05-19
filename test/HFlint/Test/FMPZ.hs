@@ -12,6 +12,8 @@ import qualified Math.Structure.Tasty
 
 import HFlint.FMPZ
 import HFlint.Test.FMPZ.Integer
+import HFlint.FMPZ.Tasty.QuickCheck
+import HFlint.FMPZ.Tasty.SmallCheck
 
 
 tests :: TestTree

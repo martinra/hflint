@@ -12,8 +12,8 @@
 module HFlint.NF.FFI
 where
 
-#include <flint/nf.h>
-#include <flint/nf_elem.h>
+#include <nf.h>
+#include <nf_elem.h>
 
 import Control.Monad ( void )
 import Data.Proxy
